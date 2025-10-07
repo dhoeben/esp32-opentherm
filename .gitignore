@@ -1,0 +1,33 @@
+# ==========================
+# ESPHome / Home Assistant
+# ==========================
+
+# ESPHome build cache
+.esphome/
+.cache/
+build/
+*.bin
+*.elf
+*.map
+
+# Logs
+logs/
+*.log
+
+# Secrets (Wi-Fi, API passwords)
+secrets.yaml
+
+# ==========================
+# VS Code / IDE
+# ==========================
+
+.vscode/
+*.code-workspace
+
+# Python cache
+__pycache__/
+*.pyc
+
+# macOS / Windows cruft
+.DS_Store
+Thumbs.db

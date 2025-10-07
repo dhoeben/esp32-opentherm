@@ -1,0 +1,45 @@
+# -----------------------------------------------------------
+# Climate entity: central heating (CH) control via OpenTherm
+# -----------------------------------------------------------
+
+- platform: thermostat
+  name: "Boiler Thermostat"
+  id: boiler_climate
+
+  # 🔹 This is the *feedback* temperature from the boiler (CH water temperature)
+  sensor: boiler_temp
+
+  visual:
+    min_temperature: 10
+    max_temperature: 80
+    temperature_step: 0.5
+
+  min_heating_off_time: 30s
+  min_heating_run_time: 30s
+  min_idle_time: 30s
+
+  preset:
+    - name: Comfort
+      default_target_temperature_low: 60.0  # typical CH flow temp when heating
+
+  heat_action:
+    - lambda: |-
+        auto ot = opentherm::OpenThermComponent::get_singleton();
+        if (ot != nullptr) {
+          float target = id(boiler_climate).target_temperature;
+          uint16_t raw = (uint16_t)(target * 256.0f);
+          uint32_t frame = ot->build_request(opentherm::WRITE_DATA, 0x11, raw);
+          ot->send_frame(frame);
+          ESP_LOGI("otgw", "🔥 Heating ON: %.1f°C target sent", target);
+        }
+
+  idle_action:
+    - lambda: |-
+        auto ot = opentherm::OpenThermComponent::get_singleton();
+        if (ot != nullptr) {
+          // When idle, lower setpoint so boiler stops firing.
+          uint16_t raw = (uint16_t)(10.0f * 256.0f);
+          uint32_t frame = ot->build_request(opentherm::WRITE_DATA, 0x11, raw);
+          ot->send_frame(frame);
+          ESP_LOGI("otgw", "🌙 Heating OFF: reduced setpoint sent");
+        }

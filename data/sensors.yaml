@@ -1,0 +1,33 @@
+# -----------------------------------------------------------
+# External sensors from Home Assistant
+# -----------------------------------------------------------
+
+# Outdoor temperature (from Home Assistant)
+# This value can later be written back to the boiler as the OpenTherm
+# "outside temperature" (data-id 0x1C).
+- platform: homeassistant
+  entity_id: sensor.outdoor_temperature
+  id: ha_outdoor_temp
+  internal: false        # set to true if you don’t want it visible in HA
+  unit_of_measurement: "°C"
+  accuracy_decimals: 1
+  on_value:
+    then:
+      - lambda: |-
+          auto ot = opentherm::OpenThermComponent::get_singleton();
+          if (ot != nullptr) {
+            // 0x1C = outside temperature
+            uint16_t raw = (uint16_t)(x * 256.0f);   // convert °C to F8.8
+            uint32_t frame = ot->build_request(opentherm::WRITE_DATA, 0x1C, raw);
+            ot->send_frame(frame);
+            ESP_LOGI("otgw", "Sent outside temp %.1f°C to boiler", x);
+          }
+
+# -----------------------------------------------------------
+# Optional diagnostic sensors (built-in)
+# -----------------------------------------------------------
+
+# Example: Wi-Fi signal strength
+- platform: wifi_signal
+  name: "Wi-Fi Signal Strength"
+  update_interval: 60s

@@ -4,6 +4,7 @@
 
 # ESPHome build cache
 .esphome/
+.esphome/storage/
 .cache/
 build/
 *.bin

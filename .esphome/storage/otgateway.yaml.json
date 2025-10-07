@@ -1,0 +1,18 @@
+{
+  "storage_version": 1,
+  "name": "opentherm_gateway",
+  "friendly_name": "opentherm_gateway",
+  "comment": null,
+  "esphome_version": null,
+  "src_version": 1,
+  "address": "opentherm_gateway.local",
+  "web_port": null,
+  "esp_platform": "ESP32",
+  "build_path": null,
+  "firmware_bin_path": null,
+  "loaded_integrations": [],
+  "loaded_platforms": [],
+  "no_mdns": false,
+  "framework": null,
+  "core_platform": "esp32"
+}

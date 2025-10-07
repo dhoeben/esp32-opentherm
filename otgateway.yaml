@@ -1,0 +1,30 @@
+esphome:
+  name: opentherm_gateway
+
+esp32:
+  board: esp32-c6-devkitc-1
+  framework:
+    type: esp-idf
+
+# Enable logging
+logger:
+
+# Enable Home Assistant API
+api:
+  password: "Monster#1"
+
+ota:
+  - platform: esphome
+    password: "Monster#1"
+
+wifi:
+  ssid: "Happy Hour IoT"
+  password: "itsalways5pmsomewhere"
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: "Opentherm Gateway"
+    password: "yAyQs84CkJpv"
+
+captive_portal:
+    

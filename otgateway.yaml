@@ -53,6 +53,9 @@ opentherm:
 
 climate: !include data/climate.yaml
 number: !include data/number.yaml
-sensor: !include
-  - data/sensors.yaml
-  - data/equitherm.yaml
+sensor: !include data/sensors.yaml
+
+substitutions:
+  eq_n: !secret eq_n
+  eq_k: !secret eq_k
+  eq_t: !secret eq_t

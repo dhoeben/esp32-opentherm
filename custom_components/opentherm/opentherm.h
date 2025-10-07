@@ -6,18 +6,11 @@
 
 namespace opentherm {
 
-// ============================
-// OpenTherm message constants
-// ============================
 enum OTMsgType : uint8_t {
-  READ_DATA  = 0b000,  // Master → Read
-  WRITE_DATA = 0b001,  // Master → Write
+  READ_DATA  = 0b000,
+  WRITE_DATA = 0b001,
 };
 
-// ============================
-// Default Equitherm Coefficients
-// (can be overridden via YAML -> secrets)
-// ============================
 #ifndef EQ_N
 #define EQ_N 0.7f
 #endif
@@ -27,31 +20,31 @@ enum OTMsgType : uint8_t {
 #ifndef EQ_T
 #define EQ_T 2.0f
 #endif
-#define EQ_FB_GAIN atof(esphome::App.get_secret("eq_fb_gain").c_str())
+#ifndef EQ_FB_GAIN
+#define EQ_FB_GAIN 3.0f
+#endif
 
-
-// ============================================================
-//  Main Component Class
-// ============================================================
 class OpenThermComponent : public esphome::Component {
  public:
   OpenThermComponent();
 
-  // Exposed sensors (published to HA)
+  // Exposed sensors
   esphome::sensor::Sensor *boiler_temp  = new esphome::sensor::Sensor();
   esphome::sensor::Sensor *return_temp  = new esphome::sensor::Sensor();
   esphome::sensor::Sensor *modulation   = new esphome::sensor::Sensor();
   esphome::sensor::Sensor *setpoint     = new esphome::sensor::Sensor();
 
-  // Component lifecycle
+  void set_boiler_temp_sensor(esphome::sensor::Sensor *s) { boiler_temp = s; }
+  void set_return_temp_sensor(esphome::sensor::Sensor *s) { return_temp = s; }
+  void set_modulation_sensor(esphome::sensor::Sensor *s) { modulation = s; }
+  void set_setpoint_sensor(esphome::sensor::Sensor *s) { setpoint = s; }
+
   void setup() override;
   void loop() override;
 
-  // Helpers to read boiler data
   uint32_t read_did(uint8_t did);
   static float parse_f88(uint16_t raw);
 
-  // Config setters (called from Python binding)
   void set_pins(esphome::InternalGPIOPin *in_pin, esphome::InternalGPIOPin *out_pin) {
     in_pin_ = in_pin;
     out_pin_ = out_pin;
@@ -60,11 +53,13 @@ class OpenThermComponent : public esphome::Component {
   void set_rx_timeout(uint32_t ms) { rx_timeout_ms_ = ms; }
   void set_debug(bool dbg) { debug_ = dbg; }
 
-  // Singleton accessor
   static OpenThermComponent* get_singleton();
 
+  // ✅ Moved here so YAML lambdas can use them
+  bool send_frame(uint32_t frame);
+  static uint32_t build_request(OTMsgType mt, uint8_t did, uint16_t data);
+
  private:
-  // ---------------- Config ----------------
   esphome::InternalGPIOPin *in_pin_{nullptr};
   esphome::InternalGPIOPin *out_pin_{nullptr};
   uint32_t poll_interval_ms_{10000};
@@ -72,19 +67,19 @@ class OpenThermComponent : public esphome::Component {
   bool debug_{false};
   uint32_t last_poll_ms_{0};
 
-  // ---------------- Timing ----------------
-  static constexpr uint32_t HALF_BIT_US = 500; // 0.5 ms (Manchester half-bit)
+  static constexpr uint32_t HALF_BIT_US = 500;
   static constexpr uint32_t BIT_US      = 1000;
 
-  // ---------------- Low-level OT ----------------
   void line_tx_level(bool high);
   bool line_rx_level() const;
   void tx_manchester_bit(bool logical_one);
-  bool send_frame(uint32_t frame);
   bool recv_frame(uint32_t &resp);
-  static uint32_t build_request(OTMsgType mt, uint8_t did, uint16_t data);
   static uint8_t parity32(uint32_t v);
   bool wait_us(uint32_t us);
 };
+
+extern esphome::sensor::Sensor *id_ha_weather_temp;
+extern esphome::sensor::Sensor *id_ha_target_temp;
+extern esphome::sensor::Sensor *id_ha_indoor_temp;
 
 }  // namespace opentherm

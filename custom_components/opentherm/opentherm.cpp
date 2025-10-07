@@ -2,6 +2,11 @@
 using namespace esphome;
 
 namespace opentherm {
+  // Link definitions for HA sensors
+esphome::sensor::Sensor *id_ha_weather_temp = nullptr;
+esphome::sensor::Sensor *id_ha_target_temp = nullptr;
+esphome::sensor::Sensor *id_ha_indoor_temp = nullptr;
+
 
 static OpenThermComponent* g_singleton = nullptr;
 
@@ -49,21 +54,20 @@ void OpenThermComponent::loop() {
   // -----------------------------------------------------------
   // Weather-compensated control (Equitherm)
   // -----------------------------------------------------------
-  float t_out = 10.0f;  // default / fallback
-  if (id(ha_outdoor_temp).has_state())
-    t_out = id(ha_outdoor_temp).state;
+  float t_out = 10.0f;
+  if (id_ha_weather_temp != nullptr && id_ha_weather_temp->has_state())
+    t_out = id_ha_weather_temp->state;
 
-  float t_set = 21.0f;  // indoor target temp
-  if (id(ha_target_temp).has_state())
-    t_set = id(ha_target_temp).state;
+  float t_set = 21.0f;
+  if (id_ha_target_temp != nullptr && id_ha_target_temp->has_state())
+    t_set = id_ha_target_temp->state;
+
+  float t_in = 21.0f;
+  if (id_ha_indoor_temp != nullptr && id_ha_indoor_temp->has_state())
+    t_in = id_ha_indoor_temp->state;
 
   // --- Base Equitherm curve ---
   float flow_target = (EQ_N * (t_set + EQ_K - t_out)) + EQ_T;
-
-  // --- Indoor feedback correction ---
-  float t_in = 21.0f;  // fallback indoor actual temperature
-  if (id(ha_indoor_temp).has_state())
-    t_in = id(ha_indoor_temp).state;
 
   float delta = t_set - t_in;  // positive = too cold, negative = too warm
   float correction = delta * EQ_FB_GAIN;  // gain factor, tune between 1.0 and 5.0

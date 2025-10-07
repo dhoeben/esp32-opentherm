@@ -2,11 +2,8 @@
 # External sensors from Home Assistant
 # -----------------------------------------------------------
 
-# Outdoor temperature (from Home Assistant)
-# This value can later be written back to the boiler as the OpenTherm
-# "outside temperature" (data-id 0x1C).
 - platform: homeassistant
-  entity_id: sensor.outdoor_temperature
+  entity_id: !secret outdoor_entity
   id: ha_outdoor_temp
   internal: false        # set to true if you don’t want it visible in HA
   unit_of_measurement: "°C"
@@ -31,3 +28,46 @@
 - platform: wifi_signal
   name: "Wi-Fi Signal Strength"
   update_interval: 60s
+
+
+# -----------------------------------------------------------
+# Equitherm
+# -----------------------------------------------------------
+
+# --- Outdoor temperature (weather from HA) ---
+- platform: homeassistant
+  entity_id: !secret weather_entity
+  attribute: temperature
+  id: ha_weather_temp
+  internal: true
+  unit_of_measurement: "°C"
+  accuracy_decimals: 1
+  filters:
+    - lambda: |-
+        if (isnan(x)) return 10.0f;  // fallback if no weather data
+        return x;
+
+# --- Indoor target (climate setpoint from HA) ---
+- platform: homeassistant
+  entity_id: !secret climate_entity
+  attribute: temperature
+  id: ha_target_temp
+  internal: true
+  unit_of_measurement: "°C"
+  accuracy_decimals: 1
+  filters:
+    - lambda: |-
+        if (isnan(x) || x < 5.0f) return 21.0f;  // fallback to 21°C
+        return x;
+
+# --- Indoor actual temperature (feedback) ---
+- platform: homeassistant
+  entity_id: !secret indoor_entity
+  id: ha_indoor_temp
+  internal: true
+  unit_of_measurement: "°C"
+  accuracy_decimals: 1
+  filters:
+    - lambda: |-
+        if (isnan(x)) return 21.0f;  // fallback if missing
+        return x;

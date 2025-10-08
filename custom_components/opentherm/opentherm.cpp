@@ -1,12 +1,15 @@
 #include "opentherm.h"
+#include "config.h"
+#include "equitherm.h"
+
 using namespace esphome;
 
 namespace opentherm {
-  // Link definitions for HA sensors
-esphome::sensor::Sensor *id_ha_weather_temp = nullptr;
-esphome::sensor::Sensor *id_ha_target_temp = nullptr;
-esphome::sensor::Sensor *id_ha_indoor_temp = nullptr;
 
+// Link definitions for HA sensors
+esphome::sensor::Sensor *id_ha_weather_temp = nullptr;
+esphome::sensor::Sensor *id_ha_target_temp  = nullptr;
+esphome::sensor::Sensor *id_ha_indoor_temp  = nullptr;
 
 static OpenThermComponent* g_singleton = nullptr;
 
@@ -41,9 +44,14 @@ void OpenThermComponent::setup() {
   in_pin_->setup();
   out_pin_->setup();
   line_tx_level(true);  // idle high
-  ESP_LOGI("opentherm", "Pins configured IN=%d OUT=%d, poll=%u ms, rx_timeout=%u ms, debug=%d",
-           in_pin_->get_pin(), out_pin_->get_pin(),
-           poll_interval_ms_, rx_timeout_ms_, debug_);
+
+  ESP_LOGI("opentherm",
+           "Pins configured IN=%d OUT=%d, poll=%u ms, rx_timeout=%u ms, debug=%d",
+           in_pin_ ? in_pin_->get_pin() : OT_IN_PIN,
+           out_pin_ ? out_pin_->get_pin() : OT_OUT_PIN,
+           poll_interval_ms_ ? poll_interval_ms_ : OT_POLL_INTERVAL,
+           rx_timeout_ms_,
+           debug_ ? debug_ : OT_DEBUG);
 }
 
 void OpenThermComponent::loop() {
@@ -52,63 +60,42 @@ void OpenThermComponent::loop() {
   last_poll_ms_ = now;
 
   // -----------------------------------------------------------
-  // Weather-compensated control (Equitherm)
+  // Weather-compensated control (Equitherm) — delegated
   // -----------------------------------------------------------
-  float t_out = 10.0f;
-  if (id_ha_weather_temp != nullptr && id_ha_weather_temp->has_state())
-    t_out = id_ha_weather_temp->state;
+  float flow_target = Equitherm::calculate_target_temp();
 
-  float t_set = 21.0f;
-  if (id_ha_target_temp != nullptr && id_ha_target_temp->has_state())
-    t_set = id_ha_target_temp->state;
-
-  float t_in = 21.0f;
-  if (id_ha_indoor_temp != nullptr && id_ha_indoor_temp->has_state())
-    t_in = id_ha_indoor_temp->state;
-
-  // --- Base Equitherm curve ---
-  float flow_target = (EQ_N * (t_set + EQ_K - t_out)) + EQ_T;
-
-  float delta = t_set - t_in;  // positive = too cold, negative = too warm
-  float correction = delta * EQ_FB_GAIN;  // gain factor, tune between 1.0 and 5.0
-
-  flow_target += correction;
-
-  // Clamp for safety
+  // Clamp for safety (secondary guard; primary clamp is in Equitherm)
   if (flow_target < 25.0f) flow_target = 25.0f;
   if (flow_target > 80.0f) flow_target = 80.0f;
 
-  uint16_t raw = (uint16_t)(flow_target * 256.0f);
+  // Write Control Setpoint (DID 0x11) as F8.8
+  uint16_t raw = static_cast<uint16_t>(flow_target * 256.0f);
   uint32_t frame = build_request(WRITE_DATA, 0x11, raw);
   send_frame(frame);
 
   if (debug_) {
-    ESP_LOGI("opentherm",
-            "Equitherm+FB: out=%.1f°C set=%.1f°C in=%.1f°C Δ=%.2f flow=%.1f°C (N=%.2f,K=%.2f,T=%.2f)",
-            t_out, t_set, t_in, delta, flow_target, EQ_N, EQ_K, EQ_T);
+    ESP_LOGI("opentherm", "Sent flow target (setpoint) = %.1f°C", flow_target);
   }
-
-
 
   // -----------------------------------------------------------
   // Poll boiler for diagnostic data
   // -----------------------------------------------------------
-  if (uint32_t raw18 = read_did(0x18)) {
+  if (uint32_t raw18 = read_did(0x18)) {           // Boiler water temp
     uint16_t data = (raw18 >> 8) & 0xFFFF;
     boiler_temp->publish_state(parse_f88(data));
   }
 
-  if (uint32_t raw19 = read_did(0x19)) {
+  if (uint32_t raw19 = read_did(0x19)) {           // Return temp
     uint16_t data = (raw19 >> 8) & 0xFFFF;
     return_temp->publish_state(parse_f88(data));
   }
 
-  if (uint32_t raw1D = read_did(0x1D)) {
+  if (uint32_t raw1D = read_did(0x1D)) {           // Modulation level
     uint16_t data = (raw1D >> 8) & 0xFFFF;
     modulation->publish_state(parse_f88(data));
   }
 
-  if (uint32_t raw11 = read_did(0x11)) {
+  if (uint32_t raw11 = read_did(0x11)) {           // Control setpoint echo
     uint16_t data = (raw11 >> 8) & 0xFFFF;
     setpoint->publish_state(parse_f88(data));
   }
@@ -177,7 +164,7 @@ bool OpenThermComponent::send_frame(uint32_t frame) {
 bool OpenThermComponent::recv_frame(uint32_t &resp) {
   int64_t start = esp_timer_get_time();
   resp = 0;
-  while ((esp_timer_get_time() - start) < (int64_t)rx_timeout_ms_ * 1000) {
+  while ((esp_timer_get_time() - start) < static_cast<int64_t>(rx_timeout_ms_) * 1000) {
     uint32_t v = 0;
     for (int i = 31; i >= 0; --i) {
       wait_us(HALF_BIT_US);

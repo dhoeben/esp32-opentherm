@@ -1,4 +1,6 @@
 #pragma once
+#include "config.h"
+
 #include "esphome.h"
 #include "driver/gpio.h"
 #include "esp_timer.h"

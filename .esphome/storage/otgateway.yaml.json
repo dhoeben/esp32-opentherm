@@ -27,6 +27,7 @@
     "ota",
     "preferences",
     "safe_mode",
+    "select",
     "sensor",
     "socket",
     "substitutions",
@@ -43,7 +44,9 @@
     "number/template",
     "ota/esphome",
     "ota/web_server",
+    "select/template",
     "sensor/homeassistant",
+    "sensor/template",
     "sensor/wifi_signal"
   ],
   "no_mdns": false,

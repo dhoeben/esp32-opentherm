@@ -1,6 +1,7 @@
 #include "opentherm.h"
 #include "config.h"
 #include "equitherm.h"
+#include "dhw.h"
 
 using namespace esphome;
 
@@ -34,6 +35,17 @@ OpenThermComponent::OpenThermComponent() {
   setpoint->set_unit_of_measurement("°C");
   setpoint->set_icon("mdi:thermostat");
   setpoint->set_accuracy_decimals(1);
+
+  dhw_temp->set_name("DHW Temperature");
+  dhw_temp->set_unit_of_measurement("°C");
+  dhw_temp->set_icon("mdi:water-thermometer");
+  dhw_temp->set_accuracy_decimals(1);
+
+  dhw_setpoint->set_name("DHW Setpoint");
+  dhw_setpoint->set_unit_of_measurement("°C");
+  dhw_setpoint->set_icon("mdi:thermostat-water");
+  dhw_setpoint->set_accuracy_decimals(1);
+
 
   g_singleton = this;
 }
@@ -99,6 +111,23 @@ void OpenThermComponent::loop() {
     uint16_t data = (raw11 >> 8) & 0xFFFF;
     setpoint->publish_state(parse_f88(data));
   }
+
+  if (uint32_t raw1A = read_did(0x1A)) {          // DHW temperature
+    uint16_t data = (raw1A >> 8) & 0xFFFF;
+    dhw_temp->publish_state(parse_f88(data));
+  }
+
+  if (uint32_t raw1B = read_did(0x1B)) {          // DHW setpoint (target)
+    uint16_t data = (raw1B >> 8) & 0xFFFF;
+    dhw_setpoint->publish_state(parse_f88(data));
+  }
+
+
+  // -----------------------------------------------------------
+  // DHW section
+  // -----------------------------------------------------------
+  DHW::update(this);
+
 }
 
 // ============================

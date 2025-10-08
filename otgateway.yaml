@@ -51,9 +51,11 @@ opentherm:
     name: "Control Setpoint"
 
 
-climate:  !include data/climate.yaml
-number:   !include data/number.yaml
-sensor:   !include data/sensors.yaml
+climate:      !include data/climate.yaml
+number:       !include data/number.yaml
+select:       !include data/select.yaml
+sensor:       !include data/sensors.yaml
+
 
 substitutions:
   eq_n: !secret eq_n

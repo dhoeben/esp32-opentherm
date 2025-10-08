@@ -36,10 +36,18 @@ class OpenThermComponent : public esphome::Component {
   esphome::sensor::Sensor *modulation   = new esphome::sensor::Sensor();
   esphome::sensor::Sensor *setpoint     = new esphome::sensor::Sensor();
 
+  // DHW sensors
+  esphome::sensor::Sensor *dhw_temp     = new esphome::sensor::Sensor();
+  esphome::sensor::Sensor *dhw_setpoint = new esphome::sensor::Sensor();
+
+
   void set_boiler_temp_sensor(esphome::sensor::Sensor *s) { boiler_temp = s; }
   void set_return_temp_sensor(esphome::sensor::Sensor *s) { return_temp = s; }
   void set_modulation_sensor(esphome::sensor::Sensor *s) { modulation = s; }
   void set_setpoint_sensor(esphome::sensor::Sensor *s) { setpoint = s; }
+
+  void set_dhw_temp_sensor(esphome::sensor::Sensor *s) { dhw_temp = s; }
+  void set_dhw_setpoint_sensor(esphome::sensor::Sensor *s) { dhw_setpoint = s; }
 
   void setup() override;
   void loop() override;

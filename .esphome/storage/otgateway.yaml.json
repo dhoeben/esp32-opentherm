@@ -32,6 +32,7 @@
     "sensor",
     "socket",
     "template",
+    "text_sensor",
     "thermostat",
     "web_server",
     "web_server_base",
@@ -48,7 +49,8 @@
     "select/template",
     "sensor/homeassistant",
     "sensor/template",
-    "sensor/wifi_signal"
+    "sensor/wifi_signal",
+    "text_sensor/template"
   ],
   "no_mdns": false,
   "framework": "esp-idf",

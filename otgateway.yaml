@@ -6,15 +6,20 @@ esphome:
     priority: -100
     then:
       - lambda: |-
-          // --- Link DHW number handles ---
+          // DHW
           opentherm::DHW::eco_temp_number = (esphome::number::Number *)&id(dhw_eco_temp);
           opentherm::DHW::normal_temp_number = (esphome::number::Number *)&id(dhw_normal_temp);
 
-          // --- Link Equitherm tuning handles ---
-          opentherm::Equitherm::eq_n = (esphome::number::Number *)&id(eq_n_number);
-          opentherm::Equitherm::eq_k = (esphome::number::Number *)&id(eq_k_number);
-          opentherm::Equitherm::eq_t = (esphome::number::Number *)&id(eq_t_number);
-          opentherm::Equitherm::eq_fb_gain = (esphome::number::Number *)&id(eq_fb_gain_number);
+          // Diagnostics binary sensors
+          opentherm::Diagnostics::comms_ok_sensor = (esphome::binary_sensor::BinarySensor *)&id(ot_comms_ok);
+          opentherm::Diagnostics::ch_active_sensor = (esphome::binary_sensor::BinarySensor *)&id(ch_active);
+          opentherm::Diagnostics::dhw_active_sensor = (esphome::binary_sensor::BinarySensor *)&id(dhw_active);
+          opentherm::Diagnostics::flame_sensor = (esphome::binary_sensor::BinarySensor *)&id(flame_on);
+          opentherm::Diagnostics::fault_sensor = (esphome::binary_sensor::BinarySensor *)&id(boiler_fault);
+          opentherm::Diagnostics::diagnostic_sensor = (esphome::binary_sensor::BinarySensor *)&id(boiler_diag);
+          opentherm::Diagnostics::fault_text_sensor = (esphome::text_sensor::TextSensor *)&id(boiler_fault_message);
+
+
 
 esp32:
   board: esp32-c6-devkitc-1
@@ -70,3 +75,7 @@ number:         !include data/number.yaml
 select:         !include data/select.yaml
 sensor:         !include data/sensors.yaml
 
+text_sensor:
+  - platform: template
+    name: "Boiler Fault Message"
+    id: boiler_fault_message

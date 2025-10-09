@@ -1,6 +1,7 @@
 #include "opentherm.h"
 #include "config.h"
 #include "equitherm.h"
+#include "diagnostics.h"
 #include "dhw.h"
 
 using namespace esphome;
@@ -15,7 +16,7 @@ esphome::sensor::Sensor *id_ha_indoor_temp  = nullptr;
 static OpenThermComponent* g_singleton = nullptr;
 
 OpenThermComponent::OpenThermComponent() {
-  // Configure all HA-visible sensors
+  // ------------- Configure HA-visible sensors -------------
   boiler_temp->set_name("Boiler Water Temperature");
   boiler_temp->set_unit_of_measurement("°C");
   boiler_temp->set_icon("mdi:thermometer");
@@ -46,7 +47,6 @@ OpenThermComponent::OpenThermComponent() {
   dhw_setpoint->set_icon("mdi:thermostat-water");
   dhw_setpoint->set_accuracy_decimals(1);
 
-
   g_singleton = this;
 }
 
@@ -67,79 +67,67 @@ void OpenThermComponent::setup() {
 }
 
 void OpenThermComponent::loop() {
-  uint32_t now = millis();
+  const uint32_t now = millis();
   if (now - last_poll_ms_ < poll_interval_ms_) return;
   last_poll_ms_ = now;
 
   // -----------------------------------------------------------
-  // Weather-compensated control (Equitherm) — delegated
+  // Weather-compensated control (Equitherm)
   // -----------------------------------------------------------
   float flow_target = Equitherm::calculate_target_temp();
 
-  // Clamp for safety (secondary guard; primary clamp is in Equitherm)
+  // Safety clamp (primary clamp is already inside Equitherm)
   if (flow_target < 25.0f) flow_target = 25.0f;
   if (flow_target > 80.0f) flow_target = 80.0f;
 
-  // Write Control Setpoint (DID 0x11) as F8.8
-  uint16_t raw = static_cast<uint16_t>(flow_target * 256.0f);
-  uint32_t frame = build_request(WRITE_DATA, 0x11, raw);
-  send_frame(frame);
-
-  if (debug_) {
-    ESP_LOGI("opentherm", "Sent flow target (setpoint) = %.1f°C", flow_target);
+  // Write Control Setpoint (DID 0x11, F8.8)
+  {
+    const uint16_t raw = static_cast<uint16_t>(flow_target * 256.0f);
+    const uint32_t frame = build_request(WRITE_DATA, 0x11, raw);
+    send_frame(frame);
+    if (debug_) ESP_LOGI("opentherm", "Sent flow target (setpoint) = %.1f°C", flow_target);
   }
 
   // -----------------------------------------------------------
-  // Poll boiler for diagnostic data
+  // Poll boiler telemetry
   // -----------------------------------------------------------
   if (uint32_t raw18 = read_did(0x18)) {           // Boiler water temp
-    uint16_t data = (raw18 >> 8) & 0xFFFF;
+    const uint16_t data = (raw18 >> 8) & 0xFFFF;
     boiler_temp->publish_state(parse_f88(data));
   }
 
   if (uint32_t raw19 = read_did(0x19)) {           // Return temp
-    uint16_t data = (raw19 >> 8) & 0xFFFF;
+    const uint16_t data = (raw19 >> 8) & 0xFFFF;
     return_temp->publish_state(parse_f88(data));
   }
 
   if (uint32_t raw1D = read_did(0x1D)) {           // Modulation level
-    uint16_t data = (raw1D >> 8) & 0xFFFF;
+    const uint16_t data = (raw1D >> 8) & 0xFFFF;
     modulation->publish_state(parse_f88(data));
   }
 
   if (uint32_t raw11 = read_did(0x11)) {           // Control setpoint echo
-    uint16_t data = (raw11 >> 8) & 0xFFFF;
+    const uint16_t data = (raw11 >> 8) & 0xFFFF;
     setpoint->publish_state(parse_f88(data));
   }
 
-  if (uint32_t raw1A = read_did(0x1A)) {          // DHW temperature
-    uint16_t data = (raw1A >> 8) & 0xFFFF;
+  if (uint32_t raw1A = read_did(0x1A)) {           // DHW temperature
+    const uint16_t data = (raw1A >> 8) & 0xFFFF;
     dhw_temp->publish_state(parse_f88(data));
   }
 
-  if (uint32_t raw1B = read_did(0x1B)) {          // DHW setpoint (target)
-    uint16_t data = (raw1B >> 8) & 0xFFFF;
+  if (uint32_t raw1B = read_did(0x1B)) {           // DHW setpoint (target)
+    const uint16_t data = (raw1B >> 8) & 0xFFFF;
     dhw_setpoint->publish_state(parse_f88(data));
   }
 
-  if (uint32_t raw00 = read_did(0x00)) {
-    uint16_t data = (raw00 >> 8) & 0xFFFF;
-
-    bool dhw_active = data & (1 << 1);  // Bit 1: DHW active
-    bool tap_flow   = data & (1 << 2);  // Bit 2: tap flow detected
-
-    // store for template binary_sensors
-    dhw_active_ = dhw_active;
-    tap_flow_   = tap_flow;
-
-    if (debug_) {
-      ESP_LOGD("opentherm", "Status bits: DHW active=%d, Tap flow=%d", dhw_active_, tap_flow_);
-    }
-  }
-
+  // -----------------------------------------------------------
+  // Boiler status & diagnostics (DID 0x00, etc.) — delegated
+  // -----------------------------------------------------------
+  Diagnostics::update(this);
 
   // -----------------------------------------------------------
-  // DHW section
+  // DHW section (mode & setpoint writer) — delegated
   // -----------------------------------------------------------
   DHW::update(this);
 }
@@ -160,24 +148,20 @@ uint32_t OpenThermComponent::build_request(OTMsgType mt, uint8_t did, uint16_t d
   f |= (static_cast<uint32_t>(mt) & 0x7u) << 28;
   f |= (static_cast<uint32_t>(did) & 0xFFu) << 20;
   f |= (static_cast<uint32_t>(data) & 0xFFFFu) << 4;
-  uint8_t p = parity32(f);
+  const uint8_t p = parity32(f);
   f |= static_cast<uint32_t>(p);
   return f;
 }
 
 bool OpenThermComponent::wait_us(uint32_t us) {
-  int64_t start = esp_timer_get_time();
+  const int64_t start = esp_timer_get_time();
   while ((esp_timer_get_time() - start) < static_cast<int64_t>(us)) { }
   return true;
 }
 
-void OpenThermComponent::line_tx_level(bool high) {
-  out_pin_->digital_write(high);
-}
+void OpenThermComponent::line_tx_level(bool high) { out_pin_->digital_write(high); }
 
-bool OpenThermComponent::line_rx_level() const {
-  return in_pin_->digital_read();
-}
+bool OpenThermComponent::line_rx_level() const { return in_pin_->digital_read(); }
 
 void OpenThermComponent::tx_manchester_bit(bool logical_one) {
   if (logical_one) {
@@ -199,27 +183,26 @@ bool OpenThermComponent::send_frame(uint32_t frame) {
   line_tx_level(true);
   wait_us(3 * BIT_US);
 
-  if (debug_)
-    ESP_LOGD("opentherm", "TX frame: 0x%08X", frame);
+  if (debug_) ESP_LOGD("opentherm", "TX frame: 0x%08X", frame);
   return true;
 }
 
 bool OpenThermComponent::recv_frame(uint32_t &resp) {
-  int64_t start = esp_timer_get_time();
+  const int64_t start = esp_timer_get_time();
   resp = 0;
   while ((esp_timer_get_time() - start) < static_cast<int64_t>(rx_timeout_ms_) * 1000) {
     uint32_t v = 0;
     for (int i = 31; i >= 0; --i) {
       wait_us(HALF_BIT_US);
-      bool first = line_rx_level();
+      const bool first = line_rx_level();
       wait_us(HALF_BIT_US);
-      bool second = line_rx_level();
+      const bool second = line_rx_level();
       if (first && !second)       v = (v << 1) | 1u;
       else if (!first && second)  v = (v << 1) | 0u;
       else return false;
     }
     resp = v;
-    uint8_t p = parity32(resp);
+    const uint8_t p = parity32(resp);
     if (((resp & 0x1u) != p)) return false;
     if (debug_) ESP_LOGD("opentherm", "RX frame: 0x%08X", resp);
     return true;
@@ -228,7 +211,7 @@ bool OpenThermComponent::recv_frame(uint32_t &resp) {
 }
 
 uint32_t OpenThermComponent::read_did(uint8_t did) {
-  uint32_t req = build_request(READ_DATA, did, 0);
+  const uint32_t req = build_request(READ_DATA, did, 0);
   if (!send_frame(req)) return 0;
 
   uint32_t resp = 0;

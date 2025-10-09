@@ -1,7 +1,6 @@
 # -----------------------------------------------------------
 # Number entity to send target temperature to boiler
 # -----------------------------------------------------------
-
 - platform: template
   name: "Boiler Target Temperature"
   id: boiler_target
@@ -71,3 +70,40 @@
             opentherm::WRITE_DATA, 0x1B, raw);
         ot->send_frame(frame);
         ESP_LOGI("dhw", "Set DHW setpoint to %.1f°C", x);
+
+# Equitherm
+- platform: template
+  name: "EQ N (slope)"
+  id: eq_n_number
+  min_value: 0.1
+  max_value: 2.0
+  step: 0.05
+  restore_value: true
+  optimistic: true
+
+- platform: template
+  name: "EQ K (parallel shift)"
+  id: eq_k_number
+  min_value: 0.0
+  max_value: 10.0
+  step: 0.1
+  restore_value: true
+  optimistic: true
+
+- platform: template
+  name: "EQ T (base offset)"
+  id: eq_t_number
+  min_value: -5.0
+  max_value: 10.0
+  step: 0.1
+  restore_value: true
+  optimistic: true
+
+- platform: template
+  name: "EQ Feedback Gain"
+  id: eq_fb_gain_number
+  min_value: 0.0
+  max_value: 10.0
+  step: 0.1
+  restore_value: true
+  optimistic: true

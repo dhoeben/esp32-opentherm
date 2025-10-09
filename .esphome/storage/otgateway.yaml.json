@@ -31,7 +31,6 @@
     "select",
     "sensor",
     "socket",
-    "substitutions",
     "template",
     "thermostat",
     "web_server",

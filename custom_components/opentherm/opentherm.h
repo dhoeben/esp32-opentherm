@@ -4,7 +4,9 @@
 #include "esphome.h"
 #include "driver/gpio.h"
 #include "esp_timer.h"
+
 #include "esphome/components/sensor/sensor.h"
+
 
 namespace opentherm {
 

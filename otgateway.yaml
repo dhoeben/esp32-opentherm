@@ -49,7 +49,19 @@ opentherm:
   setpoint:
     id: setpoint
     name: "Control Setpoint"
-
+  
+  dhw_eco_number:
+    id: dhw_eco_temp_number
+    name: "DHW ECO temperature"
+  dhw_normal_number:
+    id: dhw_normal_temp_number
+    name: "DHW normal temperature"
+  dhw_active_sensor:
+    id: dhw_active
+    name: "Boiler DHW Active"
+  tap_flow_sensor:
+    id: tap_flow
+    name: "Tap Water Flow Detected"
 
 climate:      !include data/climate.yaml
 number:       !include data/number.yaml

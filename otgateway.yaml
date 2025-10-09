@@ -2,6 +2,16 @@ esphome:
   name: otgateway
   friendly_name: OpenTherm Gateway
 
+  on_boot:
+    priority: -100
+    then:
+      - lambda: |-
+          // Link DHW number handles right away so DHW::update() can use them at startup
+          opentherm::DHW::eco_temp_number = (esphome::number::Number *)&id(dhw_eco_temp);
+          opentherm::DHW::normal_temp_number = (esphome::number::Number *)&id(dhw_normal_temp);
+
+
+
 esp32:
   board: esp32-c6-devkitc-1
   framework:
@@ -49,24 +59,12 @@ opentherm:
   setpoint:
     id: setpoint
     name: "Control Setpoint"
-  
-  dhw_eco_number:
-    id: dhw_eco_temp_number
-    name: "DHW ECO temperature"
-  dhw_normal_number:
-    id: dhw_normal_temp_number
-    name: "DHW normal temperature"
-  dhw_active_sensor:
-    id: dhw_active
-    name: "Boiler DHW Active"
-  tap_flow_sensor:
-    id: tap_flow
-    name: "Tap Water Flow Detected"
 
-climate:      !include data/climate.yaml
-number:       !include data/number.yaml
-select:       !include data/select.yaml
-sensor:       !include data/sensors.yaml
+binary_sensor:  !include data/binary_sensor.yaml
+climate:        !include data/climate.yaml
+number:         !include data/number.yaml
+select:         !include data/select.yaml
+sensor:         !include data/sensors.yaml
 
 
 substitutions:

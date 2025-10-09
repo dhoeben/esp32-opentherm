@@ -52,8 +52,6 @@
     - lambda: |-
         opentherm::DHW::normal_temp_number = (esphome::number::Number *)&id(dhw_normal_temp);
 
-
-
 - platform: template
   name: "Boiler DHW Setpoint"
   id: dhw_setpoint

@@ -122,12 +122,26 @@ void OpenThermComponent::loop() {
     dhw_setpoint->publish_state(parse_f88(data));
   }
 
+  if (uint32_t raw00 = read_did(0x00)) {
+    uint16_t data = (raw00 >> 8) & 0xFFFF;
+
+    bool dhw_active = data & (1 << 1);  // Bit 1: DHW active
+    bool tap_flow   = data & (1 << 2);  // Bit 2: tap flow detected
+
+    // store for template binary_sensors
+    dhw_active_ = dhw_active;
+    tap_flow_   = tap_flow;
+
+    if (debug_) {
+      ESP_LOGD("opentherm", "Status bits: DHW active=%d, Tap flow=%d", dhw_active_, tap_flow_);
+    }
+  }
+
 
   // -----------------------------------------------------------
   // DHW section
   // -----------------------------------------------------------
   DHW::update(this);
-
 }
 
 // ============================

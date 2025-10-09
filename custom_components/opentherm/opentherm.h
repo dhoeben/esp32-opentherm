@@ -51,6 +51,9 @@ class OpenThermComponent : public esphome::Component {
   void set_dhw_temp_sensor(esphome::sensor::Sensor *s) { dhw_temp = s; }
   void set_dhw_setpoint_sensor(esphome::sensor::Sensor *s) { dhw_setpoint = s; }
 
+  bool dhw_active() const { return dhw_active_; }
+  bool tap_flow()  const { return tap_flow_;  }
+
   void setup() override;
   void loop() override;
 
@@ -88,6 +91,9 @@ class OpenThermComponent : public esphome::Component {
   bool recv_frame(uint32_t &resp);
   static uint8_t parity32(uint32_t v);
   bool wait_us(uint32_t us);
+
+  bool dhw_active_{false};
+  bool tap_flow_{false};
 };
 
 extern esphome::sensor::Sensor *id_ha_weather_temp;

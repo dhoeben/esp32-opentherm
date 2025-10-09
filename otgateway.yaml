@@ -6,12 +6,17 @@ esphome:
     priority: -100
     then:
       - lambda: |-
+          // Link Equitherm number handles (for Equitherm::calculate_target_temp)
+          opentherm::Equitherm::eq_n         = (esphome::number::Number *)&id(eq_n);
+          opentherm::Equitherm::eq_k         = (esphome::number::Number *)&id(eq_k);
+          opentherm::Equitherm::eq_t         = (esphome::number::Number *)&id(eq_t);
+          opentherm::Equitherm::eq_fb_gain   = (esphome::number::Number *)&id(eq_fb_gain);
+
           // DHW
           opentherm::DHW::eco_temp_number = (esphome::number::Number *)&id(dhw_eco_temp);
           opentherm::DHW::normal_temp_number = (esphome::number::Number *)&id(dhw_normal_temp);
 
           // Diagnostics binary sensors
-         
           using namespace opentherm::Diagnostics;
           ch_active_sensor   = (esphome::binary_sensor::BinarySensor *)&id(ch_active);
           dhw_active_sensor  = (esphome::binary_sensor::BinarySensor *)&id(dhw_active);

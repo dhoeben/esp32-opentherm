@@ -72,38 +72,50 @@
         ESP_LOGI("dhw", "Set DHW setpoint to %.1f°C", x);
 
 # Equitherm
+# -----------------------------------------------------------
+# Equitherm curve tuning parameters (editable via Home Assistant)
+# -----------------------------------------------------------
+
 - platform: template
-  name: "EQ N (slope)"
-  id: eq_n_number
+  name: "Equitherm N (Slope)"
+  id: eq_n
   min_value: 0.1
-  max_value: 2.0
+  max_value: 1.5
   step: 0.05
   restore_value: true
   optimistic: true
+  unit_of_measurement: ""
+  icon: mdi:chart-line
 
 - platform: template
-  name: "EQ K (parallel shift)"
-  id: eq_k_number
+  name: "Equitherm K (Offset)"
+  id: eq_k
   min_value: 0.0
   max_value: 10.0
-  step: 0.1
+  step: 0.5
   restore_value: true
   optimistic: true
+  unit_of_measurement: ""
+  icon: mdi:chart-bell-curve
 
 - platform: template
-  name: "EQ T (base offset)"
-  id: eq_t_number
-  min_value: -5.0
+  name: "Equitherm T (Base)"
+  id: eq_t
+  min_value: -10.0
   max_value: 10.0
-  step: 0.1
+  step: 0.5
   restore_value: true
   optimistic: true
+  unit_of_measurement: "°C"
+  icon: mdi:thermometer-lines
 
 - platform: template
-  name: "EQ Feedback Gain"
-  id: eq_fb_gain_number
+  name: "Equitherm Feedback Gain"
+  id: eq_fb_gain
   min_value: 0.0
   max_value: 10.0
-  step: 0.1
+  step: 0.5
   restore_value: true
   optimistic: true
+  unit_of_measurement: ""
+  icon: mdi:amplifier

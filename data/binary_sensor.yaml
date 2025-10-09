@@ -8,31 +8,25 @@
     return ot ? ot->tap_flow() : false;
 
 - platform: template
-  name: "OT Comms OK"
-  id: ot_comms_ok
-  device_class: connectivity
-
-- platform: template
-  name: "Boiler CH Active"
   id: ch_active
-  device_class: heat
+  name: "CH Active"
 
 - platform: template
-  name: "Boiler DHW Active"
   id: dhw_active
-  device_class: heat
+  name: "DHW Active"
 
 - platform: template
+  id: boiler_flame
   name: "Boiler Flame"
-  id: flame_on
-  device_class: heat
 
 - platform: template
-  name: "Boiler Fault"
   id: boiler_fault
-  device_class: problem
-  
+  name: "Boiler Fault"
+
 - platform: template
-  name: "Boiler Diagnostic Mode"
   id: boiler_diag
-  device_class: running
+  name: "Boiler Diagnostic"
+
+- platform: template
+  id: comms_ok
+  name: "OpenTherm Comms OK"

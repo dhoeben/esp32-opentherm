@@ -1,0 +1,4 @@
+
+- platform: template
+  id: fault_text
+  name: "Boiler Fault Text"

@@ -11,14 +11,15 @@ esphome:
           opentherm::DHW::normal_temp_number = (esphome::number::Number *)&id(dhw_normal_temp);
 
           // Diagnostics binary sensors
-          opentherm::Diagnostics::comms_ok_sensor = (esphome::binary_sensor::BinarySensor *)&id(ot_comms_ok);
-          opentherm::Diagnostics::ch_active_sensor = (esphome::binary_sensor::BinarySensor *)&id(ch_active);
-          opentherm::Diagnostics::dhw_active_sensor = (esphome::binary_sensor::BinarySensor *)&id(dhw_active);
-          opentherm::Diagnostics::flame_sensor = (esphome::binary_sensor::BinarySensor *)&id(flame_on);
-          opentherm::Diagnostics::fault_sensor = (esphome::binary_sensor::BinarySensor *)&id(boiler_fault);
-          opentherm::Diagnostics::diagnostic_sensor = (esphome::binary_sensor::BinarySensor *)&id(boiler_diag);
-          opentherm::Diagnostics::fault_text_sensor = (esphome::text_sensor::TextSensor *)&id(boiler_fault_message);
-
+         
+          using namespace opentherm::Diagnostics;
+          ch_active_sensor   = (esphome::binary_sensor::BinarySensor *)&id(ch_active);
+          dhw_active_sensor  = (esphome::binary_sensor::BinarySensor *)&id(dhw_active);
+          flame_sensor       = (esphome::binary_sensor::BinarySensor *)&id(boiler_flame);
+          fault_sensor       = (esphome::binary_sensor::BinarySensor *)&id(boiler_fault);
+          diagnostic_sensor  = (esphome::binary_sensor::BinarySensor *)&id(boiler_diag);
+          comms_ok_sensor    = (esphome::binary_sensor::BinarySensor *)&id(comms_ok);
+          fault_text_sensor  = (esphome::text_sensor::TextSensor *)&id(fault_text);
 
 
 esp32:
@@ -74,8 +75,4 @@ climate:        !include data/climate.yaml
 number:         !include data/number.yaml
 select:         !include data/select.yaml
 sensor:         !include data/sensors.yaml
-
-text_sensor:
-  - platform: template
-    name: "Boiler Fault Message"
-    id: boiler_fault_message
+text_sensor:    !include data/text_sensor.yaml

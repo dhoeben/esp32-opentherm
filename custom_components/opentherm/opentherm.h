@@ -15,19 +15,6 @@ enum OTMsgType : uint8_t {
   WRITE_DATA = 0b001,
 };
 
-#ifndef EQ_N
-#define EQ_N 0.7f
-#endif
-#ifndef EQ_K
-#define EQ_K 3.0f
-#endif
-#ifndef EQ_T
-#define EQ_T 2.0f
-#endif
-#ifndef EQ_FB_GAIN
-#define EQ_FB_GAIN 3.0f
-#endif
-
 class OpenThermComponent : public esphome::Component {
  public:
   OpenThermComponent();

@@ -4,6 +4,8 @@
 #include "dhw.h"
 #include "equitherm.h"
 #include "diagnostics.h"
+#include "esphome/components/number/number.h"
+
 
 using namespace esphome;
 
@@ -39,7 +41,27 @@ void OpenThermComponent::setup() {
            poll_interval_ms_ ? poll_interval_ms_ : OT_POLL_INTERVAL,
            rx_timeout_ms_,
            debug_ ? debug_ : OT_DEBUG);
+
+  // ---------------------------------------------------------------------
+  // Register boiler temperature limit numbers for Home Assistant
+  // ---------------------------------------------------------------------
+  using namespace esphome::number;
+
+  // Boiler
+  Boiler::max_heating_temp->set_name("Max Boiler Temp Heating");
+  Boiler::max_heating_temp->traits.set_min_value(30);
+  Boiler::max_heating_temp->traits.set_max_value(90);
+  Boiler::max_heating_temp->traits.set_step(1);
+  Boiler::max_heating_temp->publish_state(70);
+
+  // DHW
+  DHW::max_water_temp->set_name("Max DHW Temp");
+  DHW::max_water_temp->traits.set_min_value(30);
+  DHW::max_water_temp->traits.set_max_value(90);
+  DHW::max_water_temp->traits.set_step(1);
+  DHW::max_water_temp->publish_state(50);
 }
+
 
 void OpenThermComponent::loop() {
   const uint32_t now = millis();
@@ -48,6 +70,23 @@ void OpenThermComponent::loop() {
 
   // Calculate weather-compensated flow target (Equitherm)
   float flow_target = Equitherm::calculate_target_temp();
+
+  // Enforce boiler / DHW max limits
+  float heating_limit = opentherm::Boiler::max_heating_temp
+                        ? opentherm::Boiler::max_heating_temp->state
+                        : 70.0f;  // fallback
+
+  float dhw_limit = opentherm::DHW::max_water_temp
+                    ? opentherm::DHW::max_water_temp->state
+                    : 60.0f;  // fallback
+
+  // Decide which limit applies
+  bool dhw_active = false;  // replace this with your actual mode flag
+  float active_limit = dhw_active ? dhw_limit : heating_limit;
+
+  // Clamp
+  if (flow_target > active_limit)
+    flow_target = active_limit;
 
   // Write Control Setpoint (DID 0x11, F8.8)
   const uint16_t raw = static_cast<uint16_t>(flow_target * 256.0f);

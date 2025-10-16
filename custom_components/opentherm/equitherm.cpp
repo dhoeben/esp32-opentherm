@@ -32,9 +32,25 @@ float calculate_target_temp() {
   float delta = t_set - t_in;
   flow_target += delta * fb;
 
-  // Clamp range for safety
-  if (flow_target < 25.0f) flow_target = 25.0f;
-  if (flow_target > 80.0f) flow_target = 80.0f;
+  // ------------------------------------------------------------------
+  // Clamp range for safety and respect user-defined boiler limits
+  // ------------------------------------------------------------------
+  float min_safe = 25.0f;
+
+  // Default max if pointers aren't linked yet
+  float max_safe = 80.0f;
+
+  // Read current user limits from HA
+  if (opentherm::Boiler::max_heating_temp && opentherm::Boiler::max_heating_temp->has_state())
+    max_safe = opentherm::Boiler::max_heating_temp->state;
+
+  if (flow_target < min_safe)
+    flow_target = min_safe;
+
+  if (flow_target > max_safe)
+    flow_target = max_safe;
+
+  ESP_LOGD("equitherm", "Flow target clamped to %.1f°C (min=%.1f, max=%.1f)", flow_target, min_safe, max_safe);
 
   ESP_LOGI("equitherm",
            "t_out=%.1f°C t_set=%.1f°C t_in=%.1f°C Δ=%.2f → flow=%.1f°C (N=%.2f K=%.2f T=%.2f FB=%.2f)",

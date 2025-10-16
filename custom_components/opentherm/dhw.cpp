@@ -10,6 +10,7 @@ static const char *const TAG = "dhw";
 // Global number pointers
 esphome::number::Number *eco_temp_number = nullptr;
 esphome::number::Number *normal_temp_number = nullptr;
+esphome::number::Number *max_water_temp   = nullptr;
 
 // Current mode (default = HEAT)
 static Mode current_mode = Mode::HEAT;
@@ -27,6 +28,7 @@ void update(OpenThermComponent* ot) {
   update_comfort_mode(ot);
 
   float setpoint = 50.0f;  // default fallback temperature
+  float limit = DHW::max_water_temp->state;
 
   if (current_mode == Mode::OFF) {
     setpoint = 0.0f;  // disables DHW heating

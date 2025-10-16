@@ -13,6 +13,7 @@
   "loaded_integrations": [
     "api",
     "binary_sensor",
+    "button",
     "captive_portal",
     "climate",
     "esp32",
@@ -27,6 +28,7 @@
     "opentherm",
     "ota",
     "preferences",
+    "restart",
     "safe_mode",
     "select",
     "sensor",
@@ -43,6 +45,7 @@
   ],
   "loaded_platforms": [
     "binary_sensor/template",
+    "button/restart",
     "climate/thermostat",
     "number/template",
     "ota/esphome",

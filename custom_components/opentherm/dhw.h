@@ -22,6 +22,7 @@ enum class Mode {
 // --- Global Number handles (for Home Assistant adjustable setpoints) ---
 extern esphome::number::Number *eco_temp_number;
 extern esphome::number::Number *normal_temp_number;
+extern esphome::number::Number *max_water_temp;
 
 // --- Comfort mode (CW5/CW6 preheat function) ---
 extern bool comfort_mode_enabled;

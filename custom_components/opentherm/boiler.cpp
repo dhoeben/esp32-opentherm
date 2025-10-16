@@ -15,8 +15,13 @@ esphome::sensor::Sensor *return_temp = new esphome::sensor::Sensor();
 esphome::sensor::Sensor *modulation = new esphome::sensor::Sensor();
 esphome::sensor::Sensor *setpoint = new esphome::sensor::Sensor();
 
+// Boiler limits (numbers)
+esphome::number::Number *max_heating_temp = nullptr;
+
 void update(OpenThermComponent *ot) {
   if (!ot) return;
+  
+  float limit = Boiler::max_heating_temp->state;
 
   // Boiler water temperature (DID 0x18)
   if (uint32_t raw18 = ot->read_did(0x18)) {

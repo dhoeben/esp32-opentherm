@@ -12,6 +12,11 @@ esphome:
           opentherm::Equitherm::eq_t         = (esphome::number::Number *)&id(eq_t);
           opentherm::Equitherm::eq_fb_gain   = (esphome::number::Number *)&id(eq_fb_gain);
 
+          // Limits
+          opentherm::Boiler::max_heating_temp = (esphome::number::Number *)&id(max_boiler_temp_heating);
+          opentherm::DHW::max_water_temp      = (esphome::number::Number *)&id(max_boiler_temp_water);
+
+
           // DHW
           opentherm::DHW::eco_temp_number = (esphome::number::Number *)&id(dhw_eco_temp);
           opentherm::DHW::normal_temp_number = (esphome::number::Number *)&id(dhw_normal_temp);

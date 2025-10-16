@@ -119,3 +119,25 @@
   optimistic: true
   unit_of_measurement: ""
   icon: mdi:amplifier
+
+
+# Max values
+- platform: template
+  name: "Boiler Max Heating Temp"
+  id: max_boiler_temp_heating
+  min_value: 30
+  max_value: 90
+  step: 1
+  unit_of_measurement: "°C"
+  restore_value: true
+  optimistic: true
+
+- platform: template
+  name: "Boiler Max Water Temp"
+  id: max_boiler_temp_water
+  min_value: 30
+  max_value: 90
+  step: 1
+  unit_of_measurement: "°C"
+  restore_value: true
+  optimistic: true

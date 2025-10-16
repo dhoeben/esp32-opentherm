@@ -33,6 +33,12 @@ esphome:
           comms_ok_sensor    = (esphome::binary_sensor::BinarySensor *)&id(comms_ok);
           fault_text_sensor  = (esphome::text_sensor::TextSensor *)&id(fault_text);
 
+          // Emergency and manual switches
+          using namespace opentherm::Emergency;
+          emergency_switch = (esphome::switch_::Switch *)&id(emergency_mode);
+          force_heat_switch = (esphome::switch_::Switch *)&id(force_heat);
+          force_dhw_switch = (esphome::switch_::Switch *)&id(force_dhw);
+
 
 esp32:
   board: esp32-c6-devkitc-1
@@ -49,6 +55,13 @@ api:
 
 ota:
   platform: esphome
+
+web_server:
+  port: 80
+  auth:
+    username: admin
+    password: !secret web_interface_password
+
 
 wifi:
   reboot_timeout: 5min

@@ -18,11 +18,28 @@ static Mode current_mode = Mode::HEAT;
 // Comfort mode flag
 bool comfort_mode_enabled = true;
 
+// Emergency mode
+bool forced = false;
+
+void set_forced(bool on) {
+  forced = on;
+  ESP_LOGI("dhw", "Forced DHW mode %s", on ? "ENABLED" : "DISABLED");
+}
+
 // ============================================================
 // Update function – called from opentherm.cpp
 // ============================================================
 void update(OpenThermComponent* ot) {
   if (ot == nullptr) return;
+  
+  if (forced) {
+    // --- forced mode ---
+    uint16_t forced_raw = static_cast<uint16_t>(55.0f * 256.0f);
+    uint32_t forced_frame = OpenThermComponent::build_request(WRITE_DATA, 0x38, forced_raw);
+    ot->send_frame(forced_frame);
+    ESP_LOGW("dhw", "Forced DHW heating active");
+    return;
+  }
 
   // Sync comfort mode state from boiler
   update_comfort_mode(ot);

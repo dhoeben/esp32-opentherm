@@ -18,8 +18,21 @@ esphome::sensor::Sensor *setpoint = new esphome::sensor::Sensor();
 // Boiler limits (numbers)
 esphome::number::Number *max_heating_temp = nullptr;
 
+bool forced = false;
+
+void set_forced(bool on) {
+  forced = on;
+  ESP_LOGI("boiler", "Forced CH mode %s", on ? "ENABLED" : "DISABLED");
+}
+
 void update(OpenThermComponent *ot) {
   if (!ot) return;
+  if (forced) {
+    // Send constant heat request (DID 0x00)
+    uint32_t frame = OpenThermComponent::build_request(WRITE_DATA, 0x00, 0x0400); // CH mode bit set
+    ot->send_frame(frame);
+    return;
+  }
   
   float limit = Boiler::max_heating_temp->state;
 

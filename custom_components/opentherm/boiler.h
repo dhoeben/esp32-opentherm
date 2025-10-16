@@ -21,5 +21,9 @@ extern esphome::sensor::Sensor *setpoint;
 // User-configurable temperature limits
 extern esphome::number::Number *max_heating_temp;
 
+// Emergency mode
+extern bool forced;
+void set_forced(bool on);
+
 }  // namespace Boiler
 }  // namespace opentherm

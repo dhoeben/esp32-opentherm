@@ -1,3 +1,4 @@
+# Comfort mode
 - platform: template
   name: "DHW Comfort Mode"
   id: dhw_comfort_mode
@@ -10,3 +11,19 @@
   turn_off_action:
     - lambda: |-
         opentherm::DHW::set_comfort_mode(opentherm::OpenThermComponent::get_singleton(), false);
+
+# Emergency mode
+- platform: template
+  id: emergency_mode
+  name: "Emergency Mode"
+  optimistic: true
+
+- platform: template
+  id: force_heat
+  name: "Force Heating"
+  optimistic: true
+
+- platform: template
+  id: force_dhw
+  name: "Force DHW"
+  optimistic: true

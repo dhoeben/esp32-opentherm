@@ -37,5 +37,10 @@ void set_mode(OpenThermComponent* ot, Mode mode);
 void set_comfort_mode(OpenThermComponent* ot, bool enabled);
 void update_comfort_mode(OpenThermComponent* ot);
 
+// Emergency mode
+extern bool forced;
+void set_forced(bool on);
+
+
 }  // namespace DHW
 }  // namespace opentherm

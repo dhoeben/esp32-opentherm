@@ -31,6 +31,7 @@
     "select",
     "sensor",
     "socket",
+    "switch",
     "template",
     "text_sensor",
     "thermostat",
@@ -50,6 +51,7 @@
     "sensor/homeassistant",
     "sensor/template",
     "sensor/wifi_signal",
+    "switch/template",
     "text_sensor/template"
   ],
   "no_mdns": false,

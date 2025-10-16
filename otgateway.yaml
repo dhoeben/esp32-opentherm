@@ -84,4 +84,5 @@ climate:        !include data/climate.yaml
 number:         !include data/number.yaml
 select:         !include data/select.yaml
 sensor:         !include data/sensors.yaml
+switch:         !include data/switch.yaml
 text_sensor:    !include data/text_sensor.yaml

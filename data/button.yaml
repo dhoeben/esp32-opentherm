@@ -1,0 +1,4 @@
+- platform: restart
+  name: "Restart OpenTherm Gateway"
+  id: restart_ot
+  icon: "mdi:restart"

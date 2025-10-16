@@ -80,6 +80,7 @@ opentherm:
     name: "Control Setpoint"
 
 binary_sensor:  !include data/binary_sensor.yaml
+button:         !include data/button.yaml
 climate:        !include data/climate.yaml
 number:         !include data/number.yaml
 select:         !include data/select.yaml

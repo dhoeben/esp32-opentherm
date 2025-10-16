@@ -40,6 +40,8 @@ class OpenThermComponent : public esphome::Component {
 
   bool dhw_active() const { return dhw_active_; }
   bool tap_flow()  const { return tap_flow_;  }
+  void set_tap_flow(bool active) { tap_flow_ = active; }
+
 
   void setup() override;
   void loop() override;

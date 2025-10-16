@@ -30,3 +30,8 @@
 - platform: template
   id: comms_ok
   name: "OpenTherm Comms OK"
+
+- platform: template
+  id: dhw_flowing
+  name: "DHW Water Flowing"
+  device_class: running

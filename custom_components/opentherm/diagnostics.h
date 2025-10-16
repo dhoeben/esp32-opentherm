@@ -16,6 +16,10 @@ extern esphome::binary_sensor::BinarySensor *flame_sensor;
 extern esphome::binary_sensor::BinarySensor *fault_sensor;
 extern esphome::binary_sensor::BinarySensor *diagnostic_sensor;
 extern esphome::binary_sensor::BinarySensor *comms_ok_sensor;
+extern esphome::binary_sensor::BinarySensor *dhw_flowing_sensor;  // NEW
+
+// --- Sensors ---
+extern esphome::sensor::Sensor *dhw_flow_rate_sensor;              // NEW
 
 // --- Text sensors for detailed faults ---
 extern esphome::text_sensor::TextSensor *fault_text_sensor;

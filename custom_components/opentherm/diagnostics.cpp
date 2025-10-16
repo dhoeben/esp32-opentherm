@@ -16,6 +16,10 @@ esphome::binary_sensor::BinarySensor *flame_sensor = nullptr;
 esphome::binary_sensor::BinarySensor *fault_sensor = nullptr;
 esphome::binary_sensor::BinarySensor *diagnostic_sensor = nullptr;
 esphome::binary_sensor::BinarySensor *comms_ok_sensor = nullptr;
+esphome::binary_sensor::BinarySensor *dhw_flowing_sensor = nullptr; //new
+
+// Sensors
+esphome::sensor::Sensor *dhw_flow_rate_sensor = nullptr; //new
 
 // Text sensors
 esphome::text_sensor::TextSensor *fault_text_sensor = nullptr;
@@ -85,9 +89,12 @@ void update(OpenThermComponent *ot) {
 
     if (ch_active_sensor)   ch_active_sensor->publish_state(ch_active);
     if (dhw_active_sensor)  dhw_active_sensor->publish_state(dhw_active);
+    if (dhw_flowing_sensor) dhw_flowing_sensor->publish_state(dhw_active); //new
     if (flame_sensor)       flame_sensor->publish_state(flame_on);
     if (fault_sensor)       fault_sensor->publish_state(fault);
     if (diagnostic_sensor)  diagnostic_sensor->publish_state(diagnostic);
+
+    ot->set_tap_flow(dhw_active);  // <--- Add this line
 
     ESP_LOGD(TAG, "Status bits: Fault=%d, CH=%d, DHW=%d, Flame=%d, Diagnostic=%d",
              fault, ch_active, dhw_active, flame_on, diagnostic);
@@ -106,6 +113,17 @@ void update(OpenThermComponent *ot) {
 
     ESP_LOGI(TAG, "Fault flags 0x%04X → %s", data, msg.c_str());
   }
+  
+  // ----------------------------------------------------------
+  // DID 0x3E — DHW Flow Rate (F8.8 format, in L/min)
+  // ----------------------------------------------------------
+  const uint32_t raw3E = ot->read_did(0x3E);
+  if (raw3E != 0 && dhw_flow_rate_sensor != nullptr) {
+    const uint16_t data = (raw3E >> 8) & 0xFFFF;
+    float flow_lpm = ot->parse_f88(data);
+    dhw_flow_rate_sensor->publish_state(flow_lpm);
+    ESP_LOGD(TAG, "DHW flow rate: %.2f L/min", flow_lpm);
+  }
 
   // ----------------------------------------------------------
   // Communication Health Monitor
@@ -123,6 +141,7 @@ void update(OpenThermComponent *ot) {
       last_comms_ok = comms_ok_now;
     }
   }
+
 }
 
 // ============================================================

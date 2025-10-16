@@ -86,3 +86,9 @@
   id: dhw_setpoint_boiler
   unit_of_measurement: "°C"
   accuracy_decimals: 1
+
+- platform: template
+  id: dhw_flow_rate
+  name: "DHW Flow Rate"
+  unit_of_measurement: "L/min"
+  accuracy_decimals: 2

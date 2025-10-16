@@ -20,6 +20,8 @@ esphome:
           using namespace opentherm::Diagnostics;
           ch_active_sensor   = (esphome::binary_sensor::BinarySensor *)&id(ch_active);
           dhw_active_sensor  = (esphome::binary_sensor::BinarySensor *)&id(dhw_active);
+          dhw_flowing_sensor = (esphome::binary_sensor::BinarySensor *)&id(dhw_flowing);
+          dhw_flow_rate_sensor = (esphome::sensor::Sensor *)&id(dhw_flow_rate);
           flame_sensor       = (esphome::binary_sensor::BinarySensor *)&id(boiler_flame);
           fault_sensor       = (esphome::binary_sensor::BinarySensor *)&id(boiler_fault);
           diagnostic_sensor  = (esphome::binary_sensor::BinarySensor *)&id(boiler_diag);
@@ -36,7 +38,9 @@ logger:
   level: DEBUG
 
 api:
-  password: !secret api_password
+  port: !secret api_port
+  encryption: 
+    key: !secret api_encryption_key
 
 ota:
   platform: esphome

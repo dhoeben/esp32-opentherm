@@ -47,6 +47,7 @@
   "loaded_platforms": [
     "binary_sensor/template",
     "button/restart",
+    "button/safe_mode",
     "climate/thermostat",
     "number/template",
     "ota/esphome",

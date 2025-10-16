@@ -1,3 +1,21 @@
+api:
+  encryption:
+    key: !secret api_encryption_key
+  on_client_connected:
+    - logger.log: "OpenTherm: Home Assistant connected"
+  on_client_disconnected:
+    - logger.log: "OpenTherm: Lost connection to Home Assistant"
+  port: !secret api_port
+  reboot_timeout: 10min
+  services:
+    - service: reboot_gateway
+      then:
+        - button.press: restart_ot
+
+
+captive_portal:
+
+
 esphome:
   name: otgateway
   friendly_name: OpenTherm Gateway
@@ -6,38 +24,47 @@ esphome:
     priority: -100
     then:
       - lambda: |-
-          // Link Equitherm number handles (for Equitherm::calculate_target_temp)
-          opentherm::Equitherm::eq_n         = (esphome::number::Number *)&id(eq_n);
-          opentherm::Equitherm::eq_k         = (esphome::number::Number *)&id(eq_k);
-          opentherm::Equitherm::eq_t         = (esphome::number::Number *)&id(eq_t);
+          // -------------------------------------------------------------
+          // Link Equitherm number handles
+          // -------------------------------------------------------------
           opentherm::Equitherm::eq_fb_gain   = (esphome::number::Number *)&id(eq_fb_gain);
+          opentherm::Equitherm::eq_k         = (esphome::number::Number *)&id(eq_k);
+          opentherm::Equitherm::eq_n         = (esphome::number::Number *)&id(eq_n);
+          opentherm::Equitherm::eq_t         = (esphome::number::Number *)&id(eq_t);
 
-          // Limits
+          // -------------------------------------------------------------
+          // Boiler & DHW limits
+          // -------------------------------------------------------------
           opentherm::Boiler::max_heating_temp = (esphome::number::Number *)&id(max_boiler_temp_heating);
           opentherm::DHW::max_water_temp      = (esphome::number::Number *)&id(max_boiler_temp_water);
 
+          // -------------------------------------------------------------
+          // DHW configuration
+          // -------------------------------------------------------------
+          opentherm::DHW::eco_temp_number     = (esphome::number::Number *)&id(dhw_eco_temp);
+          opentherm::DHW::normal_temp_number  = (esphome::number::Number *)&id(dhw_normal_temp);
 
-          // DHW
-          opentherm::DHW::eco_temp_number = (esphome::number::Number *)&id(dhw_eco_temp);
-          opentherm::DHW::normal_temp_number = (esphome::number::Number *)&id(dhw_normal_temp);
-
+          // -------------------------------------------------------------
           // Diagnostics binary sensors
+          // -------------------------------------------------------------
           using namespace opentherm::Diagnostics;
-          ch_active_sensor   = (esphome::binary_sensor::BinarySensor *)&id(ch_active);
-          dhw_active_sensor  = (esphome::binary_sensor::BinarySensor *)&id(dhw_active);
-          dhw_flowing_sensor = (esphome::binary_sensor::BinarySensor *)&id(dhw_flowing);
-          dhw_flow_rate_sensor = (esphome::sensor::Sensor *)&id(dhw_flow_rate);
-          flame_sensor       = (esphome::binary_sensor::BinarySensor *)&id(boiler_flame);
-          fault_sensor       = (esphome::binary_sensor::BinarySensor *)&id(boiler_fault);
-          diagnostic_sensor  = (esphome::binary_sensor::BinarySensor *)&id(boiler_diag);
-          comms_ok_sensor    = (esphome::binary_sensor::BinarySensor *)&id(comms_ok);
-          fault_text_sensor  = (esphome::text_sensor::TextSensor *)&id(fault_text);
+          ch_active_sensor      = (esphome::binary_sensor::BinarySensor *)&id(ch_active);
+          comms_ok_sensor       = (esphome::binary_sensor::BinarySensor *)&id(comms_ok);
+          diagnostic_sensor     = (esphome::binary_sensor::BinarySensor *)&id(boiler_diag);
+          dhw_active_sensor     = (esphome::binary_sensor::BinarySensor *)&id(dhw_active);
+          dhw_flowing_sensor    = (esphome::binary_sensor::BinarySensor *)&id(dhw_flowing);
+          dhw_flow_rate_sensor  = (esphome::sensor::Sensor *)&id(dhw_flow_rate);
+          fault_sensor          = (esphome::binary_sensor::BinarySensor *)&id(boiler_fault);
+          fault_text_sensor     = (esphome::text_sensor::TextSensor *)&id(fault_text);
+          flame_sensor          = (esphome::binary_sensor::BinarySensor *)&id(boiler_flame);
 
-          // Emergency and manual switches
+          // -------------------------------------------------------------
+          // Emergency and manual override switches
+          // -------------------------------------------------------------
           using namespace opentherm::Emergency;
           emergency_switch = (esphome::switch_::Switch *)&id(emergency_mode);
           force_heat_switch = (esphome::switch_::Switch *)&id(force_heat);
-          force_dhw_switch = (esphome::switch_::Switch *)&id(force_dhw);
+          force_dhw_switch  = (esphome::switch_::Switch *)&id(force_dhw);
 
 
 esp32:
@@ -45,58 +72,67 @@ esp32:
   framework:
     type: esp-idf
 
-logger:
-  level: DEBUG
-
-api:
-  port: !secret api_port
-  encryption: 
-    key: !secret api_encryption_key
-
-ota:
-  platform: esphome
-
-web_server:
-  port: 80
-  auth:
-    username: admin
-    password: !secret web_interface_password
-
-
-wifi:
-  reboot_timeout: 5min
-  ssid: !secret wifi_ssid
-  password: !secret wifi_password
-  ap:
-    ssid: "Opentherm Gateway"
-    password: "Opentherm12345"
-
-captive_portal:
 
 external_components:
   - source: ./custom_components/opentherm
 
+
+logger:
+  level: DEBUG
+
+
 opentherm:
   id: otgw
-  in_pin:         !secret in_pin 
-  out_pin:        !secret out_pin 
-  poll_interval:  !secret poll_interval
-  rx_timeout:     !secret rx_timeout
-  debug:          true
+  debug: true
+  in_pin: !secret in_pin
+  out_pin: !secret out_pin
+  poll_interval: !secret poll_interval
+  rx_timeout: !secret rx_timeout
 
   boiler_temp:
     id: boiler_temp
     name: "Boiler Water Temperature"
-  return_temp:
-    id: return_temp
-    name: "Return Temperature"
+
   modulation:
     id: modulation
     name: "Boiler Modulation"
+
+  return_temp:
+    id: return_temp
+    name: "Return Temperature"
+
   setpoint:
     id: setpoint
     name: "Control Setpoint"
 
+
+ota:
+  platform: esphome
+  password: !secret ota_password
+
+
+safe_mode:
+
+
+web_server:
+  auth:
+    username: admin
+    password: !secret web_interface_password
+  port: 80
+
+
+wifi:
+  ap:
+    ssid: "Opentherm Gateway"
+    password: "Opentherm12345"
+  password: !secret wifi_password
+  reboot_timeout: 5min
+  ssid: !secret wifi_ssid
+
+
+# -------------------------------------------------------------
+# Modular external includes
+# -------------------------------------------------------------
 binary_sensor:  !include data/binary_sensor.yaml
 button:         !include data/button.yaml
 climate:        !include data/climate.yaml

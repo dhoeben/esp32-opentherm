@@ -14,10 +14,28 @@ namespace opentherm {
 static OpenThermComponent *g_singleton = nullptr;
 
 // -----------------------------------------------------------------------------
-// Global links to Home Assistant sensors
+// Global links to Home Assistant sensors (externals linked elsewhere)
 // -----------------------------------------------------------------------------
 esphome::sensor::Sensor *id_ha_weather_temp = nullptr;
-esphome::sensor::Sensor *id_ha_indoor_temp = nullptr;
+esphome::sensor::Sensor *id_ha_indoor_temp  = nullptr;
+
+// -----------------------------------------------------------------------------
+// Compensation mode (default = Equitherm)
+// -----------------------------------------------------------------------------
+CompensationMode g_compensation_mode = CompensationMode::EQUITHERM;
+
+void set_compensation_mode(CompensationMode m) { g_compensation_mode = m; }
+
+// Optional helper you can call from YAML lambdas with a string:
+void set_compensation_mode_from_string(const std::string &s) {
+  if (s == "Boiler" || s == "boiler") {
+    g_compensation_mode = CompensationMode::BOILER;
+    ESP_LOGI("opentherm", "Compensation mode set to BOILER (internal curve).");
+  } else {
+    g_compensation_mode = CompensationMode::EQUITHERM;
+    ESP_LOGI("opentherm", "Compensation mode set to EQUITHERM (external setpoint).");
+  }
+}
 
 OpenThermComponent *OpenThermComponent::get_singleton() { return g_singleton; }
 
@@ -71,18 +89,34 @@ void OpenThermComponent::loop() {
   float flow_target = 0.0f;
 
   // -------------------------------------------------------------------------
-  // Emergency Mode
+  // 1) Emergency Mode always wins
   // -------------------------------------------------------------------------
   if (opentherm::Emergency::is_active()) {
     flow_target = opentherm::Emergency::get_target();
     ESP_LOGW("opentherm", "Emergency mode active — overriding target to %.1f°C", flow_target);
   } else {
-    // Normal weather-compensated operation
-    flow_target = Equitherm::calculate_target_temp();
+    // -----------------------------------------------------------------------
+    // 2) Compensation mode selection
+    //    - EQUITHERM: compute and send DID 0x11
+    //    - BOILER:   do not send DID 0x11 (let boiler's internal curve work)
+    // -----------------------------------------------------------------------
+    if (g_compensation_mode == CompensationMode::EQUITHERM) {
+      // Normal weather-compensated operation (external)
+      flow_target = Equitherm::calculate_target_temp();
+      ESP_LOGD("opentherm", "Equitherm flow target pre-clamp: %.1f°C", flow_target);
+    } else {
+      // Boiler internal compensation: skip sending 0x11 entirely
+      ESP_LOGI("opentherm", "Boiler internal compensation active — skipping external setpoint.");
+      // Still update subsystems for telemetry:
+      Boiler::update(this);
+      DHW::update(this);
+      Diagnostics::update(this);
+      return;
+    }
   }
 
   // -------------------------------------------------------------------------
-  // Limit enforcement (safety clamping)
+  // 3) Limit enforcement (safety clamping)
   // -------------------------------------------------------------------------
   float heating_limit = opentherm::Boiler::max_heating_temp
                             ? opentherm::Boiler::max_heating_temp->state
@@ -92,14 +126,14 @@ void OpenThermComponent::loop() {
                         ? opentherm::DHW::max_water_temp->state
                         : 60.0f;  // fallback
 
-  bool dhw_active = false;  // Replace later with your real DHW active flag
-  float active_limit = dhw_active ? dhw_limit : heating_limit;
+  const bool dhw_active = false;  // TODO: replace with real DHW active flag when available
+  const float active_limit = dhw_active ? dhw_limit : heating_limit;
 
   if (flow_target > active_limit)
     flow_target = active_limit;
 
   // -------------------------------------------------------------------------
-  // Write Control Setpoint (DID 0x11, F8.8)
+  // 4) Write Control Setpoint (DID 0x11, F8.8) — ONLY in Equitherm or Emergency
   // -------------------------------------------------------------------------
   const uint16_t raw = static_cast<uint16_t>(flow_target * 256.0f);
   const uint32_t frame = build_request(WRITE_DATA, 0x11, raw);
@@ -108,7 +142,7 @@ void OpenThermComponent::loop() {
   if (debug_) ESP_LOGI("opentherm", "Flow target (setpoint) sent = %.1f°C", flow_target);
 
   // -------------------------------------------------------------------------
-  // Subsystem updates
+  // 5) Subsystem updates (telemetry, diagnostics)
   // -------------------------------------------------------------------------
   Boiler::update(this);
   DHW::update(this);

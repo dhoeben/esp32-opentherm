@@ -34,26 +34,24 @@
         auto ot = opentherm::OpenThermComponent::get_singleton();
         if (ot == nullptr) return;
 
-        // Determine current preset
-        auto preset_opt = id(ch_climate).preset;
-        std::string preset_str = "home";
-        if (preset_opt.has_value()) preset_str = to_string(preset_opt.value());
+        std::string mode = id(compensation_mode).state.c_str();
 
         float flow_target = 0.0f;
 
-        // Equitherm for normal heating presets
-        if (preset_str == "home" || preset_str == "comfort" || preset_str == "eco") {
+        if (mode == "Equitherm") {
           flow_target = opentherm::Equitherm::calculate_target_temp();
-        } else if (preset_str == "away") {
-          flow_target = 10.0f;  // antifreeze protection
+          ESP_LOGI("otgw", "Equitherm mode active");
+        } else {
+          // Let the boiler handle weather compensation, send only CH enable
+          flow_target = 0;  // 0 = no override
+          ESP_LOGI("otgw", "Boiler internal compensation active");
+          return;
         }
 
         uint16_t raw = static_cast<uint16_t>(flow_target * 256.0f);
         uint32_t frame = ot->build_request(opentherm::WRITE_DATA, 0x11, raw);
         ot->send_frame(frame);
-
-        ESP_LOGI("otgw", "Heating ON | Preset: %s | Flow target: %.1f°C",
-                 preset_str.c_str(), flow_target);
+        ESP_LOGI("otgw", "Heating ON (flow target %.1f°C)", flow_target);
 
   # When heating is idle
   idle_action:

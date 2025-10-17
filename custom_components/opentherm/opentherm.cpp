@@ -126,7 +126,7 @@ void OpenThermComponent::loop() {
                         ? opentherm::DHW::max_water_temp->state
                         : 60.0f;  // fallback
 
-  const bool dhw_active = false;  // TODO: replace with real DHW active flag when available
+  const bool dhw_active = this->tap_flow(); 
   const float active_limit = dhw_active ? dhw_limit : heating_limit;
 
   if (flow_target > active_limit)

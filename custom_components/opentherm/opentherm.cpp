@@ -17,7 +17,6 @@ static OpenThermComponent *g_singleton = nullptr;
 // Global links to Home Assistant sensors
 // -----------------------------------------------------------------------------
 esphome::sensor::Sensor *id_ha_weather_temp = nullptr;
-esphome::sensor::Sensor *id_ha_target_temp = nullptr;
 esphome::sensor::Sensor *id_ha_indoor_temp = nullptr;
 
 OpenThermComponent *OpenThermComponent::get_singleton() { return g_singleton; }

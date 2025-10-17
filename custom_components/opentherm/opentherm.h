@@ -86,7 +86,6 @@ class OpenThermComponent : public esphome::Component {
 };
 
 extern esphome::sensor::Sensor *id_ha_weather_temp;
-extern esphome::sensor::Sensor *id_ha_target_temp;
 extern esphome::sensor::Sensor *id_ha_indoor_temp;
 
 }  // namespace opentherm

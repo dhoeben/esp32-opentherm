@@ -7,7 +7,7 @@
   id: ch_climate
   sensor: ha_indoor_temp        # feedback sensor (linked to !secret indoor_entity)
   visual:
-    min_temperature: 10
+    min_temperature: 5
     max_temperature: 40
     temperature_step: 0.5
 
@@ -15,24 +15,58 @@
   min_heating_run_time: 30s
   min_idle_time: 30s
 
-  # Optional: allow HA preset profiles
+
+  # 🔹 Define Presets
   preset:
-    - name: Comfort
-      default_target_temperature_low: 21
-    - name: Eco
+    - name: home
       default_target_temperature_low: 18
+    - name: comfort
+      default_target_temperature_low: 20
+    - name: eco
+      default_target_temperature_low: 15
+    - name: away
+      default_target_temperature_low: 12
+
+  default_preset: eco
 
   heat_action:
-    - lambda: |-
-        auto ot = opentherm::OpenThermComponent::get_singleton();
-        if (ot == nullptr) return;
+  - lambda: |-
+      auto ot = opentherm::OpenThermComponent::get_singleton();
+      if (ot == nullptr) return;
 
-        // Use Equitherm to determine proper flow temperature
-        float flow_target = opentherm::Equitherm::calculate_target_temp();
-        uint16_t raw = (uint16_t)(flow_target * 256.0f);
-        uint32_t frame = ot->build_request(opentherm::WRITE_DATA, 0x11, raw);
-        ot->send_frame(frame);
-        ESP_LOGI("otgw", "🔥 Heating ON, flow target = %.1f°C", flow_target);
+      // Determine which preset is active
+      auto preset_opt = id(ch_climate).preset;
+      std::string preset_str = "home";
+
+      if (preset_opt.has_value()) {
+        auto preset_enum = preset_opt.value();
+        preset_str = to_string(preset_enum);  // built-in ESPHome helper
+      }
+
+      // Default target
+      float target_temp = id(home_temp).state;
+
+      if (preset_str == "comfort") {
+        target_temp = id(comfort_temp).state;
+      } else if (preset_str == "eco") {
+        target_temp = id(eco_temp).state;
+      } else if (preset_str == "away") {
+        target_temp = id(away_temp).state;
+      } else {
+        target_temp = id(home_temp).state;
+      }
+
+      // Calculate flow temp via Equitherm
+      float flow_target = opentherm::Equitherm::calculate_target_temp();
+
+      // Send to boiler
+      uint16_t raw = (uint16_t)(flow_target * 256.0f);
+      uint32_t frame = ot->build_request(opentherm::WRITE_DATA, 0x11, raw);
+      ot->send_frame(frame);
+
+      ESP_LOGI("otgw", "🔥 Preset: %s | Target: %.1f°C | Flow: %.1f°C",
+               preset_str.c_str(), target_temp, flow_target);
+
 
   idle_action:
     - lambda: |-
@@ -43,5 +77,4 @@
         uint16_t raw = (uint16_t)(10.0f * 256.0f);
         uint32_t frame = ot->build_request(opentherm::WRITE_DATA, 0x11, raw);
         ot->send_frame(frame);
-        ESP_LOGI("otgw", "🌙 Heating OFF");
-
+        ESP_LOGI("otgw", "Heating OFF");

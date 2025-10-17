@@ -141,3 +141,52 @@
   unit_of_measurement: "°C"
   restore_value: true
   optimistic: true
+
+# Climate entity
+- platform: template
+  name: "Home Temperature"
+  id: home_temp
+  icon: mdi:home
+  min_value: 15
+  max_value: 25
+  step: 0.5
+  initial_value: 18.0
+  unit_of_measurement: "°C"
+  restore_value: true
+  optimistic: true
+
+- platform: template
+  name: "Comfort Temperature"
+  id: comfort_temp
+  icon: mdi:white-balance-sunny
+  min_value: 18
+  max_value: 25
+  step: 0.5
+  initial_value: 20
+  unit_of_measurement: "°C"
+  restore_value: true
+  optimistic: true
+
+- platform: template
+  name: "Eco Temperature"
+  id: eco_temp
+  icon: mdi:leaf
+  min_value: 14
+  max_value: 22
+  step: 0.5
+  initial_value: 15
+  unit_of_measurement: "°C"
+  restore_value: true
+  optimistic: true
+
+- platform: template
+  name: "Away Temperature"
+  id: away_temp
+  icon: mdi:home-export-outline
+  min_value: 5
+  max_value: 20
+  step: 0.5
+  initial_value: 12
+  unit_of_measurement: "°C"
+  restore_value: true
+  optimistic: true

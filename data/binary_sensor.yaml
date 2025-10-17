@@ -3,6 +3,7 @@ binary_sensor:
     name: "Tap Water Flow Detected"
     id: tap_flow
     device_class: running
+    entity_category: diagnostic
     lambda: |-
       auto ot = opentherm::OpenThermComponent::get_singleton();
       return ot ? ot->tap_flow() : false;
@@ -10,28 +11,35 @@ binary_sensor:
   - platform: template
     id: ch_active
     name: "CH Active"
+    entity_category: diagnostic
 
   - platform: template
     id: dhw_active
     name: "DHW Active"
+    entity_category: diagnostic
 
   - platform: template
     id: boiler_flame
     name: "Boiler Flame"
+    entity_category: diagnostic
 
   - platform: template
     id: boiler_fault
     name: "Boiler Fault"
+    entity_category: diagnostic
 
   - platform: template
     id: boiler_diag
     name: "Boiler Diagnostic"
+    entity_category: diagnostic
 
   - platform: template
     id: comms_ok
     name: "OpenTherm Comms OK"
+    entity_category: diagnostic
 
   - platform: template
     id: dhw_flowing
     name: "DHW Water Flowing"
     device_class: running
+    entity_category: diagnostic

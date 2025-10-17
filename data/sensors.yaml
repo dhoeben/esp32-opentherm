@@ -1,8 +1,5 @@
 sensor:
-  # -----------------------------------------------------------
   # External sensors from Home Assistant
-  # -----------------------------------------------------------
-
   - platform: homeassistant
     entity_id: !secret outdoor_entity
     id: ha_outdoor_temp
@@ -21,21 +18,6 @@ sensor:
               ESP_LOGI("otgw", "Sent outside temp %.1f°C to boiler", x);
             }
 
-  # -----------------------------------------------------------
-  # Optional diagnostic sensors (built-in)
-  # -----------------------------------------------------------
-
-  # Example: Wi-Fi signal strength
-  - platform: wifi_signal
-    name: "Wi-Fi Signal Strength"
-    update_interval: 60s
-
-
-  # -----------------------------------------------------------
-  # Equitherm
-  # -----------------------------------------------------------
-
-  # --- Outdoor temperature (weather from HA) ---
   - platform: homeassistant
     entity_id: !secret weather_entity
     attribute: temperature
@@ -48,7 +30,6 @@ sensor:
           if (isnan(x)) return 10.0f;  // fallback if no weather data
           return x;
 
-  # --- Indoor actual temperature (feedback) ---
   - platform: homeassistant
     entity_id: !secret indoor_entity
     id: ha_indoor_temp
@@ -60,23 +41,29 @@ sensor:
           if (isnan(x)) return 21.0f;  // fallback if missing
           return x;
 
+  # Diagnostics
+  - platform: wifi_signal
+    name: "Wi-Fi Signal Strength"
+    update_interval: 60s
+    entity_category: diagnostic
 
-  # --- DHW actual temperature (from boiler via OpenTherm DID 0x1A) ---
   - platform: template
     name: "Boiler DHW Temperature"
     id: dhw_temperature
     unit_of_measurement: "°C"
     accuracy_decimals: 1
+    entity_category: diagnostic
 
-  # --- DHW setpoint (boiler’s current target) ---
   - platform: template
     name: "Boiler DHW Setpoint"
     id: dhw_setpoint_boiler
     unit_of_measurement: "°C"
     accuracy_decimals: 1
+    entity_category: diagnostic
 
   - platform: template
     id: dhw_flow_rate
     name: "DHW Flow Rate"
     unit_of_measurement: "L/min"
     accuracy_decimals: 2
+    entity_category: diagnostic

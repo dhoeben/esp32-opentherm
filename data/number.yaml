@@ -1,7 +1,4 @@
 number:
-  # -----------------------------------------------------------
-  # Number entity to send target temperature to boiler
-  # -----------------------------------------------------------
   - platform: template
     name: "Boiler Target Temperature"
     id: boiler_target
@@ -73,10 +70,6 @@ number:
           ESP_LOGI("dhw", "Set DHW setpoint to %.1f°C", x);
 
   # Equitherm
-  # -----------------------------------------------------------
-  # Equitherm curve tuning parameters (editable via Home Assistant)
-  # -----------------------------------------------------------
-
   - platform: template
     name: "Equitherm N (Slope)"
     id: eq_n

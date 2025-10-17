@@ -1,4 +1,5 @@
 button:
+  # Power management
   - platform: restart
     name: "Restart OpenTherm Gateway"
     id: restart_ot

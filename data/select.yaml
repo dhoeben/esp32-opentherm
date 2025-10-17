@@ -1,7 +1,5 @@
 select:
-  # -----------------------------------------------------------
   # Boiler DHW mode
-  # -----------------------------------------------------------
   - platform: template
     name: "Boiler DHW Mode"
     id: dhw_mode_select
@@ -22,9 +20,7 @@ select:
           else opentherm::DHW::set_mode(ot, opentherm::DHW::Mode::HEAT);
           ESP_LOGI("dhw", "DHW mode changed to: %s", m.c_str());
 
-  # -----------------------------------------------------------
   # Temperature Compensation Mode Selector
-  # -----------------------------------------------------------
   - platform: template
     name: "Temperature Compensation"
     id: compensation_mode

@@ -12,7 +12,6 @@ climate:
     min_heating_run_time: 30s
     min_idle_time: 30s
 
-    # Presets
     preset:
       - name: away
         default_target_temperature_low: 10
@@ -25,7 +24,6 @@ climate:
 
     default_preset: home
 
-    # When heating is required
     heat_action:
       - lambda: |-
           auto ot = opentherm::OpenThermComponent::get_singleton();
@@ -50,7 +48,6 @@ climate:
           ot->send_frame(frame);
           ESP_LOGI("otgw", "Heating ON (flow target %.1f°C)", flow_target);
 
-    # When heating is idle
     idle_action:
       - lambda: |-
           auto ot = opentherm::OpenThermComponent::get_singleton();

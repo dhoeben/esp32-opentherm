@@ -1,5 +1,5 @@
 switch:
-  # Comfort mode
+  # DHW
   - platform: template
     name: "DHW Comfort Mode"
     id: dhw_comfort_mode

@@ -5,7 +5,7 @@
 - platform: homeassistant
   entity_id: !secret outdoor_entity
   id: ha_outdoor_temp
-  internal: false        # set to true if you don’t want it visible in HA
+  internal: true        # set to true if you don’t want it visible in HA
   unit_of_measurement: "°C"
   accuracy_decimals: 1
   on_value:
@@ -45,19 +45,6 @@
   filters:
     - lambda: |-
         if (isnan(x)) return 10.0f;  // fallback if no weather data
-        return x;
-
-# --- Indoor target (climate setpoint from HA) ---
-- platform: homeassistant
-  entity_id: !secret climate_entity
-  attribute: temperature
-  id: ha_target_temp
-  internal: true
-  unit_of_measurement: "°C"
-  accuracy_decimals: 1
-  filters:
-    - lambda: |-
-        if (isnan(x) || x < 5.0f) return 21.0f;  // fallback to 21°C
         return x;
 
 # --- Indoor actual temperature (feedback) ---

@@ -1,41 +1,42 @@
-# -----------------------------------------------------------
-# Boiler DHW mode
-# -----------------------------------------------------------
-- platform: template
-  name: "Boiler DHW Mode"
-  id: dhw_mode_select
-  options:
-    - "off"
-    - "eco"
-    - "heat"
-  optimistic: true
-  restore_value: true
-  initial_option: "heat"
-  on_value:
-    - lambda: |-
-        auto ot = opentherm::OpenThermComponent::get_singleton();
-        if (ot == nullptr) return;
-        std::string m = x;
-        if (m == "off") opentherm::DHW::set_mode(ot, opentherm::DHW::Mode::OFF);
-        else if (m == "eco") opentherm::DHW::set_mode(ot, opentherm::DHW::Mode::ECO);
-        else opentherm::DHW::set_mode(ot, opentherm::DHW::Mode::HEAT);
-        ESP_LOGI("dhw", "DHW mode changed to: %s", m.c_str());
-
-# -----------------------------------------------------------
-# Temperature Compensation Mode Selector
-# -----------------------------------------------------------
-- platform: template
-  name: "Temperature Compensation"
-  id: compensation_mode
-  optimistic: true
-  restore_value: true
-  initial_option: "Equitherm"
-  options:
-    - "Equitherm"
-    - "Boiler"
-  icon: mdi:thermostat-cog
-  on_value:
-    then:
+select:
+  # -----------------------------------------------------------
+  # Boiler DHW mode
+  # -----------------------------------------------------------
+  - platform: template
+    name: "Boiler DHW Mode"
+    id: dhw_mode_select
+    options:
+      - "off"
+      - "eco"
+      - "heat"
+    optimistic: true
+    restore_value: true
+    initial_option: "heat"
+    on_value:
       - lambda: |-
-          // Pass the selected string to C++ helper
-          opentherm::set_compensation_mode_from_string(id(compensation_mode).state.c_str());
+          auto ot = opentherm::OpenThermComponent::get_singleton();
+          if (ot == nullptr) return;
+          std::string m = x;
+          if (m == "off") opentherm::DHW::set_mode(ot, opentherm::DHW::Mode::OFF);
+          else if (m == "eco") opentherm::DHW::set_mode(ot, opentherm::DHW::Mode::ECO);
+          else opentherm::DHW::set_mode(ot, opentherm::DHW::Mode::HEAT);
+          ESP_LOGI("dhw", "DHW mode changed to: %s", m.c_str());
+
+  # -----------------------------------------------------------
+  # Temperature Compensation Mode Selector
+  # -----------------------------------------------------------
+  - platform: template
+    name: "Temperature Compensation"
+    id: compensation_mode
+    optimistic: true
+    restore_value: true
+    initial_option: "Equitherm"
+    options:
+      - "Equitherm"
+      - "Boiler"
+    icon: mdi:thermostat-cog
+    on_value:
+      then:
+        - lambda: |-
+            // Pass the selected string to C++ helper
+            opentherm::set_compensation_mode_from_string(id(compensation_mode).state.c_str());

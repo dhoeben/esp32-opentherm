@@ -1,9 +1,10 @@
-- platform: restart
-  name: "Restart OpenTherm Gateway"
-  id: restart_ot
-  icon: "mdi:restart"
+button:
+  - platform: restart
+    name: "Restart OpenTherm Gateway"
+    id: restart_ot
+    icon: "mdi:restart"
 
-- platform: safe_mode
-  name: "Reboot into Safe OTA Mode"
-  id: reboot_safe
-  icon: "mdi:restart-alert"
+  - platform: safe_mode
+    name: "Reboot into Safe OTA Mode"
+    id: reboot_safe
+    icon: "mdi:restart-alert"

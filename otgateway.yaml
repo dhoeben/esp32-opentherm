@@ -1,150 +1,26 @@
-api:
-  encryption:
-    key: !secret api_encryption_key
-  port: !secret api_port
-  reboot_timeout: 10min
-  services:
-    - service: reboot_gateway
-      then:
-        - button.press: restart_ot
+# Packages required to run
+packages:
+  - !include common/api.yaml
+  - !include common/esp32.yaml
+  - !include common/esphome.yaml
+  - !include common/external_components.yaml
+  - !include common/logger.yaml
+  - !include common/opentherm.yaml
+  - !include common/ota.yaml
+  - !include common/web_server.yaml
+  - !include common/wifi.yaml
 
+  # Entities for Home Assistant
+  - !include data/binary_sensor.yaml
+  - !include data/button.yaml
+  - !include data/climate.yaml
+  - !include data/number.yaml
+  - !include data/select.yaml
+  - !include data/sensors.yaml
+  - !include data/switch.yaml
+  - !include data/text_sensor.yaml
 
+# Components without config
 captive_portal:
-
-
-esphome:
-  name: otgateway
-  friendly_name: OpenTherm Gateway
-
-  on_boot:
-    priority: -100
-    then:
-      - lambda: |-
-          // Link the local climate entity to Equitherm
-          opentherm::Equitherm::id_ch_climate = (esphome::climate::Climate *)&id(ch_climate);
-
-          // -------------------------------------------------------------
-          // Link Equitherm number handles
-          // -------------------------------------------------------------
-          opentherm::Equitherm::eq_fb_gain   = (esphome::number::Number *)&id(eq_fb_gain);
-          opentherm::Equitherm::eq_k         = (esphome::number::Number *)&id(eq_k);
-          opentherm::Equitherm::eq_n         = (esphome::number::Number *)&id(eq_n);
-          opentherm::Equitherm::eq_t         = (esphome::number::Number *)&id(eq_t);
-
-          // -------------------------------------------------------------
-          // Boiler & DHW limits
-          // -------------------------------------------------------------
-          opentherm::Boiler::max_heating_temp = (esphome::number::Number *)&id(max_boiler_temp_heating);
-          opentherm::DHW::max_water_temp      = (esphome::number::Number *)&id(max_boiler_temp_water);
-
-          // -------------------------------------------------------------
-          // DHW configuration
-          // -------------------------------------------------------------
-          opentherm::DHW::eco_temp_number     = (esphome::number::Number *)&id(dhw_eco_temp);
-          opentherm::DHW::normal_temp_number  = (esphome::number::Number *)&id(dhw_normal_temp);
-
-          // -------------------------------------------------------------
-          // Diagnostics binary sensors
-          // -------------------------------------------------------------
-          using namespace opentherm::Diagnostics;
-          ch_active_sensor      = (esphome::binary_sensor::BinarySensor *)&id(ch_active);
-          comms_ok_sensor       = (esphome::binary_sensor::BinarySensor *)&id(comms_ok);
-          diagnostic_sensor     = (esphome::binary_sensor::BinarySensor *)&id(boiler_diag);
-          dhw_active_sensor     = (esphome::binary_sensor::BinarySensor *)&id(dhw_active);
-          dhw_flowing_sensor    = (esphome::binary_sensor::BinarySensor *)&id(dhw_flowing);
-          dhw_flow_rate_sensor  = (esphome::sensor::Sensor *)&id(dhw_flow_rate);
-          fault_sensor          = (esphome::binary_sensor::BinarySensor *)&id(boiler_fault);
-          fault_text_sensor     = (esphome::text_sensor::TextSensor *)&id(fault_text);
-          flame_sensor          = (esphome::binary_sensor::BinarySensor *)&id(boiler_flame);
-
-          // -------------------------------------------------------------
-          // Emergency and manual override switches
-          // -------------------------------------------------------------
-          using namespace opentherm::Emergency;
-          emergency_switch = (esphome::switch_::Switch *)&id(emergency_mode);
-          force_heat_switch = (esphome::switch_::Switch *)&id(force_heat);
-          force_dhw_switch  = (esphome::switch_::Switch *)&id(force_dhw);
-
-
-esp32:
-  board: esp32-s3-devkitc-1
-  variant: ESP32S3
-  flash_size: 16MB
-  framework:
-    type: esp-idf
-    sdkconfig_options:
-      CONFIG_ESP32S3_SPIRAM_MODE_QUAD: y
-      CONFIG_ESP32S3_SPIRAM_SUPPORT: y
-      CONFIG_ESP32S3_DEFAULT_CPU_FREQ_MHZ: "240"
-
-
-external_components:
-  - source: ./custom_components/opentherm
-
-
-logger:
-  level: DEBUG
-
-
-opentherm:
-  id: otgw
-  debug: true
-  in_pin: !secret in_pin
-  out_pin: !secret out_pin
-  poll_interval: !secret poll_interval
-  rx_timeout: !secret rx_timeout
-
-  boiler_temp:
-    id: boiler_temp
-    name: "Boiler Water Temperature"
-
-  modulation:
-    id: modulation
-    name: "Boiler Modulation"
-
-  return_temp:
-    id: return_temp
-    name: "Return Temperature"
-
-  setpoint:
-    id: setpoint
-    name: "Control Setpoint"
-
-
-ota:
-  platform: esphome
-  password: !secret ota_password
-
-
 safe_mode:
 
-
-web_server:
-  auth:
-    username: admin
-    password: !secret web_interface_password
-  port: 80
-
-
-wifi:
-  ap:
-    ssid: "Opentherm Gateway"
-    password: "Opentherm12345"
-  power_save_mode: none
-  reboot_timeout: 5min
-  ssid: !secret wifi_ssid
-  password: !secret wifi_password
-  fast_connect: true
-
-
-# -------------------------------------------------------------
-# Modular external includes
-# -------------------------------------------------------------
-binary_sensor:  !include data/binary_sensor.yaml
-button:         !include data/button.yaml
-climate:        !include data/climate.yaml
-number:         !include data/number.yaml
-select:         !include data/select.yaml
-sensor:         !include data/sensors.yaml
-switch:         !include data/switch.yaml
-text_sensor:    !include data/text_sensor.yaml

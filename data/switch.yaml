@@ -1,29 +1,30 @@
-# Comfort mode
-- platform: template
-  name: "DHW Comfort Mode"
-  id: dhw_comfort_mode
-  icon: "mdi:water-boiler"
-  lambda: |-
-    return opentherm::DHW::comfort_mode_enabled;
-  turn_on_action:
-    - lambda: |-
-        opentherm::DHW::set_comfort_mode(opentherm::OpenThermComponent::get_singleton(), true);
-  turn_off_action:
-    - lambda: |-
-        opentherm::DHW::set_comfort_mode(opentherm::OpenThermComponent::get_singleton(), false);
+switch:
+  # Comfort mode
+  - platform: template
+    name: "DHW Comfort Mode"
+    id: dhw_comfort_mode
+    icon: "mdi:water-boiler"
+    lambda: |-
+      return opentherm::DHW::comfort_mode_enabled;
+    turn_on_action:
+      - lambda: |-
+          opentherm::DHW::set_comfort_mode(opentherm::OpenThermComponent::get_singleton(), true);
+    turn_off_action:
+      - lambda: |-
+          opentherm::DHW::set_comfort_mode(opentherm::OpenThermComponent::get_singleton(), false);
 
-# Emergency mode
-- platform: template
-  id: emergency_mode
-  name: "Emergency Mode"
-  optimistic: true
+  # Emergency mode
+  - platform: template
+    id: emergency_mode
+    name: "Emergency Mode"
+    optimistic: true
 
-- platform: template
-  id: force_heat
-  name: "Force Heating"
-  optimistic: true
+  - platform: template
+    id: force_heat
+    name: "Force Heating"
+    optimistic: true
 
-- platform: template
-  id: force_dhw
-  name: "Force DHW"
-  optimistic: true
+  - platform: template
+    id: force_dhw
+    name: "Force DHW"
+    optimistic: true

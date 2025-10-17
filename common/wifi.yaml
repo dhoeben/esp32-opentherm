@@ -1,0 +1,9 @@
+wifi:
+  ap:
+    ssid: "Opentherm Gateway"
+    password: "Opentherm12345"
+  power_save_mode: none
+  reboot_timeout: 5min
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+  fast_connect: true

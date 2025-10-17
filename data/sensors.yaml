@@ -1,81 +1,82 @@
-# -----------------------------------------------------------
-# External sensors from Home Assistant
-# -----------------------------------------------------------
+sensor:
+  # -----------------------------------------------------------
+  # External sensors from Home Assistant
+  # -----------------------------------------------------------
 
-- platform: homeassistant
-  entity_id: !secret outdoor_entity
-  id: ha_outdoor_temp
-  internal: true        # set to true if you don’t want it visible in HA
-  unit_of_measurement: "°C"
-  accuracy_decimals: 1
-  on_value:
-    then:
+  - platform: homeassistant
+    entity_id: !secret outdoor_entity
+    id: ha_outdoor_temp
+    internal: true        # set to true if you don’t want it visible in HA
+    unit_of_measurement: "°C"
+    accuracy_decimals: 1
+    on_value:
+      then:
+        - lambda: |-
+            auto ot = opentherm::OpenThermComponent::get_singleton();
+            if (ot != nullptr) {
+              // 0x1C = outside temperature
+              uint16_t raw = (uint16_t)(x * 256.0f);   // convert °C to F8.8
+              uint32_t frame = ot->build_request(opentherm::WRITE_DATA, 0x1C, raw);
+              ot->send_frame(frame);
+              ESP_LOGI("otgw", "Sent outside temp %.1f°C to boiler", x);
+            }
+
+  # -----------------------------------------------------------
+  # Optional diagnostic sensors (built-in)
+  # -----------------------------------------------------------
+
+  # Example: Wi-Fi signal strength
+  - platform: wifi_signal
+    name: "Wi-Fi Signal Strength"
+    update_interval: 60s
+
+
+  # -----------------------------------------------------------
+  # Equitherm
+  # -----------------------------------------------------------
+
+  # --- Outdoor temperature (weather from HA) ---
+  - platform: homeassistant
+    entity_id: !secret weather_entity
+    attribute: temperature
+    id: ha_weather_temp
+    internal: true
+    unit_of_measurement: "°C"
+    accuracy_decimals: 1
+    filters:
       - lambda: |-
-          auto ot = opentherm::OpenThermComponent::get_singleton();
-          if (ot != nullptr) {
-            // 0x1C = outside temperature
-            uint16_t raw = (uint16_t)(x * 256.0f);   // convert °C to F8.8
-            uint32_t frame = ot->build_request(opentherm::WRITE_DATA, 0x1C, raw);
-            ot->send_frame(frame);
-            ESP_LOGI("otgw", "Sent outside temp %.1f°C to boiler", x);
-          }
+          if (isnan(x)) return 10.0f;  // fallback if no weather data
+          return x;
 
-# -----------------------------------------------------------
-# Optional diagnostic sensors (built-in)
-# -----------------------------------------------------------
-
-# Example: Wi-Fi signal strength
-- platform: wifi_signal
-  name: "Wi-Fi Signal Strength"
-  update_interval: 60s
+  # --- Indoor actual temperature (feedback) ---
+  - platform: homeassistant
+    entity_id: !secret indoor_entity
+    id: ha_indoor_temp
+    internal: true
+    unit_of_measurement: "°C"
+    accuracy_decimals: 1
+    filters:
+      - lambda: |-
+          if (isnan(x)) return 21.0f;  // fallback if missing
+          return x;
 
 
-# -----------------------------------------------------------
-# Equitherm
-# -----------------------------------------------------------
+  # --- DHW actual temperature (from boiler via OpenTherm DID 0x1A) ---
+  - platform: template
+    name: "Boiler DHW Temperature"
+    id: dhw_temperature
+    unit_of_measurement: "°C"
+    accuracy_decimals: 1
 
-# --- Outdoor temperature (weather from HA) ---
-- platform: homeassistant
-  entity_id: !secret weather_entity
-  attribute: temperature
-  id: ha_weather_temp
-  internal: true
-  unit_of_measurement: "°C"
-  accuracy_decimals: 1
-  filters:
-    - lambda: |-
-        if (isnan(x)) return 10.0f;  // fallback if no weather data
-        return x;
+  # --- DHW setpoint (boiler’s current target) ---
+  - platform: template
+    name: "Boiler DHW Setpoint"
+    id: dhw_setpoint_boiler
+    unit_of_measurement: "°C"
+    accuracy_decimals: 1
 
-# --- Indoor actual temperature (feedback) ---
-- platform: homeassistant
-  entity_id: !secret indoor_entity
-  id: ha_indoor_temp
-  internal: true
-  unit_of_measurement: "°C"
-  accuracy_decimals: 1
-  filters:
-    - lambda: |-
-        if (isnan(x)) return 21.0f;  // fallback if missing
-        return x;
-
-
-# --- DHW actual temperature (from boiler via OpenTherm DID 0x1A) ---
-- platform: template
-  name: "Boiler DHW Temperature"
-  id: dhw_temperature
-  unit_of_measurement: "°C"
-  accuracy_decimals: 1
-
-# --- DHW setpoint (boiler’s current target) ---
-- platform: template
-  name: "Boiler DHW Setpoint"
-  id: dhw_setpoint_boiler
-  unit_of_measurement: "°C"
-  accuracy_decimals: 1
-
-- platform: template
-  id: dhw_flow_rate
-  name: "DHW Flow Rate"
-  unit_of_measurement: "L/min"
-  accuracy_decimals: 2
+  - platform: template
+    id: dhw_flow_rate
+    name: "DHW Flow Rate"
+    unit_of_measurement: "L/min"
+    accuracy_decimals: 2

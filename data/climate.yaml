@@ -1,79 +1,76 @@
-# -----------------------------------------------------------
-# Unified Climate Entity — full control of heating
-# -----------------------------------------------------------
+climate:
+  - platform: thermostat
+    name: "OpenTherm Heating"
+    id: ch_climate
+    sensor: ha_indoor_temp        # feedback sensor (linked via !secret indoor_entity)
+    visual:
+      min_temperature: 5
+      max_temperature: 40
+      temperature_step: 0.5
 
-- platform: thermostat
-  name: "OpenTherm Heating"
-  id: ch_climate
-  sensor: ha_indoor_temp        # feedback sensor (linked via !secret indoor_entity)
-  visual:
-    min_temperature: 5
-    max_temperature: 40
-    temperature_step: 0.5
+    min_heating_off_time: 30s
+    min_heating_run_time: 30s
+    min_idle_time: 30s
 
-  min_heating_off_time: 30s
-  min_heating_run_time: 30s
-  min_idle_time: 30s
+    # Presets
+    preset:
+      - name: away
+        default_target_temperature_low: 10
+      - name: eco
+        default_target_temperature_low: 15
+      - name: home
+        default_target_temperature_low: 18
+      - name: comfort
+        default_target_temperature_low: 20
 
-  # Presets
-  preset:
-    - name: away
-      default_target_temperature_low: 10
-    - name: eco
-      default_target_temperature_low: 15
-    - name: home
-      default_target_temperature_low: 18
-    - name: comfort
-      default_target_temperature_low: 20
+    default_preset: home
 
-  default_preset: home
+    # When heating is required
+    heat_action:
+      - lambda: |-
+          auto ot = opentherm::OpenThermComponent::get_singleton();
+          if (ot == nullptr) return;
 
-  # When heating is required
-  heat_action:
-    - lambda: |-
-        auto ot = opentherm::OpenThermComponent::get_singleton();
-        if (ot == nullptr) return;
+          std::string mode = id(compensation_mode).state.c_str();
 
-        std::string mode = id(compensation_mode).state.c_str();
+          float flow_target = 0.0f;
 
-        float flow_target = 0.0f;
+          if (mode == "Equitherm") {
+            flow_target = opentherm::Equitherm::calculate_target_temp();
+            ESP_LOGI("otgw", "Equitherm mode active");
+          } else {
+            // Let the boiler handle weather compensation, send only CH enable
+            flow_target = 0;  // 0 = no override
+            ESP_LOGI("otgw", "Boiler internal compensation active");
+            return;
+          }
 
-        if (mode == "Equitherm") {
-          flow_target = opentherm::Equitherm::calculate_target_temp();
-          ESP_LOGI("otgw", "Equitherm mode active");
-        } else {
-          // Let the boiler handle weather compensation, send only CH enable
-          flow_target = 0;  // 0 = no override
-          ESP_LOGI("otgw", "Boiler internal compensation active");
-          return;
-        }
+          uint16_t raw = static_cast<uint16_t>(flow_target * 256.0f);
+          uint32_t frame = ot->build_request(opentherm::WRITE_DATA, 0x11, raw);
+          ot->send_frame(frame);
+          ESP_LOGI("otgw", "Heating ON (flow target %.1f°C)", flow_target);
 
-        uint16_t raw = static_cast<uint16_t>(flow_target * 256.0f);
-        uint32_t frame = ot->build_request(opentherm::WRITE_DATA, 0x11, raw);
-        ot->send_frame(frame);
-        ESP_LOGI("otgw", "Heating ON (flow target %.1f°C)", flow_target);
+    # When heating is idle
+    idle_action:
+      - lambda: |-
+          auto ot = opentherm::OpenThermComponent::get_singleton();
+          if (ot == nullptr) return;
 
-  # When heating is idle
-  idle_action:
-    - lambda: |-
-        auto ot = opentherm::OpenThermComponent::get_singleton();
-        if (ot == nullptr) return;
+          auto preset_opt = id(ch_climate).preset;
+          std::string preset_str = "home";
+          if (preset_opt.has_value()) preset_str = to_string(preset_opt.value());
 
-        auto preset_opt = id(ch_climate).preset;
-        std::string preset_str = "home";
-        if (preset_opt.has_value()) preset_str = to_string(preset_opt.value());
+          // Default: stop boiler completely
+          float flow_target = 10.0f;
 
-        // Default: stop boiler completely
-        float flow_target = 10.0f;
+          // Only comfort mode keeps pipes slightly warm
+          if (preset_str == "comfort") {
+            flow_target = 15.0f;
+          }
 
-        // Only comfort mode keeps pipes slightly warm
-        if (preset_str == "comfort") {
-          flow_target = 15.0f;
-        }
+          uint16_t raw = static_cast<uint16_t>(flow_target * 256.0f);
+          uint32_t frame = ot->build_request(opentherm::WRITE_DATA, 0x11, raw);
+          ot->send_frame(frame);
 
-        uint16_t raw = static_cast<uint16_t>(flow_target * 256.0f);
-        uint32_t frame = ot->build_request(opentherm::WRITE_DATA, 0x11, raw);
-        ot->send_frame(frame);
-
-        ESP_LOGI("otgw", "Heating OFF | Preset: %s | Flow target: %.1f°C",
-                 preset_str.c_str(), flow_target);
+          ESP_LOGI("otgw", "Heating OFF | Preset: %s | Flow target: %.1f°C",
+                  preset_str.c_str(), flow_target);

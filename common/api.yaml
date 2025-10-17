@@ -1,0 +1,9 @@
+api:
+  encryption:
+    key: !secret api_encryption_key
+  port: !secret api_port
+  reboot_timeout: 10min
+  services:
+    - service: reboot_gateway
+      then:
+        - button.press: restart_ot

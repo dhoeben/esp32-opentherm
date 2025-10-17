@@ -1,37 +1,37 @@
-# Binary sensors derived from OpenTherm status word (DID 0x00)
-- platform: template
-  name: "Tap Water Flow Detected"
-  id: tap_flow
-  device_class: running
-  lambda: |-
-    auto ot = opentherm::OpenThermComponent::get_singleton();
-    return ot ? ot->tap_flow() : false;
+binary_sensor:
+  - platform: template
+    name: "Tap Water Flow Detected"
+    id: tap_flow
+    device_class: running
+    lambda: |-
+      auto ot = opentherm::OpenThermComponent::get_singleton();
+      return ot ? ot->tap_flow() : false;
 
-- platform: template
-  id: ch_active
-  name: "CH Active"
+  - platform: template
+    id: ch_active
+    name: "CH Active"
 
-- platform: template
-  id: dhw_active
-  name: "DHW Active"
+  - platform: template
+    id: dhw_active
+    name: "DHW Active"
 
-- platform: template
-  id: boiler_flame
-  name: "Boiler Flame"
+  - platform: template
+    id: boiler_flame
+    name: "Boiler Flame"
 
-- platform: template
-  id: boiler_fault
-  name: "Boiler Fault"
+  - platform: template
+    id: boiler_fault
+    name: "Boiler Fault"
 
-- platform: template
-  id: boiler_diag
-  name: "Boiler Diagnostic"
+  - platform: template
+    id: boiler_diag
+    name: "Boiler Diagnostic"
 
-- platform: template
-  id: comms_ok
-  name: "OpenTherm Comms OK"
+  - platform: template
+    id: comms_ok
+    name: "OpenTherm Comms OK"
 
-- platform: template
-  id: dhw_flowing
-  name: "DHW Water Flowing"
-  device_class: running
+  - platform: template
+    id: dhw_flowing
+    name: "DHW Water Flowing"
+    device_class: running

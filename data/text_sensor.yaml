@@ -1,4 +1,4 @@
-
-- platform: template
-  id: fault_text
-  name: "Boiler Fault Text"
+text_sensor:
+  - platform: template
+    id: fault_text
+    name: "Boiler Fault Text"

@@ -5,7 +5,7 @@
 - platform: thermostat
   name: "OpenTherm Heating"
   id: ch_climate
-  sensor: ha_indoor_temp        # feedback sensor (linked to !secret indoor_entity)
+  sensor: ha_indoor_temp        # feedback sensor (linked via !secret indoor_entity)
   visual:
     min_temperature: 5
     max_temperature: 40
@@ -15,66 +15,67 @@
   min_heating_run_time: 30s
   min_idle_time: 30s
 
-
-  # 🔹 Define Presets
+  # Presets
   preset:
+    - name: away
+      default_target_temperature_low: 10
+    - name: eco
+      default_target_temperature_low: 15
     - name: home
       default_target_temperature_low: 18
     - name: comfort
       default_target_temperature_low: 20
-    - name: eco
-      default_target_temperature_low: 15
-    - name: away
-      default_target_temperature_low: 12
 
-  default_preset: eco
+  default_preset: home
 
+  # When heating is required
   heat_action:
-  - lambda: |-
-      auto ot = opentherm::OpenThermComponent::get_singleton();
-      if (ot == nullptr) return;
+    - lambda: |-
+        auto ot = opentherm::OpenThermComponent::get_singleton();
+        if (ot == nullptr) return;
 
-      // Determine which preset is active
-      auto preset_opt = id(ch_climate).preset;
-      std::string preset_str = "home";
+        // Determine current preset
+        auto preset_opt = id(ch_climate).preset;
+        std::string preset_str = "home";
+        if (preset_opt.has_value()) preset_str = to_string(preset_opt.value());
 
-      if (preset_opt.has_value()) {
-        auto preset_enum = preset_opt.value();
-        preset_str = to_string(preset_enum);  // built-in ESPHome helper
-      }
+        float flow_target = 0.0f;
 
-      // Default target
-      float target_temp = id(home_temp).state;
+        // Equitherm for normal heating presets
+        if (preset_str == "home" || preset_str == "comfort" || preset_str == "eco") {
+          flow_target = opentherm::Equitherm::calculate_target_temp();
+        } else if (preset_str == "away") {
+          flow_target = 10.0f;  // antifreeze protection
+        }
 
-      if (preset_str == "comfort") {
-        target_temp = id(comfort_temp).state;
-      } else if (preset_str == "eco") {
-        target_temp = id(eco_temp).state;
-      } else if (preset_str == "away") {
-        target_temp = id(away_temp).state;
-      } else {
-        target_temp = id(home_temp).state;
-      }
+        uint16_t raw = static_cast<uint16_t>(flow_target * 256.0f);
+        uint32_t frame = ot->build_request(opentherm::WRITE_DATA, 0x11, raw);
+        ot->send_frame(frame);
 
-      // Calculate flow temp via Equitherm
-      float flow_target = opentherm::Equitherm::calculate_target_temp();
+        ESP_LOGI("otgw", "Heating ON | Preset: %s | Flow target: %.1f°C",
+                 preset_str.c_str(), flow_target);
 
-      // Send to boiler
-      uint16_t raw = (uint16_t)(flow_target * 256.0f);
-      uint32_t frame = ot->build_request(opentherm::WRITE_DATA, 0x11, raw);
-      ot->send_frame(frame);
-
-      ESP_LOGI("otgw", "🔥 Preset: %s | Target: %.1f°C | Flow: %.1f°C",
-               preset_str.c_str(), target_temp, flow_target);
-
-
+  # When heating is idle
   idle_action:
     - lambda: |-
         auto ot = opentherm::OpenThermComponent::get_singleton();
         if (ot == nullptr) return;
 
-        // Reduce flow temperature to stop boiler firing
-        uint16_t raw = (uint16_t)(10.0f * 256.0f);
+        auto preset_opt = id(ch_climate).preset;
+        std::string preset_str = "home";
+        if (preset_opt.has_value()) preset_str = to_string(preset_opt.value());
+
+        // Default: stop boiler completely
+        float flow_target = 10.0f;
+
+        // Only comfort mode keeps pipes slightly warm
+        if (preset_str == "comfort") {
+          flow_target = 15.0f;
+        }
+
+        uint16_t raw = static_cast<uint16_t>(flow_target * 256.0f);
         uint32_t frame = ot->build_request(opentherm::WRITE_DATA, 0x11, raw);
         ot->send_frame(frame);
-        ESP_LOGI("otgw", "Heating OFF");
+
+        ESP_LOGI("otgw", "Heating OFF | Preset: %s | Flow target: %.1f°C",
+                 preset_str.c_str(), flow_target);

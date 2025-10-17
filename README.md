@@ -1,4 +1,4 @@
-### 🏠 OpenTherm Gateway (ESPHome + ESP32-C6)
+### 🏠 OpenTherm Gateway (ESPHome + ESP32)
 
 This project is still a work in progress and will implements a **fully native OpenTherm Gateway** using an **ESP32-S3** and ESPHome.  
 It acts as a modern, reliable, and flexible interface between your boiler and Home Assistant — featuring full OpenTherm communication, diagnostics, and web-accessible emergency controls.

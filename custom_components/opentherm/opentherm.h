@@ -6,7 +6,7 @@
 #include "esp_timer.h"
 
 #include "esphome/components/sensor/sensor.h"
-#include <string>  // required for std::string
+#include <string>  
 
 namespace opentherm {
 

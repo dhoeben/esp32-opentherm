@@ -7,7 +7,7 @@ namespace opentherm {
 namespace Emergency {
 
 // -----------------------------------------------------------------------------
-// 🔹 Emergency Mode logic
+// Emergency Mode logic
 // -----------------------------------------------------------------------------
 
 // Enables or disables emergency mode override
@@ -23,7 +23,7 @@ float get_target();
 bool is_active();
 
 // -----------------------------------------------------------------------------
-// 🔹 Exposed switch entities (linked in on_boot)
+// Exposed switch entities (linked in on_boot)
 // -----------------------------------------------------------------------------
 
 // These are linked to Home Assistant switches in YAML, then controlled via C++
@@ -32,7 +32,7 @@ extern esphome::switch_::Switch *force_heat_switch;  // Forces CH on/off
 extern esphome::switch_::Switch *force_dhw_switch;   // Forces DHW on/off
 
 // -----------------------------------------------------------------------------
-// 🔹 Optional internal state helpers (defined in emergency.cpp)
+// Optional internal state helpers (defined in emergency.cpp)
 // -----------------------------------------------------------------------------
 extern bool active;          // Emergency mode active state
 extern float manual_target;  // Manual flow setpoint in °C

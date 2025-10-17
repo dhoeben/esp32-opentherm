@@ -10,13 +10,13 @@ namespace Emergency {
 static const char *const TAG = "ot_emergency";
 
 // -----------------------------------------------------------------------------
-// 🔹 Internal state
+// Internal state
 // -----------------------------------------------------------------------------
 bool active = false;
 float manual_target = 55.0f;  // Default fallback temperature (°C)
 
 // -----------------------------------------------------------------------------
-// 🔹 Core emergency logic
+// Core emergency logic
 // -----------------------------------------------------------------------------
 void enable(bool state) {
   active = state;
@@ -43,7 +43,7 @@ float get_target() {
 }
 
 // -----------------------------------------------------------------------------
-// 🔹 Switch entities
+// Switch entities
 // -----------------------------------------------------------------------------
 class EmergencyModeSwitch : public esphome::switch_::Switch {
  protected:
@@ -82,7 +82,7 @@ class ForceDHWSwitch : public esphome::switch_::Switch {
 };
 
 // -----------------------------------------------------------------------------
-// 🔹 Exposed globals (linked in on_boot)
+// Exposed globals (linked in on_boot)
 // -----------------------------------------------------------------------------
 esphome::switch_::Switch *emergency_switch = nullptr;
 esphome::switch_::Switch *force_heat_switch = nullptr;

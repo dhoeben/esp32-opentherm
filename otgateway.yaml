@@ -1,11 +1,7 @@
 api:
   encryption:
     key: !secret api_encryption_key
-  on_client_connected:
-    - logger.log: "OpenTherm: Home Assistant connected"
-  on_client_disconnected:
-    - logger.log: "OpenTherm: Lost connection to Home Assistant"
-  port: !secret api_port
+  port: 6053
   reboot_timeout: 10min
   services:
     - service: reboot_gateway
@@ -68,9 +64,15 @@ esphome:
 
 
 esp32:
-  board: esp32-c6-devkitc-1
+  board: esp32-s3-devkitc-1
+  variant: ESP32S3
+  flash_size: 16MB
   framework:
     type: esp-idf
+    sdkconfig_options:
+      CONFIG_ESP32S3_SPIRAM_MODE_QUAD: y
+      CONFIG_ESP32S3_SPIRAM_SUPPORT: y
+      CONFIG_ESP32S3_DEFAULT_CPU_FREQ_MHZ: "240"
 
 
 external_components:
@@ -125,9 +127,11 @@ wifi:
   ap:
     ssid: "Opentherm Gateway"
     password: "Opentherm12345"
-  password: !secret wifi_password
+  power_save_mode: none
   reboot_timeout: 5min
   ssid: !secret wifi_ssid
+  password: !secret wifi_password
+  fast_connect: true
 
 
 # -------------------------------------------------------------

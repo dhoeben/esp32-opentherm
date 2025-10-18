@@ -9,7 +9,7 @@ select:
     options:
       - "Equitherm"
       - "Boiler"
-    icon: mdi:thermostat-cog
+    icon: mdi:sun-snowflake-variant
     on_value:
       then:
         - lambda: |-

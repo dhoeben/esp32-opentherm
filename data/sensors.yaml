@@ -40,6 +40,6 @@ sensor:
 
   # Diagnostics
   - platform: wifi_signal
-    name: "Wi-Fi Signal Strength"
+    name: "Wi-Fi Signal"
     update_interval: 60s
     entity_category: diagnostic

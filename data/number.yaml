@@ -1,23 +1,23 @@
 number:
-  - platform: template
-    name: "Boiler Target Temperature"
-    id: boiler_target
-    icon: mdi:thermostat
-    unit_of_measurement: "°C"
-    min_value: 10
-    max_value: 80
-    step: 1.0
-    optimistic: true
-    initial_value: 21.0
-    on_value:
-      - lambda: |-
-          auto ot = opentherm::OpenThermComponent::get_singleton();
-          if (ot != nullptr) {
-            uint16_t raw = (uint16_t)(x * 256.0f);      // °C → F8.8
-            uint32_t frame = ot->build_request(opentherm::WRITE_DATA, 0x11, raw);
-            ot->send_frame(frame);
-            ESP_LOGI("otgw", "Sent new setpoint %.1f°C to boiler", x);
-          }
+  # - platform: template
+  #   name: "Boiler Target Temperature"
+  #   id: boiler_target
+  #   icon: mdi:thermostat
+  #   unit_of_measurement: "°C"
+  #   min_value: 10
+  #   max_value: 80
+  #   step: 1.0
+  #   optimistic: true
+  #   initial_value: 21.0
+  #   on_value:
+  #     - lambda: |-
+  #         auto ot = opentherm::OpenThermComponent::get_singleton();
+  #         if (ot != nullptr) {
+  #           uint16_t raw = (uint16_t)(x * 256.0f);      // °C → F8.8
+  #           uint32_t frame = ot->build_request(opentherm::WRITE_DATA, 0x11, raw);
+  #           ot->send_frame(frame);
+  #           ESP_LOGI("otgw", "Sent new setpoint %.1f°C to boiler", x);
+  #         }
 
   # Equitherm
   - platform: template
@@ -31,7 +31,7 @@ number:
     restore_value: true
     optimistic: true
     unit_of_measurement: ""
-    icon: mdi:chart-line
+    icon: mdi:alpha-n
 
   - platform: template
     name: "Equitherm K (Offset)"
@@ -44,7 +44,7 @@ number:
     restore_value: true
     optimistic: true
     unit_of_measurement: ""
-    icon: mdi:chart-bell-curve
+    icon: mdi:alpha-k
 
   - platform: template
     name: "Equitherm T (Base)"
@@ -57,7 +57,7 @@ number:
     restore_value: true
     optimistic: true
     unit_of_measurement: "°C"
-    icon: mdi:thermometer-lines
+    icon: mdi:alpha-t
 
   - platform: template
     name: "Equitherm Feedback Gain"
@@ -70,12 +70,12 @@ number:
     restore_value: true
     optimistic: true
     unit_of_measurement: ""
-    icon: mdi:amplifier
+    icon: mdi:alpha-f
 
 
   # Max values
   - platform: template
-    name: "Max CH Temp"
+    name: "Maximum CH Temperature"
     id: max_boiler_temp_heating
     min_value: 30
     max_value: 90
@@ -85,9 +85,10 @@ number:
     unit_of_measurement: "°C"
     restore_value: true
     optimistic: true
+    icon: mdi:thermometer-high
 
   - platform: template
-    name: "Max DHW Temp"
+    name: "Maximum DHW Temperature"
     id: max_boiler_temp_water
     min_value: 30
     max_value: 90
@@ -97,6 +98,7 @@ number:
     unit_of_measurement: "°C"
     restore_value: true
     optimistic: true
+    icon: mdi:thermometer-high
 
   # Climate entity
   - platform: template

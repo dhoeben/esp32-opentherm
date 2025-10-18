@@ -13,7 +13,7 @@ static const char *const TAG = "ot_emergency";
 // Internal state
 // -----------------------------------------------------------------------------
 bool active = false;
-float manual_target = 55.0f;  // Default fallback temperature (°C)
+float manual_target = 60.0f;  // Default fallback temperature (°C)
 
 // -----------------------------------------------------------------------------
 // Core emergency logic
@@ -57,7 +57,7 @@ class ForceHeatSwitch : public esphome::switch_::Switch {
  protected:
   void write_state(bool state) override {
     if (state) {
-      ESP_LOGW(TAG, "🔥 Forcing central heating ON (manual override)");
+      ESP_LOGW(TAG, "Forcing central heating ON (manual override)");
       opentherm::Boiler::set_forced(true);
     } else {
       ESP_LOGI(TAG, "Central heating override OFF");
@@ -71,7 +71,7 @@ class ForceDHWSwitch : public esphome::switch_::Switch {
  protected:
   void write_state(bool state) override {
     if (state) {
-      ESP_LOGW(TAG, "🚿 Forcing DHW ON (manual override)");
+      ESP_LOGW(TAG, "Forcing DHW ON (manual override)");
       opentherm::DHW::set_forced(true);
     } else {
       ESP_LOGI(TAG, "DHW override OFF");

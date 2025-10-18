@@ -78,6 +78,7 @@ climate:
     name: "Domestic Hot Water"
     id: dhw_climate
     sensor: dhw_temp
+    icon: mdi:water-boiler
 
     visual:
       min_temperature: 40

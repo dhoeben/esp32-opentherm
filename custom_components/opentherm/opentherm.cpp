@@ -89,34 +89,38 @@ void OpenThermComponent::loop() {
   float flow_target = 0.0f;
 
   // -------------------------------------------------------------------------
-  // 1) Emergency Mode always wins
+  // 1) Emergency mode always overrides
   // -------------------------------------------------------------------------
   if (opentherm::Emergency::is_active()) {
     flow_target = opentherm::Emergency::get_target();
     ESP_LOGW("opentherm", "Emergency mode active — overriding target to %.1f°C", flow_target);
+  } else if (g_compensation_mode == CompensationMode::EQUITHERM) {
+    // -----------------------------------------------------------------------
+    // 2A) EQUITHERM: external compensation (we compute and send DID 0x11)
+    // -----------------------------------------------------------------------
+    flow_target = Equitherm::calculate_target_temp();
+    ESP_LOGD("opentherm", "Equitherm flow target pre-clamp: %.1f°C", flow_target);
+
   } else {
     // -----------------------------------------------------------------------
-    // 2) Compensation mode selection
-    //    - EQUITHERM: compute and send DID 0x11
-    //    - BOILER:   do not send DID 0x11 (let boiler's internal curve work)
+    // 2B) BOILER: internal compensation (we skip 0x11 but send outdoor temp)
     // -----------------------------------------------------------------------
-    if (g_compensation_mode == CompensationMode::EQUITHERM) {
-      // Normal weather-compensated operation (external)
-      flow_target = Equitherm::calculate_target_temp();
-      ESP_LOGD("opentherm", "Equitherm flow target pre-clamp: %.1f°C", flow_target);
+    if (id_ha_weather_temp && id_ha_weather_temp->has_state()) {
+      float t_out = id_ha_weather_temp->state;
+      uint16_t raw = static_cast<uint16_t>(t_out * 256.0f);
+      uint32_t frame = build_request(WRITE_DATA, 0x1C, raw);
+      send_frame(frame);
+      ESP_LOGI("opentherm", "Boiler mode: sent outside temperature %.1f°C (DID 0x1C)", t_out);
     } else {
-      // Boiler internal compensation: skip sending 0x11 entirely
-      ESP_LOGI("opentherm", "Boiler internal compensation active — skipping external setpoint.");
-      // Still update subsystems for telemetry:
-      Boiler::update(this);
-      DHW::update(this);
-      Diagnostics::update(this);
-      return;
+      ESP_LOGW("opentherm", "Boiler mode active, but no valid outdoor temperature available!");
     }
+
+    // We won’t send DID 0x11 here — flow_target used only for limit clamping/logging
+    flow_target = 0.0f;  // just placeholder to reuse same safety code below
   }
 
   // -------------------------------------------------------------------------
-  // 3) Limit enforcement (safety clamping)
+  // 3) Limit enforcement (applies to BOTH Equitherm & Boiler modes)
   // -------------------------------------------------------------------------
   float heating_limit = opentherm::Boiler::max_heating_temp
                             ? opentherm::Boiler::max_heating_temp->state
@@ -126,23 +130,26 @@ void OpenThermComponent::loop() {
                         ? opentherm::DHW::max_water_temp->state
                         : 60.0f;  // fallback
 
-  const bool dhw_active = this->tap_flow(); 
+  const bool dhw_active = this->tap_flow();
   const float active_limit = dhw_active ? dhw_limit : heating_limit;
 
   if (flow_target > active_limit)
     flow_target = active_limit;
 
   // -------------------------------------------------------------------------
-  // 4) Write Control Setpoint (DID 0x11, F8.8) — ONLY in Equitherm or Emergency
+  // 4) Send control frame (only in Equitherm or Emergency)
   // -------------------------------------------------------------------------
-  const uint16_t raw = static_cast<uint16_t>(flow_target * 256.0f);
-  const uint32_t frame = build_request(WRITE_DATA, 0x11, raw);
-  send_frame(frame);
-
-  if (debug_) ESP_LOGI("opentherm", "Flow target (setpoint) sent = %.1f°C", flow_target);
+  if (g_compensation_mode == CompensationMode::EQUITHERM || opentherm::Emergency::is_active()) {
+    const uint16_t raw = static_cast<uint16_t>(flow_target * 256.0f);
+    const uint32_t frame = build_request(WRITE_DATA, 0x11, raw);
+    send_frame(frame);
+    if (debug_) ESP_LOGI("opentherm", "Flow target (setpoint) sent = %.1f°C", flow_target);
+  } else {
+    ESP_LOGI("opentherm", "Boiler mode: external setpoint disabled, limits still applied (max=%.1f°C)", active_limit);
+  }
 
   // -------------------------------------------------------------------------
-  // 5) Subsystem updates (telemetry, diagnostics)
+  // 5) Subsystem updates (shared for all modes)
   // -------------------------------------------------------------------------
   Boiler::update(this);
   DHW::update(this);

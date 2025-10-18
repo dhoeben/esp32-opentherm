@@ -5,7 +5,21 @@ esp32:
   framework:
     type: esp-idf
     sdkconfig_options:
-      CONFIG_ESP32S3_SPIRAM_MODE_QUAD: y
-      CONFIG_ESP32S3_SPIRAM_SUPPORT: y
-      CONFIG_ESP32S3_DEFAULT_CPU_FREQ_MHZ: "240"
+      # Force UART logs (disable USB-CDC console)
+      CONFIG_ESP_CONSOLE_UART: y
+      CONFIG_ESP_CONSOLE_UART_DEFAULT: y
+      CONFIG_ESP_CONSOLE_USB_CDC: n
 
+      # PSRAM configuration (8MB Octal, 120MHz)
+      CONFIG_SPIRAM_MODE_OCT: y
+      CONFIG_SPIRAM_TYPE_AUTO: y
+      CONFIG_SPIRAM_SPEED_120M: y
+      CONFIG_ESP32S3_SPIRAM_SUPPORT: y
+      CONFIG_SPIRAM_USE_MALLOC: y
+
+      # Flash configuration (safe & compatible)
+      CONFIG_ESPTOOLPY_FLASHMODE_DIO: y
+      CONFIG_ESPTOOLPY_FLASHFREQ_80M: y
+
+      # CPU frequency
+      CONFIG_ESP32S3_DEFAULT_CPU_FREQ_MHZ: "240"

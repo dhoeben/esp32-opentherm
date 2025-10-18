@@ -5,7 +5,7 @@
 # ESPHome build cache
 .esphome/
 .esphome/storage/
-.esphome/storage/*
+.esphome/storage/otgateway.yaml.json
 .cache/
 build/
 *.bin

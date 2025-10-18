@@ -24,12 +24,6 @@ esphome:
           opentherm::DHW::max_water_temp      = (esphome::number::Number *)&id(max_boiler_temp_water);
 
           // -------------------------------------------------------------
-          // DHW configuration
-          // -------------------------------------------------------------
-          opentherm::DHW::eco_temp_number     = (esphome::number::Number *)&id(dhw_eco_temp);
-          opentherm::DHW::normal_temp_number  = (esphome::number::Number *)&id(dhw_normal_temp);
-
-          // -------------------------------------------------------------
           // Diagnostics binary sensors
           // -------------------------------------------------------------
           using namespace opentherm::Diagnostics;

@@ -1,6 +1,7 @@
 climate:
+  # Central Heating
   - platform: thermostat
-    name: "OpenTherm Heating"
+    name: "Central Heating"
     id: ch_climate
     sensor: ha_indoor_temp        # feedback sensor (linked via !secret indoor_entity)
     visual:
@@ -71,3 +72,56 @@ climate:
 
           ESP_LOGI("otgw", "Heating OFF | Preset: %s | Flow target: %.1f°C",
                   preset_str.c_str(), flow_target);
+
+  # Domestic Hot Waterclimate:
+  - platform: thermostat
+    name: "Domestic Hot Water"
+    id: dhw_climate
+    sensor: dhw_temp
+
+    visual:
+      min_temperature: 40
+      max_temperature: 65
+      temperature_step: 1.0
+
+    min_heating_off_time: 30s
+    min_heating_run_time: 30s
+    min_idle_time: 30s
+
+    preset:
+      - name: comfort
+        default_target_temperature_low: 60
+      - name: eco
+        default_target_temperature_low: 60
+
+    default_preset: eco
+
+    heat_action:
+      - lambda: |-
+          auto ot = opentherm::OpenThermComponent::get_singleton();
+          if (ot == nullptr) return;
+
+          float t = id(dhw_climate).target_temperature;
+          opentherm::DHW::set_target_temp(ot, t);
+          opentherm::DHW::set_enabled(ot, true);
+          ESP_LOGI("dhw_climate", "Heating DHW to %.1f°C", t);
+
+    idle_action:
+      - lambda: |-
+          auto ot = opentherm::OpenThermComponent::get_singleton();
+          if (ot == nullptr) return;
+
+          auto preset = id(dhw_climate).preset.value_or(esphome::climate::CLIMATE_PRESET_COMFORT);
+
+          if (preset == esphome::climate::CLIMATE_PRESET_ECO) {
+            opentherm::DHW::set_mode(ot, opentherm::DHW::Mode::ECO);
+          } else {
+            opentherm::DHW::set_mode(ot, opentherm::DHW::Mode::HEAT);
+          }
+
+          const char *preset_str =
+            (preset == esphome::climate::CLIMATE_PRESET_ECO) ? "Eco" :
+            (preset == esphome::climate::CLIMATE_PRESET_COMFORT) ? "Comfort" :
+            "Unknown";
+
+          ESP_LOGI("dhw_climate", "DHW preset changed to %s", preset_str);

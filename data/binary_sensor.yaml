@@ -19,6 +19,24 @@ binary_sensor:
     entity_category: diagnostic
 
   - platform: template
+    name: "DHW Heating Active"
+    id: dhw_heating_active
+    device_class: heat
+    lambda: |-
+      auto ot = opentherm::OpenThermComponent::get_singleton();
+      if (ot == nullptr) return false;
+      return ot->tap_flow();  // true if DHW tap/flow is active
+    entity_category: diagnostic
+
+  - platform: template
+    name: "DHW Preheat Active"
+    id: dhw_preheat_active
+    icon: "mdi:water-boiler"
+    lambda: |-
+      return opentherm::DHW::comfort_mode_enabled;
+    entity_category: diagnostic
+
+  - platform: template
     id: boiler_flame
     name: "Boiler Flame"
     entity_category: diagnostic

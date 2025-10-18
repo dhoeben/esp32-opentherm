@@ -26,6 +26,8 @@ number:
     min_value: 0.1
     max_value: 1.5
     step: 0.05
+    mode: box 
+    entity_category: config
     restore_value: true
     optimistic: true
     unit_of_measurement: ""
@@ -37,6 +39,8 @@ number:
     min_value: 0.0
     max_value: 10.0
     step: 0.5
+    mode: box 
+    entity_category: config
     restore_value: true
     optimistic: true
     unit_of_measurement: ""
@@ -48,6 +52,8 @@ number:
     min_value: -10.0
     max_value: 10.0
     step: 0.5
+    mode: box 
+    entity_category: config
     restore_value: true
     optimistic: true
     unit_of_measurement: "°C"
@@ -59,6 +65,8 @@ number:
     min_value: 0.0
     max_value: 10.0
     step: 0.5
+    mode: box 
+    entity_category: config
     restore_value: true
     optimistic: true
     unit_of_measurement: ""
@@ -71,6 +79,8 @@ number:
     id: max_boiler_temp_heating
     min_value: 30
     max_value: 90
+    mode: box 
+    entity_category: config
     step: 1
     unit_of_measurement: "°C"
     restore_value: true
@@ -81,6 +91,8 @@ number:
     id: max_boiler_temp_water
     min_value: 30
     max_value: 90
+    mode: box 
+    entity_category: config
     step: 1
     unit_of_measurement: "°C"
     restore_value: true
@@ -93,6 +105,8 @@ number:
     icon: mdi:home
     min_value: 15
     max_value: 25
+    mode: box 
+    entity_category: config
     step: 0.5
     initial_value: 18.0
     unit_of_measurement: "°C"
@@ -105,6 +119,8 @@ number:
     icon: mdi:white-balance-sunny
     min_value: 18
     max_value: 25
+    mode: box 
+    entity_category: config
     step: 0.5
     initial_value: 20
     unit_of_measurement: "°C"
@@ -117,6 +133,8 @@ number:
     icon: mdi:leaf
     min_value: 14
     max_value: 22
+    mode: box 
+    entity_category: config
     step: 0.5
     initial_value: 15
     unit_of_measurement: "°C"
@@ -129,6 +147,8 @@ number:
     icon: mdi:home-export-outline
     min_value: 5
     max_value: 20
+    mode: box 
+    entity_category: config
     step: 0.5
     initial_value: 12
     unit_of_measurement: "°C"

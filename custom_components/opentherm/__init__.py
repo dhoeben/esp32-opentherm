@@ -37,10 +37,10 @@ CONFIG_SCHEMA = cv.Schema({
     cv.Optional(CONF_DEBUG, default=False): cv.boolean,
 
     # Core sensors
-    cv.Optional(CONF_BOILER_TEMP): sensor.sensor_schema(unit_of_measurement="°C", accuracy_decimals=1),
-    cv.Optional(CONF_RETURN_TEMP): sensor.sensor_schema(unit_of_measurement="°C", accuracy_decimals=1),
-    cv.Optional(CONF_MODULATION): sensor.sensor_schema(unit_of_measurement="%", accuracy_decimals=0),
-    cv.Optional(CONF_SETPOINT): sensor.sensor_schema(unit_of_measurement="°C", accuracy_decimals=1),
+    cv.Optional(CONF_BOILER_TEMP): sensor.sensor_schema(unit_of_measurement="°C", accuracy_decimals=1, entity_category="diagnostic"),
+    cv.Optional(CONF_RETURN_TEMP): sensor.sensor_schema(unit_of_measurement="°C", accuracy_decimals=1, entity_category="diagnostic"),
+    cv.Optional(CONF_MODULATION): sensor.sensor_schema(unit_of_measurement="%", accuracy_decimals=0, entity_category="diagnostic"),
+    cv.Optional(CONF_SETPOINT): sensor.sensor_schema(unit_of_measurement="°C", accuracy_decimals=1, entity_category="diagnostic"),
 
     # Limit numbers
     cv.Optional("max_boiler_temp_heating"): number.NUMBER_SCHEMA,

@@ -2,3 +2,4 @@ text_sensor:
   - platform: template
     id: fault_text
     name: "Boiler Fault Text"
+    entity_category: diagnostic

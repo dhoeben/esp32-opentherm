@@ -3,14 +3,17 @@ switch:
   - platform: template
     id: emergency_mode
     name: "Emergency Mode"
+    internal: true
     optimistic: true
 
   - platform: template
     id: force_heat
-    name: "Force Heating"
+    name: "Emergency force Heating"
+    internal: true
     optimistic: true
 
   - platform: template
     id: force_dhw
-    name: "Force DHW"
+    name: "Emergency force DHW"
+    internal: true
     optimistic: true

@@ -1,22 +1,22 @@
 sensor:
   # External sensors from Home Assistant
-  - platform: homeassistant
-    entity_id: !secret outdoor_entity
-    id: ha_outdoor_temp
-    internal: true        # set to true if you don’t want it visible in HA
-    unit_of_measurement: "°C"
-    accuracy_decimals: 1
-    on_value:
-      then:
-        - lambda: |-
-            auto ot = opentherm::OpenThermComponent::get_singleton();
-            if (ot != nullptr) {
-              // 0x1C = outside temperature
-              uint16_t raw = (uint16_t)(x * 256.0f);   // convert °C to F8.8
-              uint32_t frame = ot->build_request(opentherm::WRITE_DATA, 0x1C, raw);
-              ot->send_frame(frame);
-              ESP_LOGI("otgw", "Sent outside temp %.1f°C to boiler", x);
-            }
+  # - platform: homeassistant
+  #   entity_id: !secret outdoor_entity
+  #   id: ha_outdoor_temp
+  #   internal: true        # set to true if you don’t want it visible in HA
+  #   unit_of_measurement: "°C"
+  #   accuracy_decimals: 1
+  #   on_value:
+  #     then:
+  #       - lambda: |-
+  #           auto ot = opentherm::OpenThermComponent::get_singleton();
+  #           if (ot != nullptr) {
+  #             // 0x1C = outside temperature
+  #             uint16_t raw = (uint16_t)(x * 256.0f);   // convert °C to F8.8
+  #             uint32_t frame = ot->build_request(opentherm::WRITE_DATA, 0x1C, raw);
+  #             ot->send_frame(frame);
+  #             ESP_LOGI("otgw", "Sent outside temp %.1f°C to boiler", x);
+  #           }
 
   - platform: homeassistant
     entity_id: !secret weather_entity

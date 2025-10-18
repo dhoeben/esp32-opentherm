@@ -9,11 +9,19 @@ namespace Boiler {
 
 static const char *const TAG = "ot_boiler";
 
+
+void bind_sensors(esphome::sensor::Sensor *water, esphome::sensor::Sensor *ret, esphome::sensor::Sensor *mod, esphome::sensor::Sensor *setp) {
+  water_temp = water;
+  return_temp = ret;
+  modulation = mod;
+  setpoint = setp;
+}
+
 // Boiler sensors
-esphome::sensor::Sensor *water_temp = new esphome::sensor::Sensor();
-esphome::sensor::Sensor *return_temp = new esphome::sensor::Sensor();
-esphome::sensor::Sensor *modulation = new esphome::sensor::Sensor();
-esphome::sensor::Sensor *setpoint = new esphome::sensor::Sensor();
+esphome::sensor::Sensor *water_temp = nullptr;
+esphome::sensor::Sensor *return_temp = nullptr;
+esphome::sensor::Sensor *modulation = nullptr;
+esphome::sensor::Sensor *setpoint = nullptr;
 
 // Boiler limits (numbers)
 esphome::number::Number *max_heating_temp = nullptr;

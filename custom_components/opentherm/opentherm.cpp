@@ -26,7 +26,6 @@ CompensationMode g_compensation_mode = CompensationMode::EQUITHERM;
 
 void set_compensation_mode(CompensationMode m) { g_compensation_mode = m; }
 
-// Optional helper you can call from YAML lambdas with a string:
 void set_compensation_mode_from_string(const std::string &s) {
   if (s == "Boiler" || s == "boiler") {
     g_compensation_mode = CompensationMode::BOILER;
@@ -58,24 +57,35 @@ void OpenThermComponent::setup() {
            poll_interval_ms_ ? poll_interval_ms_ : OT_POLL_INTERVAL,
            rx_timeout_ms_, debug_ ? debug_ : OT_DEBUG);
 
+  // Bind boiler sensors
+  Boiler::bind_sensors(this->boiler_temp, this->return_temp, this->modulation, this->setpoint);
+
   // ---------------------------------------------------------------------
-  // Register boiler & DHW temperature limit numbers for Home Assistant
+  // Register boiler & DHW temperature limit numbers (safe, codegen-based)
   // ---------------------------------------------------------------------
   using namespace esphome::number;
 
-  // Boiler limit number
-  Boiler::max_heating_temp->set_name("Max Boiler Temp Heating");
-  Boiler::max_heating_temp->traits.set_min_value(30);
-  Boiler::max_heating_temp->traits.set_max_value(90);
-  Boiler::max_heating_temp->traits.set_step(1);
-  Boiler::max_heating_temp->publish_state(70);
+  if (boiler_limit_) {
+    opentherm::Boiler::max_heating_temp = boiler_limit_;
+    boiler_limit_->set_name("Max Boiler Temp Heating");
+    boiler_limit_->traits.set_min_value(30);
+    boiler_limit_->traits.set_max_value(90);
+    boiler_limit_->traits.set_step(1);
+    boiler_limit_->publish_state(70);
+  } else {
+    ESP_LOGW("opentherm", "No boiler limit number configured.");
+  }
 
-  // DHW limit number
-  DHW::max_water_temp->set_name("Max DHW Temp");
-  DHW::max_water_temp->traits.set_min_value(30);
-  DHW::max_water_temp->traits.set_max_value(90);
-  DHW::max_water_temp->traits.set_step(1);
-  DHW::max_water_temp->publish_state(50);
+  if (dhw_limit_) {
+    opentherm::DHW::max_water_temp = dhw_limit_;
+    dhw_limit_->set_name("Max DHW Temp");
+    dhw_limit_->traits.set_min_value(30);
+    dhw_limit_->traits.set_max_value(90);
+    dhw_limit_->traits.set_step(1);
+    dhw_limit_->publish_state(50);
+  } else {
+    ESP_LOGW("opentherm", "No DHW limit number configured.");
+  }
 }
 
 // -----------------------------------------------------------------------------
@@ -88,23 +98,14 @@ void OpenThermComponent::loop() {
 
   float flow_target = 0.0f;
 
-  // -------------------------------------------------------------------------
-  // 1) Emergency mode always overrides
-  // -------------------------------------------------------------------------
+  // 1) Emergency mode overrides everything
   if (opentherm::Emergency::is_active()) {
     flow_target = opentherm::Emergency::get_target();
     ESP_LOGW("opentherm", "Emergency mode active — overriding target to %.1f°C", flow_target);
   } else if (g_compensation_mode == CompensationMode::EQUITHERM) {
-    // -----------------------------------------------------------------------
-    // 2A) EQUITHERM: external compensation (we compute and send DID 0x11)
-    // -----------------------------------------------------------------------
     flow_target = Equitherm::calculate_target_temp();
     ESP_LOGD("opentherm", "Equitherm flow target pre-clamp: %.1f°C", flow_target);
-
   } else {
-    // -----------------------------------------------------------------------
-    // 2B) BOILER: internal compensation (we skip 0x11 but send outdoor temp)
-    // -----------------------------------------------------------------------
     if (id_ha_weather_temp && id_ha_weather_temp->has_state()) {
       float t_out = id_ha_weather_temp->state;
       uint16_t raw = static_cast<uint16_t>(t_out * 256.0f);
@@ -114,43 +115,26 @@ void OpenThermComponent::loop() {
     } else {
       ESP_LOGW("opentherm", "Boiler mode active, but no valid outdoor temperature available!");
     }
-
-    // We won’t send DID 0x11 here — flow_target used only for limit clamping/logging
-    flow_target = 0.0f;  // just placeholder to reuse same safety code below
   }
 
-  // -------------------------------------------------------------------------
-  // 3) Limit enforcement (applies to BOTH Equitherm & Boiler modes)
-  // -------------------------------------------------------------------------
-  float heating_limit = opentherm::Boiler::max_heating_temp
-                            ? opentherm::Boiler::max_heating_temp->state
-                            : 70.0f;  // fallback
-
-  float dhw_limit = opentherm::DHW::max_water_temp
-                        ? opentherm::DHW::max_water_temp->state
-                        : 60.0f;  // fallback
-
+  // 3) Limit enforcement
+  float heating_limit = boiler_limit_ ? boiler_limit_->state : 70.0f;
+  float dhw_limit     = dhw_limit_ ? dhw_limit_->state : 60.0f;
   const bool dhw_active = this->tap_flow();
   const float active_limit = dhw_active ? dhw_limit : heating_limit;
 
   if (flow_target > active_limit)
     flow_target = active_limit;
 
-  // -------------------------------------------------------------------------
-  // 4) Send control frame (only in Equitherm or Emergency)
-  // -------------------------------------------------------------------------
+  // 4) Send control frame (Equitherm or Emergency)
   if (g_compensation_mode == CompensationMode::EQUITHERM || opentherm::Emergency::is_active()) {
     const uint16_t raw = static_cast<uint16_t>(flow_target * 256.0f);
     const uint32_t frame = build_request(WRITE_DATA, 0x11, raw);
     send_frame(frame);
     if (debug_) ESP_LOGI("opentherm", "Flow target (setpoint) sent = %.1f°C", flow_target);
-  } else {
-    ESP_LOGI("opentherm", "Boiler mode: external setpoint disabled, limits still applied (max=%.1f°C)", active_limit);
   }
 
-  // -------------------------------------------------------------------------
-  // 5) Subsystem updates (shared for all modes)
-  // -------------------------------------------------------------------------
+  // 5) Subsystem updates
   Boiler::update(this);
   DHW::update(this);
   Diagnostics::update(this);
@@ -165,8 +149,7 @@ uint8_t OpenThermComponent::parity32(uint32_t v) {
   v ^= v >> 8;
   v ^= v >> 4;
   v &= 0xF;
-  static const uint8_t lut[16] = {0, 1, 1, 0, 1, 0, 0, 1,
-                                  1, 0, 0, 1, 0, 1, 1, 0};
+  static const uint8_t lut[16] = {0,1,1,0,1,0,0,1,1,0,0,1,0,1,1,0};
   return lut[v] & 1u;
 }
 
@@ -176,8 +159,7 @@ uint32_t OpenThermComponent::build_request(OTMsgType mt, uint8_t did, uint16_t d
   f |= (static_cast<uint32_t>(mt) & 0x7u) << 28;
   f |= (static_cast<uint32_t>(did) & 0xFFu) << 20;
   f |= (static_cast<uint32_t>(data) & 0xFFFFu) << 4;
-  const uint8_t p = parity32(f);
-  f |= static_cast<uint32_t>(p);
+  f |= parity32(f);
   return f;
 }
 
@@ -187,25 +169,16 @@ bool OpenThermComponent::wait_us(uint32_t us) {
   return true;
 }
 
-void OpenThermComponent::line_tx_level(bool high) {
-  out_pin_->digital_write(high);
-}
-
-bool OpenThermComponent::line_rx_level() const {
-  return in_pin_->digital_read();
-}
+void OpenThermComponent::line_tx_level(bool high) { out_pin_->digital_write(high); }
+bool OpenThermComponent::line_rx_level() const { return in_pin_->digital_read(); }
 
 void OpenThermComponent::tx_manchester_bit(bool logical_one) {
   if (logical_one) {
-    line_tx_level(true);
-    wait_us(HALF_BIT_US);
-    line_tx_level(false);
-    wait_us(HALF_BIT_US);
+    line_tx_level(true);  wait_us(HALF_BIT_US);
+    line_tx_level(false); wait_us(HALF_BIT_US);
   } else {
-    line_tx_level(false);
-    wait_us(HALF_BIT_US);
-    line_tx_level(true);
-    wait_us(HALF_BIT_US);
+    line_tx_level(false); wait_us(HALF_BIT_US);
+    line_tx_level(true);  wait_us(HALF_BIT_US);
   }
 }
 
@@ -243,8 +216,7 @@ bool OpenThermComponent::recv_frame(uint32_t &resp) {
     }
 
     resp = v;
-    const uint8_t p = parity32(resp);
-    if (((resp & 0x1u) != p)) return false;
+    if (((resp & 0x1u) != parity32(resp))) return false;
 
     if (debug_) ESP_LOGD("opentherm", "RX frame: 0x%08X", resp);
     return true;
@@ -256,17 +228,12 @@ bool OpenThermComponent::recv_frame(uint32_t &resp) {
 uint32_t OpenThermComponent::read_did(uint8_t did) {
   const uint32_t req = build_request(READ_DATA, did, 0);
   if (!send_frame(req)) return 0;
-
   uint32_t resp = 0;
   if (!recv_frame(resp)) {
     if (debug_) ESP_LOGW("opentherm", "Timeout / bad frame for DID 0x%02X", did);
     return 0;
   }
-  if (((resp >> 31) & 1u) != 1u) {
-    if (debug_) ESP_LOGW("opentherm", "Bad start bit DID 0x%02X", did);
-    return 0;
-  }
-
+  if (((resp >> 31) & 1u) != 1u) return 0;
   return resp;
 }
 

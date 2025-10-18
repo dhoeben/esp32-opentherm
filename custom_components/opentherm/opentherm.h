@@ -6,7 +6,8 @@
 #include "esp_timer.h"
 
 #include "esphome/components/sensor/sensor.h"
-#include <string>  
+#include "esphome/components/number/number.h"
+#include <string>
 
 namespace opentherm {
 
@@ -39,14 +40,14 @@ class OpenThermComponent : public esphome::Component {
   OpenThermComponent();
 
   // Exposed sensors
-  esphome::sensor::Sensor *boiler_temp  = new esphome::sensor::Sensor();
-  esphome::sensor::Sensor *return_temp  = new esphome::sensor::Sensor();
-  esphome::sensor::Sensor *modulation   = new esphome::sensor::Sensor();
-  esphome::sensor::Sensor *setpoint     = new esphome::sensor::Sensor();
+  esphome::sensor::Sensor *boiler_temp = nullptr;
+  esphome::sensor::Sensor *return_temp = nullptr;
+  esphome::sensor::Sensor *modulation = nullptr;
+  esphome::sensor::Sensor *setpoint = nullptr;
 
   // DHW sensors
-  esphome::sensor::Sensor *dhw_temp     = new esphome::sensor::Sensor();
-  esphome::sensor::Sensor *dhw_setpoint = new esphome::sensor::Sensor();
+  esphome::sensor::Sensor *dhw_temp = nullptr;
+  esphome::sensor::Sensor *dhw_setpoint = nullptr;
 
   // ---------------------------------------------------------------------------
   // Boiler and DHW sensor setters
@@ -60,10 +61,16 @@ class OpenThermComponent : public esphome::Component {
   void set_dhw_setpoint_sensor(esphome::sensor::Sensor *s) { dhw_setpoint = s; }
 
   // ---------------------------------------------------------------------------
+  // Boiler & DHW limit Number entities (bound from __init__.py)
+  // ---------------------------------------------------------------------------
+  void set_boiler_limit_number(esphome::number::Number *n) { boiler_limit_ = n; }
+  void set_dhw_limit_number(esphome::number::Number *n) { dhw_limit_ = n; }
+
+  // ---------------------------------------------------------------------------
   // DHW & flow control flags
   // ---------------------------------------------------------------------------
   bool dhw_active() const { return dhw_active_; }
-  bool tap_flow()  const { return tap_flow_;  }
+  bool tap_flow() const { return tap_flow_; }
   void set_tap_flow(bool active) { tap_flow_ = active; }
 
   // ---------------------------------------------------------------------------
@@ -119,6 +126,10 @@ class OpenThermComponent : public esphome::Component {
   // DHW flags
   bool dhw_active_{false};
   bool tap_flow_{false};
+
+  // Linked limit entities (optional)
+  esphome::number::Number *boiler_limit_{nullptr};
+  esphome::number::Number *dhw_limit_{nullptr};
 };
 
 // -----------------------------------------------------------------------------

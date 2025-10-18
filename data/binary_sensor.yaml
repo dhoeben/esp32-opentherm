@@ -45,6 +45,7 @@ binary_sensor:
     id: boiler_fault
     name: "Boiler Fault"
     entity_category: diagnostic
+    device_class: problem
 
   - platform: template
     id: boiler_diag
@@ -55,6 +56,7 @@ binary_sensor:
     id: comms_ok
     name: "OpenTherm Comms OK"
     entity_category: diagnostic
+    device_class: connectivity
 
   - platform: template
     id: dhw_flowing

@@ -30,6 +30,7 @@ sensor:
     unit_of_measurement: "L/min"
     accuracy_decimals: 2
     entity_category: diagnostic
+    device_class: volume_flow_rate
   
   - platform: template
     name: "DHW Current temperature"
@@ -37,9 +38,11 @@ sensor:
     unit_of_measurement: "°C"
     accuracy_decimals: 1
     entity_category: diagnostic
+    device_class: temperature
 
   # Diagnostics
   - platform: wifi_signal
     name: "Wi-Fi Signal"
     update_interval: 60s
     entity_category: diagnostic
+    device_class: signal_strength

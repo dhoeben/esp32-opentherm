@@ -77,6 +77,7 @@ number:
   - platform: template
     name: "Maximum CH Temperature"
     id: max_boiler_temp_heating
+    device_id: ch
     min_value: 30
     max_value: 90
     mode: box 
@@ -90,6 +91,7 @@ number:
   - platform: template
     name: "Maximum DHW Temperature"
     id: max_boiler_temp_water
+    device_id: dhw
     min_value: 30
     max_value: 90
     mode: box 
@@ -104,6 +106,7 @@ number:
   - platform: template
     name: "Preset home Temperature"
     id: home_temp
+    device_id: ch
     icon: mdi:home
     min_value: 15
     max_value: 25
@@ -118,6 +121,7 @@ number:
   - platform: template
     name: "Preset comfort Temperature"
     id: comfort_temp
+    device_id: ch
     icon: mdi:white-balance-sunny
     min_value: 18
     max_value: 25
@@ -132,6 +136,7 @@ number:
   - platform: template
     name: "Preset eco Temperature"
     id: eco_temp
+    device_id: ch
     icon: mdi:leaf
     min_value: 14
     max_value: 22
@@ -146,6 +151,7 @@ number:
   - platform: template
     name: "Preset away Temperature"
     id: away_temp
+    device_id: ch
     icon: mdi:home-export-outline
     min_value: 5
     max_value: 20

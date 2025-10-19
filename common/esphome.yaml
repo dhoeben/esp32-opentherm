@@ -1,3 +1,10 @@
 esphome:
   name: otgateway
   friendly_name: OpenTherm Gateway
+
+  devices:
+    - id: ch
+      name: "Central Heating"
+
+    - id: dhw
+      name: "Domestic Hot Water"

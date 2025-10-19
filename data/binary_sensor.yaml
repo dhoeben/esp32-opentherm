@@ -2,6 +2,7 @@ binary_sensor:
   - platform: template
     name: "Tap Water Flow Detected"
     id: tap_flow
+    device_id: dhw
     device_class: running
     entity_category: diagnostic
     lambda: |-
@@ -11,15 +12,18 @@ binary_sensor:
   - platform: template
     id: ch_active
     name: "CH Active"
+    device_id: ch
     entity_category: diagnostic
 
   - platform: template
     id: dhw_active
     name: "DHW Active"
+    device_id: dhw
     entity_category: diagnostic
 
   - platform: template
     name: "DHW Heating Active"
+    device_id: dhw
     id: dhw_heating_active
     device_class: heat
     lambda: |-
@@ -30,6 +34,7 @@ binary_sensor:
 
   - platform: template
     name: "DHW Preheat Active"
+    device_id: dhw
     id: dhw_preheat_active
     icon: "mdi:water-boiler"
     lambda: |-
@@ -60,6 +65,7 @@ binary_sensor:
 
   - platform: template
     id: dhw_flowing
+    device_id: dhw
     name: "DHW Water Flowing"
     device_class: running
     entity_category: diagnostic

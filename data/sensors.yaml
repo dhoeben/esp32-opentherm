@@ -27,6 +27,7 @@ sensor:
   - platform: template
     id: dhw_flow_rate
     name: "DHW Flow Rate"
+    device_id: dhw
     unit_of_measurement: "L/min"
     accuracy_decimals: 2
     entity_category: diagnostic
@@ -35,6 +36,7 @@ sensor:
   - platform: template
     name: "DHW Current temperature"
     id: dhw_temp
+    device_id: dhw
     unit_of_measurement: "°C"
     accuracy_decimals: 1
     entity_category: diagnostic

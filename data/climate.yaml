@@ -4,6 +4,7 @@ climate:
     name: "Central Heating"
     id: ch_climate
     sensor: ha_indoor_temp        # feedback sensor (linked via !secret indoor_entity)
+    device_id: ch
     visual:
       min_temperature: 5
       max_temperature: 40
@@ -77,6 +78,7 @@ climate:
   - platform: thermostat
     name: "Domestic Hot Water"
     id: dhw_climate
+    device_id: dhw
     sensor: dhw_temp
     icon: mdi:water-boiler
 

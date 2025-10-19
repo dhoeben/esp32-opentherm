@@ -1,5 +1,5 @@
 ---
-Tested OK on ESPHome software version: 2025.9.3 - 2025.10.1
+Tested OK on ESPHome software version 2025.9.3 - 2025.10.1
 ---
 
 

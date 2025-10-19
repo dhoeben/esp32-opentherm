@@ -6,6 +6,7 @@ select:
     optimistic: true
     restore_value: true
     initial_option: "Equitherm"
+    entity_category: config
     options:
       - "Equitherm"
       - "Boiler"

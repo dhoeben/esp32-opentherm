@@ -1,5 +1,5 @@
 web_server:
   auth:
-    username: admin
+    username: !secret web_interface_username
     password: !secret web_interface_password
   port: 80

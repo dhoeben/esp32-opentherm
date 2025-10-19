@@ -6,34 +6,13 @@ It acts as a modern, reliable, and flexible interface between your boiler and Ho
 
 ### 🚀 Features
 
-✅ **Full OpenTherm Protocol Support**  
-– Native communication with OpenTherm-compatible boilers  
-– Continuous polling with configurable intervals  
-– Automatic modulation and setpoint control  
-
-✅ **Integrated Home Assistant Support**  
-– Exposes boiler temperatures, DHW, modulation, and status  
-– Adjustable temperature limits and domestic hot water (DHW) setpoints  
-– Binary sensors for flame, faults, diagnostics, and communication health  
-
-✅ **Emergency Mode (Offline Control)**  
-– Local fallback via web interface  
-– Manual switches for heating or DHW, even when Home Assistant is offline  
-
-✅ **Weather Compensation (Equitherm)**  
-– Calculates target flow temperature dynamically  
-– Adjustable slope and offset values through Home Assistant  
-
-✅ **Diagnostic & Monitoring**  
+- Full OpenTherm Protocol Support
+- Integrated Home Assistant Support
+- Emergency Mode (Offline Control)
+- Weather Compensation (Equitherm)  
+- Diagnostic & Monitoring
 – Real-time logging (boiler state, flame, fault codes)  
 – Flow detection and DHW water rate measurement  
-
-✅ **Optional Add-ons**  
-– mDNS: access gateway via `http://otgateway.local`  
-– Web UI for emergency mode and manual control  
-– (Optional) DHW water usage statistics in HA’s Energy dashboard  
-– (Optional) Power monitoring via ADC or smart plug  
-
 
 ### ⚙️ Hardware Overview
 
@@ -43,7 +22,7 @@ It acts as a modern, reliable, and flexible interface between your boiler and Ho
 | **OpenTherm Interface Circuit** | Connects boiler OpenTherm bus to ESP (isolation required!) |
 
 
-### 🖥️ Web Interface (Emergency Mode)
+### 🖥️ Web Interface
 
 - Access via http://otgateway.local (or the device IP)
 - Toggle Emergency Mode to enable offline control
@@ -58,3 +37,62 @@ It acts as a modern, reliable, and flexible interface between your boiler and Ho
 - OTA encrypted and password protected
 - Automatic reboot after successful updates
 - Safe Mode available if configuration fails to boot
+
+### 🧮 Equitherm Heating Curve
+
+This project implements a custom **Equithermic control algorithm** that dynamically adjusts the **boiler flow temperature** based on outdoor and indoor conditions.  
+It uses the same principle as weather-compensated control, but allows you to fully tune the curve parameters via Home Assistant.
+
+\[
+T_\text{flow} = n \times (T_\text{set} + k - T_\text{out}) + t + (T_\text{set} - T_\text{in}) \times fb
+\]
+
+where:
+
+| Symbol | Definition | Source |
+|:-------|:------------|:-------|
+| **T₍flow₎** | Calculated target flow temperature (°C) | Sent to boiler via OpenTherm (DID 0x11) |
+| **T₍out₎** | Outdoor temperature (°C) | From Home Assistant weather sensor |
+| **T₍in₎** | Current indoor temperature (°C) | From indoor temperature sensor |
+| **T₍set₎** | Desired indoor setpoint (°C) | From ESPHome `climate` target |
+| **n** | Curve exponent / slope multiplier | Tunable number (default ≈ 1.2–1.3) |
+| **k** | Base slope factor | Tunable number (default ≈ 0.8–1.0) |
+| **t** | Curve offset (°C) | Shifts the curve up/down; usually near indoor target |
+| **fb** | Feedback gain | Correction factor based on indoor deviation |
+| **max_ch_temp** | Maximum boiler flow limit (°C) | Adjustable from Home Assistant |
+
+---
+
+<details>
+<summary><strong>🔍 Explanation</strong></summary>
+
+The Equithermic control curve automatically increases boiler flow temperature when it’s colder outside, keeping the indoor temperature stable with minimal cycling and optimal condensing efficiency.
+
+- **n** and **k** shape how steeply the flow temperature reacts to outdoor changes.  
+- **t** vertically shifts the entire curve, roughly aligning it with the desired comfort level.  
+- **fb** applies an indoor feedback correction:  
+  - If the indoor temperature is *below* the target, the flow temperature increases slightly.  
+  - If it’s *above* the target, it decreases slightly.  
+- The final calculated temperature is **clamped** to the `Maximum CH Temperature` number you define in Home Assistant.
+
+</details>
+
+---
+
+### 🏠 Example — Typical Dutch house (1940s, radiators, 18 °C target)
+
+| Parameter | Example Value |
+|:-----------|:--------------|
+| `n` | 1.2 |
+| `k` | 0.85 |
+| `t` | 18.0 |
+| `fb` | −6.0 |
+| `max_ch_temp` | 60 °C |
+
+| Outdoor Temperature | Calculated Flow Target |
+|---------------------:|------------------------:|
+| +15 °C | ≈ 26 °C |
+| 0 °C | ≈ 42 °C |
+| −10 °C | ≈ 58 °C |
+
+This setup provides steady radiator warmth, high boiler efficiency, and comfortable 18 °C room temperature under typical winter conditions in the Netherlands.

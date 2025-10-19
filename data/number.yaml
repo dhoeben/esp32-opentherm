@@ -75,13 +75,11 @@ number:
 
   # Max values
   - platform: template
-    name: "Maximum CH Temperature"
+    name: "CH Maximum Temperature"
     id: max_boiler_temp_heating
-    device_id: ch
     min_value: 30
     max_value: 90
     mode: box 
-    entity_category: config
     step: 1
     unit_of_measurement: "°C"
     restore_value: true
@@ -89,13 +87,11 @@ number:
     icon: mdi:thermometer-high
 
   - platform: template
-    name: "Maximum DHW Temperature"
+    name: "DHW Maximum Temperature"
     id: max_boiler_temp_water
-    device_id: dhw
     min_value: 30
     max_value: 90
     mode: box 
-    entity_category: config
     step: 1
     unit_of_measurement: "°C"
     restore_value: true

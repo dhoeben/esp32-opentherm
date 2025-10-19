@@ -13,10 +13,8 @@ It acts as a modern, reliable, and flexible interface between your boiler and Ho
 - Full OpenTherm Protocol Support
 - Integrated Home Assistant Support
 - Emergency Mode (Offline Control)
-- Weather Compensation (Equitherm)  
-- Diagnostic & Monitoring
-– Real-time logging (boiler state, flame, fault codes)  
-– Flow detection and DHW water rate measurement  
+- Optional weather Compensation (Equitherm or boilers own)  
+- Diagnostic & Monitoring (boiler state, flame, fault codes)  
 
 ### ⚙️ Hardware Overview
 | Component | Purpose |
@@ -28,7 +26,7 @@ It acts as a modern, reliable, and flexible interface between your boiler and Ho
 ### 🖥️ Web Interface
 - Access via http://otgateway.local (or the device IP)
 - Toggle Emergency Mode to enable offline control
-- Manually control:
+- Manually control
 - Heating (CH) On/Off
 - Domestic Hot Water (DHW) On/Off
 - Target temperatures
@@ -44,11 +42,10 @@ It acts as a modern, reliable, and flexible interface between your boiler and Ho
 This project implements a custom **Equithermic control algorithm** that dynamically adjusts the **boiler flow temperature** based on outdoor and indoor conditions.  
 It uses the same principle as weather-compensated control, but allows you to fully tune the curve parameters via Home Assistant.
 
-```T_flow = n * (T_set + k - T_out) + t + (T_set - T_in) * fb```
-
---- 
 <details>
-<summary><strong>🔍 Explanation</strong></summary>
+<summary><strong>More information</strong></summary>
+
+```T_flow = n * (T_set + k - T_out) + t + (T_set - T_in) * fb```
 
 | Symbol | Definition | Source |
 |:-------|:------------|:-------|

@@ -1,11 +1,15 @@
 ### 🏠 OpenTherm Gateway (ESPHome + ESP32)
-
 This project is still a work in progress and will implements a **fully native OpenTherm Gateway** using an **ESP32-S3** and ESPHome.  
 It acts as a modern, reliable, and flexible interface between your boiler and Home Assistant — featuring full OpenTherm communication, diagnostics, and web-accessible emergency controls.
 
+### ⬇️ Installation
+1) Download latest release
+2) Use vscode or flash tool to create firmware
+3) Flash to your ESP device
+4) Connect ESP device to Opentherm Interface Circuit
+5) Connect Opentherm Interface Circuit to boiler OT+/- 
 
 ### 🚀 Features
-
 - Full OpenTherm Protocol Support
 - Integrated Home Assistant Support
 - Emergency Mode (Offline Control)
@@ -15,15 +19,13 @@ It acts as a modern, reliable, and flexible interface between your boiler and Ho
 – Flow detection and DHW water rate measurement  
 
 ### ⚙️ Hardware Overview
-
 | Component | Purpose |
 |------------|----------|
 | **ESP32-S3 DevKitC N16R8** | Main controller running ESPHome (could be any ESP32-S3) |
-| **OpenTherm Interface Circuit** | Connects boiler OpenTherm bus to ESP (isolation required!) |
+| **OpenTherm Interface Circuit** | Connects boiler OpenTherm bus to ESP |
 
 
 ### 🖥️ Web Interface
-
 - Access via http://otgateway.local (or the device IP)
 - Toggle Emergency Mode to enable offline control
 - Manually control:
@@ -39,13 +41,14 @@ It acts as a modern, reliable, and flexible interface between your boiler and Ho
 - Safe Mode available if configuration fails to boot
 
 ### 🧮 Equitherm Heating Curve
-
 This project implements a custom **Equithermic control algorithm** that dynamically adjusts the **boiler flow temperature** based on outdoor and indoor conditions.  
 It uses the same principle as weather-compensated control, but allows you to fully tune the curve parameters via Home Assistant.
 
 ```T_flow = n * (T_set + k - T_out) + t + (T_set - T_in) * fb```
 
-where:
+--- 
+<details>
+<summary><strong>🔍 Explanation</strong></summary>
 
 | Symbol | Definition | Source |
 |:-------|:------------|:-------|
@@ -59,9 +62,6 @@ where:
 | **fb** | Feedback gain | Correction factor based on indoor deviation |
 | **max_ch_temp** | Maximum boiler flow limit (°C) | Adjustable from Home Assistant |
 
-
-<details>
-<summary><strong>🔍 Explanation</strong></summary>
 
 The Equithermic control curve automatically increases boiler flow temperature when it’s colder outside, keeping the indoor temperature stable with minimal cycling and optimal condensing efficiency.
 

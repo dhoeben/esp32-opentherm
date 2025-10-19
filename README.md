@@ -4,7 +4,8 @@ It acts as a modern, reliable, and flexible interface between your boiler and Ho
 
 ### ⬇️ Installation
 1) Download latest release
-2) Use vscode or flash tool to create firmware
+2) Use vscode or flash tool to create firmware 
+   -> Tested OK on ESPHome software version: 2025.9.3 - 2025.10.1
 3) Flash to your ESP device
 4) Connect ESP device to Opentherm Interface Circuit
 5) Connect Opentherm Interface Circuit to boiler OT+/- 
@@ -16,7 +17,7 @@ It acts as a modern, reliable, and flexible interface between your boiler and Ho
 - Optional weather Compensation (Equitherm or boilers own)  
 - Diagnostic & Monitoring (boiler state, flame, fault codes)  
 
-### ⚙️ Hardware Overview
+### ⚙️ My Hardware Overview
 | Component | Purpose |
 |------------|----------|
 | **ESP32-S3 DevKitC N16R8** | Main controller running ESPHome (could be any ESP32-S3) |

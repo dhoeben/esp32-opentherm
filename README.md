@@ -43,9 +43,7 @@ It acts as a modern, reliable, and flexible interface between your boiler and Ho
 This project implements a custom **Equithermic control algorithm** that dynamically adjusts the **boiler flow temperature** based on outdoor and indoor conditions.  
 It uses the same principle as weather-compensated control, but allows you to fully tune the curve parameters via Home Assistant.
 
-\[
-T_\text{flow} = n \times (T_\text{set} + k - T_\text{out}) + t + (T_\text{set} - T_\text{in}) \times fb
-\]
+```T_flow = n * (T_set + k - T_out) + t + (T_set - T_in) * fb```
 
 where:
 
@@ -61,7 +59,6 @@ where:
 | **fb** | Feedback gain | Correction factor based on indoor deviation |
 | **max_ch_temp** | Maximum boiler flow limit (°C) | Adjustable from Home Assistant |
 
----
 
 <details>
 <summary><strong>🔍 Explanation</strong></summary>
@@ -76,23 +73,3 @@ The Equithermic control curve automatically increases boiler flow temperature wh
 - The final calculated temperature is **clamped** to the `Maximum CH Temperature` number you define in Home Assistant.
 
 </details>
-
----
-
-### 🏠 Example — Typical Dutch house (1940s, radiators, 18 °C target)
-
-| Parameter | Example Value |
-|:-----------|:--------------|
-| `n` | 1.2 |
-| `k` | 0.85 |
-| `t` | 18.0 |
-| `fb` | −6.0 |
-| `max_ch_temp` | 60 °C |
-
-| Outdoor Temperature | Calculated Flow Target |
-|---------------------:|------------------------:|
-| +15 °C | ≈ 26 °C |
-| 0 °C | ≈ 42 °C |
-| −10 °C | ≈ 58 °C |
-
-This setup provides steady radiator warmth, high boiler efficiency, and comfortable 18 °C room temperature under typical winter conditions in the Netherlands.

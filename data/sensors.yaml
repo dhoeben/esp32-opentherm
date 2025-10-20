@@ -23,7 +23,47 @@ sensor:
           if (isnan(x)) return 21.0f;  // fallback if missing
           return x;
 
-  #DHW
+  # Central Heating
+  - platform: template
+    id: boiler_temp
+    name: "Water Temperature"
+    device_id: ch
+    unit_of_measurement: "°C"
+    icon: mdi:waves-arrow-up
+    accuracy_decimals: 1
+    device_class: temperature
+    entity_category: diagnostic
+
+  - platform: template
+    id: return_temp
+    name: "Return Temperature"
+    device_id: ch
+    unit_of_measurement: "°C"
+    icon: mdi:waves-arrow-left
+    accuracy_decimals: 1
+    device_class: temperature
+    entity_category: diagnostic
+
+  - platform: template
+    id: modulation
+    name: "Boiler Modulation"
+    unit_of_measurement: "%"
+    icon: mdi:water-percent
+    accuracy_decimals: 0
+    device_class: power_factor
+    entity_category: diagnostic
+
+  - platform: template
+    id: setpoint
+    name: "Requested flow temperature"
+    device_id: ch
+    unit_of_measurement: "°C"
+    icon: mdi:hydro-power
+    accuracy_decimals: 1
+    device_class: temperature
+    entity_category: diagnostic
+
+  # Domestic Hot Water
   - platform: template
     id: dhw_flow_rate
     name: "DHW Flow Rate"

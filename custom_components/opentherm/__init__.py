@@ -36,11 +36,11 @@ CONFIG_SCHEMA = cv.Schema({
     cv.Optional(CONF_RX_TIMEOUT, default="40ms"): cv.positive_time_period_milliseconds,
     cv.Optional(CONF_DEBUG, default=False): cv.boolean,
 
-    # Core sensors
-    cv.Optional(CONF_BOILER_TEMP): sensor.sensor_schema(unit_of_measurement="°C", accuracy_decimals=1, entity_category="diagnostic"),
-    cv.Optional(CONF_RETURN_TEMP): sensor.sensor_schema(unit_of_measurement="°C", accuracy_decimals=1, entity_category="diagnostic"),
-    cv.Optional(CONF_MODULATION): sensor.sensor_schema(unit_of_measurement="%", accuracy_decimals=0, entity_category="diagnostic"),
-    cv.Optional(CONF_SETPOINT): sensor.sensor_schema(unit_of_measurement="°C", accuracy_decimals=1, entity_category="diagnostic"),
+    # Reference to existing sensors
+    cv.Optional(CONF_BOILER_TEMP): cv.use_id(sensor.Sensor),
+    cv.Optional(CONF_RETURN_TEMP): cv.use_id(sensor.Sensor),
+    cv.Optional(CONF_MODULATION): cv.use_id(sensor.Sensor),
+    cv.Optional(CONF_SETPOINT): cv.use_id(sensor.Sensor),
 
     # Limit numbers
     cv.Optional("max_boiler_temp_heating"): number.NUMBER_SCHEMA,
@@ -60,7 +60,7 @@ CONFIG_SCHEMA = cv.Schema({
 }).extend(cv.COMPONENT_SCHEMA)
 
 # ---------------------------------------------------------------------------
-# Codegen (async / modern)
+# Codegen
 # ---------------------------------------------------------------------------
 async def to_code(config):
     var = cg.new_Pvariable(config[CONF_ID])
@@ -76,28 +76,24 @@ async def to_code(config):
     cg.add(var.set_rx_timeout(config[CONF_RX_TIMEOUT]))
     cg.add(var.set_debug(config[CONF_DEBUG]))
 
-    # -----------------------------------------------------------------------
-    # Core sensors
-    # -----------------------------------------------------------------------
+    # Link external sensors by ID
     if CONF_BOILER_TEMP in config:
-        sens = await sensor.new_sensor(config[CONF_BOILER_TEMP])
+        sens = await cg.get_variable(config[CONF_BOILER_TEMP])
         cg.add(var.set_boiler_temp_sensor(sens))
 
     if CONF_RETURN_TEMP in config:
-        sens = await sensor.new_sensor(config[CONF_RETURN_TEMP])
+        sens = await cg.get_variable(config[CONF_RETURN_TEMP])
         cg.add(var.set_return_temp_sensor(sens))
 
     if CONF_MODULATION in config:
-        sens = await sensor.new_sensor(config[CONF_MODULATION])
+        sens = await cg.get_variable(config[CONF_MODULATION])
         cg.add(var.set_modulation_sensor(sens))
 
     if CONF_SETPOINT in config:
-        sens = await sensor.new_sensor(config[CONF_SETPOINT])
+        sens = await cg.get_variable(config[CONF_SETPOINT])
         cg.add(var.set_setpoint_sensor(sens))
 
-    # -----------------------------------------------------------------------
-    # Boiler & DHW limits
-    # -----------------------------------------------------------------------
+    # Limit numbers
     if "max_boiler_temp_heating" in config:
         max_heat = await number.new_number(config["max_boiler_temp_heating"])
         cg.add(var.set_boiler_limit_number(max_heat))
@@ -106,18 +102,13 @@ async def to_code(config):
         max_dhw = await number.new_number(config["max_boiler_temp_water"])
         cg.add(var.set_dhw_limit_number(max_dhw))
 
-    # -----------------------------------------------------------------------
-    # Equitherm bindings
-    # -----------------------------------------------------------------------
+    # Equitherm tuning numbers
     for key in ["eq_fb_gain", "eq_k", "eq_n", "eq_t"]:
         if key in config:
             n = await number.new_number(config[key])
-            # calls e.g. set_eq_fb_gain_number()
             cg.add(getattr(var, f"set_{key}_number")(n))
 
-    # -----------------------------------------------------------------------
     # Optional climate and switches
-    # -----------------------------------------------------------------------
     if "ch_climate" in config:
         c = await climate.new_climate(config["ch_climate"])
         cg.add(var.set_climate_entity(c))

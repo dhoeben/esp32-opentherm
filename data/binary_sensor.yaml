@@ -13,12 +13,14 @@ binary_sensor:
     id: ch_active
     name: "CH Active"
     device_id: ch
+    icon: mdi:radiator
     entity_category: diagnostic
 
   - platform: template
     id: dhw_active
     name: "DHW Active"
     device_id: dhw
+    icon: mdi:water-boiler
     entity_category: diagnostic
 
   - platform: template
@@ -44,22 +46,25 @@ binary_sensor:
   - platform: template
     id: boiler_flame
     name: "Boiler Flame"
+    icon: mdi:fire
     entity_category: diagnostic
 
   - platform: template
     id: boiler_fault
     name: "Boiler Fault"
     entity_category: diagnostic
+    icon: mdi:alert-box
     device_class: problem
 
   - platform: template
     id: boiler_diag
     name: "Boiler Diagnostic"
+    icon: mdi:information
     entity_category: diagnostic
 
   - platform: template
     id: comms_ok
-    name: "OpenTherm Comms OK"
+    name: "OpenTherm Communication"
     entity_category: diagnostic
     device_class: connectivity
 

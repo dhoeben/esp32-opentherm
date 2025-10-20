@@ -1,23 +1,12 @@
 opentherm:
   id: otgw
   debug: true
-  in_pin: !secret in_pin
-  out_pin: !secret out_pin
+  in_pin: !secret in_pin                    # shield D6 → MCU IN
+  out_pin: !secret out_pin                  # shield D5 ← MCU OUT
   poll_interval: !secret poll_interval
   rx_timeout: !secret rx_timeout
-
-  boiler_temp:
-    id: boiler_temp
-    name: "Boiler Water Temperature"
-
-  modulation:
-    id: modulation
-    name: "Boiler Modulation"
-
-  return_temp:
-    id: return_temp
-    name: "Return Temperature"
-
-  setpoint:
-    id: setpoint
-    name: "Control Setpoint"
+  
+  boiler_temp: boiler_temp
+  return_temp: return_temp
+  modulation: modulation
+  setpoint: setpoint

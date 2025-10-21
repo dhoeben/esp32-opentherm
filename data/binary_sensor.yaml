@@ -9,6 +9,7 @@ binary_sensor:
       auto ot = opentherm::OpenThermComponent::get_singleton();
       return ot ? ot->tap_flow() : false;
 
+  # Central Heating
   - platform: template
     id: ch_active
     name: "CH Active"
@@ -16,6 +17,7 @@ binary_sensor:
     icon: mdi:radiator
     entity_category: diagnostic
 
+  # Domestic Hot Water
   - platform: template
     id: dhw_active
     name: "DHW Active"
@@ -44,6 +46,14 @@ binary_sensor:
     entity_category: diagnostic
 
   - platform: template
+    id: dhw_flowing
+    device_id: dhw
+    name: "DHW Water Flowing"
+    device_class: running
+    entity_category: diagnostic
+
+  # Diagnistics
+  - platform: template
     id: boiler_flame
     name: "Boiler Flame"
     icon: mdi:fire
@@ -68,9 +78,8 @@ binary_sensor:
     entity_category: diagnostic
     device_class: connectivity
 
-  - platform: template
-    id: dhw_flowing
-    device_id: dhw
-    name: "DHW Water Flowing"
-    device_class: running
+  - platform: status
+    id: wifi_connected
+    name: "Wi-Fi Connected"
     entity_category: diagnostic
+    device_class: connectivity

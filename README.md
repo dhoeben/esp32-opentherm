@@ -11,6 +11,17 @@ It acts as a modern, reliable, and flexible interface between your boiler and Ho
 4) Connect ESP device to Opentherm Interface Circuit
 5) Connect Opentherm Interface Circuit to boiler OT+/- 
 
+<details>
+<summary><strong>Connection schedule</strong></summary>
+| ESP32-S3 DevKitC-1   | DIYless Thermostat Shield | Function           | Notes                                                              |
+| -------------------- | ------------------------- | ------------------ | ------------------------------------------------------------------ |
+| **3V3 (pin 1 or 2)** | **3V3**                   | Power              | powers the shield logic (it runs at 3.3 V). **Do NOT** use 5 V.    |
+| **GND (pin 22)**     | **GND**                   | Ground             | common reference for logic side.                                   |
+| **GPIO 17**          | **D5**                    | OpenTherm TX (OUT) | from ESP32 to shield (MCU drives line driver).                     |
+| **GPIO 18**          | **D6**                    | OpenTherm RX (IN)  | from shield to ESP32 (optocoupler output).                         |
+
+
+</details>
 ### 🚀 Features
 - Full OpenTherm Protocol Support
 - Integrated Home Assistant Support
@@ -72,3 +83,13 @@ The Equithermic control curve automatically increases boiler flow temperature wh
 - The final calculated temperature is **clamped** to the `Maximum CH Temperature` number you define in Home Assistant.
 
 </details>
+
+### ⚫ Status LED
+| Condition                 | Color     | Behavior                       |
+| ------------------------- | --------- | ------------------------------ |
+| **Booting (<10 s)**       | 🟢 Green  | Device initialization phase    |
+| **Wi-Fi disconnected**    | 🔵 Blue   | No Wi-Fi connection            |
+| **OpenTherm comm error**  | 🟣 Purple | No or invalid boiler response  |
+| **Emergency mode active** | 🟠 Orange | Manual override or safety mode |
+| **Boiler fault**          | 🔴 Red    | Boiler fault detected          |
+| **System OK / standby**   | ⚫ Off    | Everything normal              |

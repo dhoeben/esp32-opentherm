@@ -17,3 +17,21 @@ switch:
     name: "Emergency force DHW"
     internal: true
     optimistic: true
+    
+
+  - platform: template
+    id: led_rainbow_mode
+    name: "Status LED Test"
+    icon: mdi:palette
+    internal: true
+    optimistic: true
+    restore_mode: ALWAYS_OFF
+    turn_on_action:
+      - logger.log: "Rainbow test ON"
+      - light.turn_on:
+          id: onboard_led
+          effect: "Rainbow"
+          brightness: 100%
+    turn_off_action:
+      - logger.log: "Rainbow test OFF"
+      - light.turn_off: onboard_led

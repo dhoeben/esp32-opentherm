@@ -8,3 +8,4 @@ esphome:
 
     - id: dhw
       name: "Domestic Hot Water"
+  

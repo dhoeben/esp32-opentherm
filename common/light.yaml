@@ -1,0 +1,73 @@
+light:
+  - platform: esp32_rmt_led_strip
+    id: onboard_led
+    internal: true
+    name: "Status LED"
+    pin: GPIO48
+    num_leds: 1
+    default_transition_length: 0s
+    rgb_order: GRB
+    chipset: WS2812
+    effects:
+      - addressable_rainbow:
+          name: "Rainbow"
+          speed: 10
+          width: 50
+
+interval:
+  - interval: 1s
+    then:
+      - lambda: |-
+          // Boot phase (first 10 s): solid green overrides everything
+          if (millis() < 10000) {
+            auto call = id(onboard_led).turn_on();
+            call.set_rgb(0.0f, 1.0f, 0.0f);   // 🟢
+            call.perform();
+            return;
+          }
+
+          // Determine which errors are active
+          bool has_fault   = id(boiler_fault).state;
+          bool wifi_down   = !id(wifi_connected).state;
+          bool comm_error  = !id(comms_ok).state;
+          bool emergency   = id(emergency_mode).state;
+
+          // If nothing active → LED off
+          if (!has_fault && !wifi_down && !comm_error && !emergency) {
+            id(onboard_led).turn_off().perform();
+            return;
+          }
+
+          // ---- Blink sequence between active errors ----
+          // Order: red (fault) → blue (wifi) → purple (comms) → orange (emergency)
+          static int step = 0;
+          step = (step + 1) % 4;
+
+          auto call = id(onboard_led).turn_on();
+
+          if (has_fault && step == 0) {
+            call.set_rgb(1.0f, 0.0f, 0.0f);  // 🔴
+            call.perform();
+            return;
+          }
+
+          if (wifi_down && step == 1) {
+            call.set_rgb(0.0f, 0.0f, 1.0f);  // 🔵
+            call.perform();
+            return;
+          }
+
+          if (comm_error && step == 2) {
+            call.set_rgb(0.5f, 0.0f, 0.5f);  // 🟣
+            call.perform();
+            return;
+          }
+
+          if (emergency && step == 3) {
+            call.set_rgb(1.0f, 0.5f, 0.0f);  // 🟠
+            call.perform();
+            return;
+          }
+
+          // Nothing shown this tick → turn off to create visible blinking
+          id(onboard_led).turn_off().perform();

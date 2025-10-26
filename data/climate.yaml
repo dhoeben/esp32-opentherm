@@ -69,7 +69,6 @@ climate:
           ESP_LOGI("otgw", "Heating ON | Preset: %s | Flow target: %.1f°C",
                    preset.c_str(), flow_target);
 
-
     idle_action:
       - lambda: |-
           auto ot = opentherm::OpenThermComponent::get_singleton();
@@ -77,13 +76,14 @@ climate:
 
           auto preset_opt = id(ch_climate).preset;
           std::string preset_str = "home";
-          if (preset_opt.has_value()) preset_str = to_string(preset_opt.value());
+          if (preset_opt.has_value())
+            preset_str = to_string(preset_opt.value());
 
           // Default: stop boiler completely
-          float flow_target = 10.0f;
+          float flow_target = 5.0f;
 
-          // Only comfort mode keeps pipes slightly warm
-          if (preset_str == "comfort") {
+          // Comfort or Boost → keep pipes slightly warm
+          if (preset_str == "comfort" || preset_str == "boost") {
             flow_target = 15.0f;
           }
 
@@ -92,7 +92,8 @@ climate:
           ot->send_frame(frame);
 
           ESP_LOGI("otgw", "Heating OFF | Preset: %s | Flow target: %.1f°C",
-                  preset_str.c_str(), flow_target);
+                   preset_str.c_str(), flow_target);
+
 
   # Domestic Hot Waterclimate:
   - platform: thermostat

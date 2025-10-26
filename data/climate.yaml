@@ -2,6 +2,7 @@ climate:
   # Central Heating
   - platform: thermostat
     name: "Central Heating"
+    icon: mdi:thermostat
     id: ch_climate
     sensor: adaptive_indoor_temp        # feedback sensor order HA sensor > backup sensor > 21C
     device_id: ch

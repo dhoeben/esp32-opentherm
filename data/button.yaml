@@ -1,13 +1,13 @@
 button:
   # Power management
   - platform: restart
-    name: "Restart"
+    name: "[Restart]"
     id: restart_ot
     icon: "mdi:restart"
     entity_category: diagnostic
 
   - platform: safe_mode
-    name: "Reboot Safe Mode"
+    name: "[Reboot Safe Mode]"
     id: reboot_safe
     icon: "mdi:restart-alert"
     entity_category: diagnostic

@@ -51,11 +51,11 @@ sensor:
 
       if (!isnan(id(backup_temp).state)) {
         return id(backup_temp).state;
-        ESP_LOGI("otgw", "Using backup temperature");
+        ESP_LOGW("otgw", "Using backup temperature");
       }
 
       return 21.0f;
-      ESP_LOGI("otgw", "Using fixed temperature");
+      ESP_LOGW("otgw", "Using fixed temperature");
 
 
   # Central Heating

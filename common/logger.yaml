@@ -1,2 +1,4 @@
 logger:
   level: DEBUG
+  logs:
+    light: WARN

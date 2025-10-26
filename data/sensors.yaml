@@ -4,6 +4,8 @@ sensor:
     entity_id: !secret weather_entity
     attribute: temperature
     id: ha_weather_temp
+    name: Temperature outdoor HA
+    icon: mdi:home-assistant
     internal: true
     unit_of_measurement: "°C"
     accuracy_decimals: 1
@@ -15,6 +17,9 @@ sensor:
   - platform: homeassistant
     entity_id: !secret indoor_entity
     id: ha_indoor_temp
+    name: Temperature indoor HA
+    icon: mdi:home-assistant
+    force_update: true
     internal: true
     unit_of_measurement: "°C"
     accuracy_decimals: 1
@@ -26,6 +31,7 @@ sensor:
   # External hardware sensor
   - platform: dallas_temp
     name: "Backup Temperature"
+    icon: mdi:thermometer-probe
     id: backup_temp
     internal: true
     update_interval: 10s
@@ -33,12 +39,12 @@ sensor:
     unit_of_measurement: "°C"
     accuracy_decimals: 1
     device_class: temperature
-    icon: mdi:thermometer-probe
 
   # Internal temperature sensor used
   - platform: template
     id: adaptive_indoor_temp
-    name: "Active Indoor Temperature"
+    name: "Temperature indoor"
+    icon: mdi:thermometer-auto
     internal: true
     unit_of_measurement: "°C"
     accuracy_decimals: 1

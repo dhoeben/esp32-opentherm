@@ -3,6 +3,7 @@ light:
     id: onboard_led
     internal: true
     name: "Status LED"
+    icon: mdi:circle
     pin: GPIO48
     num_leds: 1
     default_transition_length: 0s
@@ -43,7 +44,7 @@ interval:
             return;
           }
 
-          if (!developer || !rainbow) {
+          if (!developer && !rainbow) {
             // ---- Blink sequence between active states ----
             // Order: red (fault) → blue (wifi) → purple (comms) → orange (emergency) → white (backup)
             static int step = 0;

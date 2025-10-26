@@ -45,17 +45,17 @@ climate:
           if (preset == "boost") {
             // 🚀 BOOST MODE: override equitherm target with boost temperature
             flow_target = id(boost_temp).state;
-            ESP_LOGI("otgw", "BOOST mode active: forcing flow %.1f°C", flow_target);
+            ESP_LOGI("climate", "BOOST mode active: forcing flow %.1f°C", flow_target);
 
           } else if (mode == "Equitherm") {
             // Normal equitherm operation
             flow_target = opentherm::Equitherm::calculate_target_temp();
-            ESP_LOGI("otgw", "Equitherm mode active (preset %s)", preset.c_str());
+            ESP_LOGI("climate", "Equitherm mode active (preset %s)", preset.c_str());
 
           } else {
             // Let the boiler handle its own curve (no override)
             flow_target = 0.0f;
-            ESP_LOGI("otgw", "Boiler internal compensation active (preset %s)", preset.c_str());
+            ESP_LOGI("climate", "Boiler internal compensation active (preset %s)", preset.c_str());
             return;
           }
 
@@ -67,7 +67,7 @@ climate:
           uint32_t frame = ot->build_request(opentherm::WRITE_DATA, 0x11, raw);
           ot->send_frame(frame);
 
-          ESP_LOGI("otgw", "Heating ON | Preset: %s | Flow target: %.1f°C",
+          ESP_LOGI("climate", "Heating ON | Preset: %s | Flow target: %.1f°C",
                    preset.c_str(), flow_target);
 
     idle_action:

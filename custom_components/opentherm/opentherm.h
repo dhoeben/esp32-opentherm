@@ -1,114 +1,95 @@
 #pragma once
 #include "config.h"
-
 #include "esphome.h"
 #include "driver/gpio.h"
 #include "esp_timer.h"
-
 #include "esphome/components/sensor/sensor.h"
 #include "esphome/components/number/number.h"
-#include <string>
+#include "esphome/components/climate/climate.h"
+#include "esphome/components/switch/switch.h"
 
 namespace opentherm {
 
-// -----------------------------------------------------------------------------
-// OpenTherm message types
-// -----------------------------------------------------------------------------
+// Message types
 enum OTMsgType : uint8_t {
   READ_DATA  = 0b000,
   WRITE_DATA = 0b001,
 };
 
-// -----------------------------------------------------------------------------
-// Compensation mode selection (Equitherm vs Boiler internal curve)
-// -----------------------------------------------------------------------------
+// Compensation mode
 enum class CompensationMode {
   EQUITHERM,
   BOILER
 };
 
-// Global variable and helper functions (defined in opentherm.cpp)
-extern CompensationMode g_compensation_mode;
-void set_compensation_mode(CompensationMode m);
-void set_compensation_mode_from_string(const std::string &s);
-
-// -----------------------------------------------------------------------------
-// Main OpenTherm component
-// -----------------------------------------------------------------------------
 class OpenThermComponent : public esphome::Component {
  public:
   OpenThermComponent();
 
-  // Exposed sensors
-  esphome::sensor::Sensor *boiler_temp = nullptr;
-  esphome::sensor::Sensor *return_temp = nullptr;
-  esphome::sensor::Sensor *modulation = nullptr;
-  esphome::sensor::Sensor *setpoint = nullptr;
+  // ---- Sensor setters (from codegen) ----
+  void set_boiler_temp_sensor(esphome::sensor::Sensor *s) { boiler_temp_ = s; }
+  void set_return_temp_sensor(esphome::sensor::Sensor *s) { return_temp_ = s; }
+  void set_modulation_sensor(esphome::sensor::Sensor *s)  { modulation_  = s; }
+  void set_setpoint_sensor(esphome::sensor::Sensor *s)    { setpoint_    = s; }
 
-  // DHW sensors
-  esphome::sensor::Sensor *dhw_temp = nullptr;
-  esphome::sensor::Sensor *dhw_setpoint = nullptr;
+  // External HA / diagnostic sensors
+  void set_ha_weather_sensor(esphome::sensor::Sensor *s) { ha_weather_ = s; }
+  void set_ha_indoor_sensor(esphome::sensor::Sensor *s)  { ha_indoor_ = s; }
+  void set_adaptive_indoor_sensor(esphome::sensor::Sensor *s) { adaptive_indoor_ = s; }
+  void set_dhw_flow_rate_sensor(esphome::sensor::Sensor *s)   { dhw_flow_rate_ = s; }
 
-  // ---------------------------------------------------------------------------
-  // Boiler and DHW sensor setters
-  // ---------------------------------------------------------------------------
-  void set_boiler_temp_sensor(esphome::sensor::Sensor *s) { boiler_temp = s; }
-  void set_return_temp_sensor(esphome::sensor::Sensor *s) { return_temp = s; }
-  void set_modulation_sensor(esphome::sensor::Sensor *s) { modulation = s; }
-  void set_setpoint_sensor(esphome::sensor::Sensor *s) { setpoint = s; }
+  // optional DHW sensors (not required by YAML today)
+  void set_dhw_temp_sensor(esphome::sensor::Sensor *s)    { dhw_temp_    = s; }
+  void set_dhw_setpoint_sensor(esphome::sensor::Sensor *s){ dhw_setpoint_= s; }
 
-  void set_dhw_temp_sensor(esphome::sensor::Sensor *s) { dhw_temp = s; }
-  void set_dhw_setpoint_sensor(esphome::sensor::Sensor *s) { dhw_setpoint = s; }
-
-  // ---------------------------------------------------------------------------
-  // Boiler & DHW limit Number entities (bound from __init__.py)
-  // ---------------------------------------------------------------------------
+  // Limit numbers
   void set_boiler_limit_number(esphome::number::Number *n) { boiler_limit_ = n; }
-  void set_dhw_limit_number(esphome::number::Number *n) { dhw_limit_ = n; }
+  void set_dhw_limit_number(esphome::number::Number *n)    { dhw_limit_    = n; }
 
-  // ---------------------------------------------------------------------------
-  // DHW & flow control flags
-  // ---------------------------------------------------------------------------
+  // Equitherm numbers (called by __init__.py)
+  void set_eq_n_number(esphome::number::Number *n)      { eq_n_  = n; }
+  void set_eq_k_number(esphome::number::Number *n)      { eq_k_  = n; }
+  void set_eq_t_number(esphome::number::Number *n)      { eq_t_  = n; }
+  void set_eq_fb_gain_number(esphome::number::Number *n){ eq_fb_ = n; }
+
+  // Optional linked entities
+  void set_climate_entity(esphome::climate::Climate *c)    { ch_climate_ = c; }
+  void set_emergency_switch(esphome::switch_::Switch *s)   { emergency_sw_ = s; }
+  void set_force_heat_switch(esphome::switch_::Switch *s)  { force_heat_sw_ = s; }
+  void set_force_dhw_switch(esphome::switch_::Switch *s)   { force_dhw_sw_ = s; }
+
+  // Runtime flags (DHW)
   bool dhw_active() const { return dhw_active_; }
-  bool tap_flow() const { return tap_flow_; }
+  bool tap_flow()  const { return tap_flow_; }
   void set_tap_flow(bool active) { tap_flow_ = active; }
 
-  // ---------------------------------------------------------------------------
-  // Standard ESPHome lifecycle
-  // ---------------------------------------------------------------------------
+  // ESPHome lifecycle
   void setup() override;
   void loop() override;
 
-  // ---------------------------------------------------------------------------
   // OpenTherm helpers
-  // ---------------------------------------------------------------------------
   uint32_t read_did(uint8_t did);
   static float parse_f88(uint16_t raw);
-
-  void set_pins(esphome::InternalGPIOPin *in_pin, esphome::InternalGPIOPin *out_pin) {
-    in_pin_ = in_pin;
-    out_pin_ = out_pin;
-  }
-
-  void set_poll_interval(uint32_t ms) { poll_interval_ms_ = ms; }
-  void set_rx_timeout(uint32_t ms) { rx_timeout_ms_ = ms; }
-  void set_debug(bool dbg) { debug_ = dbg; }
-
-  static OpenThermComponent* get_singleton();
-
-  // Expose frame helpers for YAML lambdas
   bool send_frame(uint32_t frame);
   static uint32_t build_request(OTMsgType mt, uint8_t did, uint16_t data);
 
+  // Hardware / timings / debug
+  void set_pins(esphome::InternalGPIOPin *in_pin, esphome::InternalGPIOPin *out_pin) { in_pin_ = in_pin; out_pin_ = out_pin; }
+  void set_poll_interval(uint32_t ms) { poll_interval_ms_ = ms; }
+  void set_rx_timeout(uint32_t ms)    { rx_timeout_ms_ = ms; }
+  void set_debug(bool dbg)            { debug_ = dbg; }
+
+  static OpenThermComponent* get_singleton();
+
  private:
-  // Hardware pins
+  // IO
   esphome::InternalGPIOPin *in_pin_{nullptr};
   esphome::InternalGPIOPin *out_pin_{nullptr};
 
-  // Config values
-  uint32_t poll_interval_ms_{10000};
-  uint32_t rx_timeout_ms_{40};
-  bool debug_{false};
+  // Config/state
+  uint32_t poll_interval_ms_{OT_POLL_INTERVAL};
+  uint32_t rx_timeout_ms_{OT_RX_TIMEOUT};
+  bool     debug_{OT_DEBUG};
   uint32_t last_poll_ms_{0};
 
   // Bit timing
@@ -127,15 +108,37 @@ class OpenThermComponent : public esphome::Component {
   bool dhw_active_{false};
   bool tap_flow_{false};
 
-  // Linked limit entities (optional)
+  // Linked entities
+  esphome::sensor::Sensor *boiler_temp_{nullptr};
+  esphome::sensor::Sensor *return_temp_{nullptr};
+  esphome::sensor::Sensor *modulation_{nullptr};
+  esphome::sensor::Sensor *setpoint_{nullptr};
+
+  esphome::sensor::Sensor *dhw_temp_{nullptr};
+  esphome::sensor::Sensor *dhw_setpoint_{nullptr};
+
+  esphome::sensor::Sensor *ha_weather_{nullptr};
+  esphome::sensor::Sensor *ha_indoor_{nullptr};
+  esphome::sensor::Sensor *adaptive_indoor_{nullptr};
+  esphome::sensor::Sensor *dhw_flow_rate_{nullptr};
+
   esphome::number::Number *boiler_limit_{nullptr};
   esphome::number::Number *dhw_limit_{nullptr};
+
+  esphome::number::Number *eq_n_{nullptr};
+  esphome::number::Number *eq_k_{nullptr};
+  esphome::number::Number *eq_t_{nullptr};
+  esphome::number::Number *eq_fb_{nullptr};
+
+  esphome::climate::Climate   *ch_climate_{nullptr};
+  esphome::switch_::Switch    *emergency_sw_{nullptr};
+  esphome::switch_::Switch    *force_heat_sw_{nullptr};
+  esphome::switch_::Switch    *force_dhw_sw_{nullptr};
 };
 
-// -----------------------------------------------------------------------------
-// Global references to HA-linked sensors
-// -----------------------------------------------------------------------------
-extern esphome::sensor::Sensor *id_ha_weather_temp;
-extern esphome::sensor::Sensor *id_ha_indoor_temp;
+// Global mode API (unchanged)
+extern CompensationMode g_compensation_mode;
+void set_compensation_mode(CompensationMode m);
+void set_compensation_mode_from_string(const std::string &s);
 
-}  // namespace opentherm
+} // namespace opentherm

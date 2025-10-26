@@ -1,2 +1,2 @@
 network:
-    enable_ipv6: tru
+    enable_ipv6: true

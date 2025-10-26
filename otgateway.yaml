@@ -7,6 +7,7 @@ packages:
   - !include common/interval.yaml
   - !include common/light.yaml
   - !include common/logger.yaml
+  - !include common/network.yaml
   - !include common/one_wire.yaml
   - !include common/opentherm.yaml
   - !include common/ota.yaml

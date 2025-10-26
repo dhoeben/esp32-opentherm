@@ -4,6 +4,7 @@ packages:
   - !include common/esp32.yaml
   - !include common/esphome.yaml
   - !include common/external_components.yaml
+  - !include common/interval.yaml
   - !include common/light.yaml
   - !include common/logger.yaml
   - !include common/one_wire.yaml

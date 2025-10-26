@@ -1,0 +1,23 @@
+interval:
+  - interval: 1min
+    then:
+      - lambda: |-
+          using namespace esphome::climate;
+
+          static unsigned long boost_start = 0;
+          static bool active = false;
+
+          auto preset = id(ch_climate).preset.value_or(CLIMATE_PRESET_HOME);
+
+          if (preset == CLIMATE_PRESET_BOOST) {
+              if (!active) {
+                  boost_start = millis();
+                  active = true;
+                  ESP_LOGI("boost", "Boost mode started");
+              } else if (millis() - boost_start > 30UL * 60UL * 1000UL) {
+                  ESP_LOGI("boost", "Boost timeout reached — please revert preset in HA");
+                  active = false;
+              }
+          } else {
+              active = false;
+          }

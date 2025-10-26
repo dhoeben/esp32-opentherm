@@ -115,6 +115,21 @@ number:
     optimistic: true
 
   - platform: template
+    name: "Preset boost Temperature"
+    id: boost_temp
+    device_id: ch
+    icon: mdi:rocket-launch
+    min_value: 18
+    max_value: 25
+    mode: box 
+    entity_category: config
+    step: 0.5
+    initial_value: 20
+    unit_of_measurement: "°C"
+    restore_value: true
+    optimistic: true
+
+  - platform: template
     name: "Preset comfort Temperature"
     id: comfort_temp
     device_id: ch

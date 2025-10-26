@@ -22,6 +22,41 @@ sensor:
       - lambda: |-
           if (isnan(x)) return 21.0f;  // fallback if missing
           return x;
+  
+  # External hardware sensor
+  - platform: dallas_temp
+    name: "Backup Temperature"
+    id: backup_temp
+    internal: true
+    update_interval: 10s
+    entity_category: diagnostic
+    unit_of_measurement: "°C"
+    accuracy_decimals: 1
+    device_class: temperature
+    icon: mdi:thermometer-probe
+
+  # Internal temperature sensor used
+  - platform: template
+    id: adaptive_indoor_temp
+    name: "Active Indoor Temperature"
+    internal: true
+    unit_of_measurement: "°C"
+    accuracy_decimals: 1
+    update_interval: 5s
+    lambda: |-
+      if (!id(backup_temp_switch).state && !isnan(id(ha_indoor_temp).state)) {
+        return id(ha_indoor_temp).state;
+        ESP_LOGI("otgw", "Using Home Assistant temperature");
+      }
+
+      if (!isnan(id(backup_temp).state)) {
+        return id(backup_temp).state;
+        ESP_LOGI("otgw", "Using backup temperature");
+      }
+
+      return 21.0f;
+      ESP_LOGI("otgw", "Using fixed temperature");
+
 
   # Central Heating
   - platform: template

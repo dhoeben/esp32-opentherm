@@ -16,7 +16,7 @@ esphome::number::Number *eq_t = nullptr;
 esphome::number::Number *eq_fb_gain = nullptr;
 
 esphome::sensor::Sensor *id_ha_weather_temp = nullptr;
-esphome::sensor::Sensor *id_ha_indoor_temp  = nullptr;
+esphome::sensor::Sensor *id_adaptive_indoor_temp  = nullptr;
 esphome::climate::Climate *id_ch_climate     = nullptr;
 
 // -----------------------------------------------------------------------------
@@ -28,8 +28,8 @@ float calculate_target_temp() {
                           ? id_ha_weather_temp->state
                           : 10.0f;
 
-  const float t_in = (id_ha_indoor_temp && id_ha_indoor_temp->has_state())
-                         ? id_ha_indoor_temp->state
+  const float t_in = (id_adaptive_indoor_temp && id_adaptive_indoor_temp->has_state())
+                         ? id_adaptive_indoor_temp->state
                          : 21.0f;
 
   float t_set = 21.0f;

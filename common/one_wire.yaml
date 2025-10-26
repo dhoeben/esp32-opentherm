@@ -1,0 +1,3 @@
+one_wire:
+  - platform: gpio
+    pin: !secret temp_pin

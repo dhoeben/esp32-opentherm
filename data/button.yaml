@@ -11,3 +11,4 @@ button:
     id: reboot_safe
     icon: "mdi:restart-alert"
     entity_category: diagnostic
+    internal: true

@@ -3,7 +3,7 @@ climate:
   - platform: thermostat
     name: "Central Heating"
     id: ch_climate
-    sensor: ha_indoor_temp        # feedback sensor (linked via !secret indoor_entity)
+    sensor: adaptive_indoor_temp        # feedback sensor order HA sensor > backup sensor > 21C
     device_id: ch
     visual:
       min_temperature: 5

@@ -17,6 +17,14 @@ switch:
     name: "Emergency force DHW"
     internal: true
     optimistic: true
+
+  # Backup temperature
+  - platform: template
+    id: backup_temp_switch
+    name: "Backup temperature sensor"
+    internal: true
+    optimistic: true
+    restore_mode: ALWAYS_OFF
     
 
   - platform: template

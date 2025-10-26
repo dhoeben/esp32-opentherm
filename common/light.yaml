@@ -12,7 +12,7 @@ light:
       - addressable_rainbow:
           name: "Rainbow"
           speed: 10
-          width: 50
+          width: 25
 
 interval:
   - interval: 1s
@@ -31,6 +31,7 @@ interval:
           bool wifi_down   = !id(wifi_connected).state;
           bool comm_error  = !id(comms_ok).state;
           bool emergency   = id(emergency_mode).state;
+          bool backup_mode = id(backup_temp_switch).state;
 
           // If nothing active → LED off
           if (!has_fault && !wifi_down && !comm_error && !emergency) {
@@ -38,10 +39,10 @@ interval:
             return;
           }
 
-          // ---- Blink sequence between active errors ----
-          // Order: red (fault) → blue (wifi) → purple (comms) → orange (emergency)
+          // ---- Blink sequence between active states ----
+          // Order: red (fault) → blue (wifi) → purple (comms) → orange (emergency) → white (backup)
           static int step = 0;
-          step = (step + 1) % 4;
+          step = (step + 1) % 5; 
 
           auto call = id(onboard_led).turn_on();
 
@@ -65,6 +66,12 @@ interval:
 
           if (emergency && step == 3) {
             call.set_rgb(1.0f, 0.5f, 0.0f);  // 🟠
+            call.perform();
+            return;
+          }
+
+          if (backup_mode && step == 4) {
+            call.set_rgb(1.0f, 1.0f, 1.0f);  // ⚪ 
             call.perform();
             return;
           }

@@ -13,6 +13,7 @@ It acts as a modern, reliable, and flexible interface between your boiler and Ho
 
 <details>
 <summary><strong>Connection schedule</strong></summary>
+
 | ESP32-S3 DevKitC-1   | DIYless Thermostat Shield | Function           | Notes                                                              |
 | -------------------- | ------------------------- | ------------------ | ------------------------------------------------------------------ |
 | **3V3 (pin 1 or 2)** | **3V3**                   | Power              | powers the shield logic (it runs at 3.3 V). **Do NOT** use 5 V.    |
@@ -22,6 +23,7 @@ It acts as a modern, reliable, and flexible interface between your boiler and Ho
 
 
 </details>
+
 ### 🚀 Features
 - Full OpenTherm Protocol Support
 - Integrated Home Assistant Support
@@ -92,4 +94,5 @@ The Equithermic control curve automatically increases boiler flow temperature wh
 | **OpenTherm comm error**  | 🟣 Purple | No or invalid boiler response  |
 | **Emergency mode active** | 🟠 Orange | Manual override or safety mode |
 | **Boiler fault**          | 🔴 Red    | Boiler fault detected          |
+| **Using backup temp**     | ⚪ White  | When backup temp switch is on  |
 | **System OK / standby**   | ⚫ Off    | Everything normal              |

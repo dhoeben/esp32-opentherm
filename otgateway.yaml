@@ -8,6 +8,7 @@ packages:
   - !include common/logger.yaml
   - !include common/opentherm.yaml
   - !include common/ota.yaml
+  - !include common/time.yaml
   - !include common/web_server.yaml
   - !include common/wifi.yaml
 

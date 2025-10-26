@@ -45,17 +45,17 @@ sensor:
     update_interval: 5s
     lambda: |-
       if (!id(backup_temp_switch).state && !isnan(id(ha_indoor_temp).state)) {
-        return id(ha_indoor_temp).state;
         ESP_LOGI("otgw", "Using Home Assistant temperature");
+        return id(ha_indoor_temp).state;
       }
 
       if (!isnan(id(backup_temp).state)) {
-        return id(backup_temp).state;
         ESP_LOGW("otgw", "Using backup temperature");
+        return id(backup_temp).state;
       }
 
-      return 21.0f;
       ESP_LOGW("otgw", "Using fixed temperature");
+      return 21.0f;
 
 
   # Central Heating

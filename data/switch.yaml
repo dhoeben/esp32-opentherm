@@ -25,7 +25,17 @@ switch:
     internal: true
     optimistic: true
     restore_mode: ALWAYS_OFF
-    
+
+  # Developer mode
+  - platform: template
+    id: developer_mode_switch
+    name: "Developer mode"
+    icon: mdi:test-tube
+    internal: true
+    optimistic: true
+    restore_mode: ALWAYS_OFF
+    entity_category: diagnostic
+
 
   - platform: template
     id: led_rainbow_mode
@@ -34,6 +44,7 @@ switch:
     internal: true
     optimistic: true
     restore_mode: ALWAYS_OFF
+    entity_category: diagnostic
     turn_on_action:
       - logger.log: "Rainbow test ON"
       - light.turn_on:

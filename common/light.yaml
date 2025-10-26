@@ -33,48 +33,54 @@ interval:
           bool emergency   = id(emergency_mode).state;
           bool backup_mode = id(backup_temp_switch).state;
 
+          // Overruling modes
+          bool developer   = id(developer_mode_switch).state;
+          bool rainbow     = id(led_rainbow_mode).state;
+
           // If nothing active → LED off
           if (!has_fault && !wifi_down && !comm_error && !emergency) {
             id(onboard_led).turn_off().perform();
             return;
           }
 
-          // ---- Blink sequence between active states ----
-          // Order: red (fault) → blue (wifi) → purple (comms) → orange (emergency) → white (backup)
-          static int step = 0;
-          step = (step + 1) % 5; 
+          if (!developer || !rainbow) {
+            // ---- Blink sequence between active states ----
+            // Order: red (fault) → blue (wifi) → purple (comms) → orange (emergency) → white (backup)
+            static int step = 0;
+            step = (step + 1) % 5; 
 
-          auto call = id(onboard_led).turn_on();
+            auto call = id(onboard_led).turn_on();
 
-          if (has_fault && step == 0) {
-            call.set_rgb(1.0f, 0.0f, 0.0f);  // 🔴
-            call.perform();
-            return;
+            if (has_fault && step == 0) {
+              call.set_rgb(1.0f, 0.0f, 0.0f);  // 🔴
+              call.perform();
+              return;
+            }
+
+            if (wifi_down && step == 1) {
+              call.set_rgb(0.0f, 0.0f, 1.0f);  // 🔵
+              call.perform();
+              return;
+            }
+
+            if (comm_error && step == 2) {
+              call.set_rgb(0.5f, 0.0f, 0.5f);  // 🟣
+              call.perform();
+              return;
+            }
+
+            if (emergency && step == 3) {
+              call.set_rgb(1.0f, 0.5f, 0.0f);  // 🟠
+              call.perform();
+              return;
+            }
+
+            if (backup_mode && step == 4) {
+              call.set_rgb(1.0f, 1.0f, 1.0f);  // ⚪ 
+              call.perform();
+              return;
+            }
+
+            // Nothing shown this tick → turn off to create visible blinking
+            id(onboard_led).turn_off().perform();
           }
-
-          if (wifi_down && step == 1) {
-            call.set_rgb(0.0f, 0.0f, 1.0f);  // 🔵
-            call.perform();
-            return;
-          }
-
-          if (comm_error && step == 2) {
-            call.set_rgb(0.5f, 0.0f, 0.5f);  // 🟣
-            call.perform();
-            return;
-          }
-
-          if (emergency && step == 3) {
-            call.set_rgb(1.0f, 0.5f, 0.0f);  // 🟠
-            call.perform();
-            return;
-          }
-
-          if (backup_mode && step == 4) {
-            call.set_rgb(1.0f, 1.0f, 1.0f);  // ⚪ 
-            call.perform();
-            return;
-          }
-
-          // Nothing shown this tick → turn off to create visible blinking
-          id(onboard_led).turn_off().perform();

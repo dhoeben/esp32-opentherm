@@ -32,6 +32,8 @@ number:
     optimistic: true
     unit_of_measurement: ""
     icon: mdi:alpha-n
+    web_server:
+      sorting_group_id: sorting_equitherm
 
   - platform: template
     name: "Equitherm K (Offset)"
@@ -45,6 +47,8 @@ number:
     optimistic: true
     unit_of_measurement: ""
     icon: mdi:alpha-k
+    web_server:
+      sorting_group_id: sorting_equitherm
 
   - platform: template
     name: "Equitherm T (Base)"
@@ -58,6 +62,8 @@ number:
     optimistic: true
     unit_of_measurement: "°C"
     icon: mdi:alpha-t
+    web_server:
+      sorting_group_id: sorting_equitherm
 
   - platform: template
     name: "Equitherm Feedback Gain"
@@ -71,6 +77,8 @@ number:
     optimistic: true
     unit_of_measurement: ""
     icon: mdi:alpha-f
+    web_server:
+      sorting_group_id: sorting_equitherm
 
 
   # Max values
@@ -85,6 +93,8 @@ number:
     restore_value: true
     optimistic: true
     icon: mdi:thermometer-high
+    web_server:
+      sorting_group_id: sorting_ch
 
   - platform: template
     name: "DHW Maximum Temperature"
@@ -97,6 +107,8 @@ number:
     restore_value: true
     optimistic: true
     icon: mdi:thermometer-high
+    web_server:
+      sorting_group_id: sorting_dhw
 
   # Climate entity
   - platform: template
@@ -113,6 +125,8 @@ number:
     unit_of_measurement: "°C"
     restore_value: true
     optimistic: true
+    web_server:
+      sorting_group_id: sorting_ch
 
   - platform: template
     name: "Preset boost Temperature"
@@ -128,6 +142,8 @@ number:
     unit_of_measurement: "°C"
     restore_value: true
     optimistic: true
+    web_server:
+      sorting_group_id: sorting_ch
 
   - platform: template
     name: "Preset comfort Temperature"
@@ -143,6 +159,8 @@ number:
     unit_of_measurement: "°C"
     restore_value: true
     optimistic: true
+    web_server:
+      sorting_group_id: sorting_ch
 
   - platform: template
     name: "Preset eco Temperature"
@@ -158,6 +176,8 @@ number:
     unit_of_measurement: "°C"
     restore_value: true
     optimistic: true
+    web_server:
+      sorting_group_id: sorting_ch
 
   - platform: template
     name: "Preset away Temperature"
@@ -173,3 +193,5 @@ number:
     unit_of_measurement: "°C"
     restore_value: true
     optimistic: true
+    web_server:
+      sorting_group_id: sorting_ch

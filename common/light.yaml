@@ -9,6 +9,8 @@ light:
     default_transition_length: 0s
     rgb_order: GRB
     chipset: WS2812
+    web_server:
+      sorting_group_id: sorting_system
     effects:
       - addressable_rainbow:
           name: "Rainbow"

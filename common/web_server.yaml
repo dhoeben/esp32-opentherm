@@ -6,3 +6,31 @@ web_server:
     password: !secret web_interface_password
   ota: false
   include_internal: true
+  sorting_groups:
+    - id: sorting_control
+      name: "Controls"
+      sorting_weight: 10
+      
+    - id: sorting_ch
+      name: "Central Heating"
+      sorting_weight: 20
+
+    - id: sorting_dhw
+      name: "Domestic Hot Water"
+      sorting_weight: 30
+
+    - id: sorting_equitherm
+      name: "Equitherm"
+      sorting_weight: 40
+
+    - id: sorting_emergency
+      name: "Emergency mode"
+      sorting_weight: 50
+
+    - id: sorting_diagnostic
+      name: "Diagnostics"
+      sorting_weight: 60
+
+    - id: sorting_system
+      name: "System"
+      sorting_weight: 70

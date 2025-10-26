@@ -4,3 +4,5 @@ text_sensor:
     name: "Boiler Fault Text"
     icon: mdi:alert-box-outline
     entity_category: diagnostic
+    web_server:
+      sorting_group_id: sorting_diagnostic

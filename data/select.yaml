@@ -11,6 +11,8 @@ select:
       - "Equitherm"
       - "Boiler"
     icon: mdi:sun-snowflake-variant
+    web_server:
+      sorting_group_id: sorting_equitherm
     on_value:
       then:
         - lambda: |-

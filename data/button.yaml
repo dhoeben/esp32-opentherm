@@ -5,6 +5,8 @@ button:
     id: restart_ot
     icon: "mdi:restart"
     entity_category: diagnostic
+    web_server:
+      sorting_group_id: sorting_system
 
   - platform: safe_mode
     name: "[Reboot Safe Mode]"
@@ -12,3 +14,5 @@ button:
     icon: "mdi:restart-alert"
     entity_category: diagnostic
     internal: true
+    web_server:
+      sorting_group_id: sorting_system

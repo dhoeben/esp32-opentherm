@@ -6,6 +6,8 @@ climate:
     id: ch_climate
     sensor: adaptive_indoor_temp        # feedback sensor order HA sensor > backup sensor > 21C
     device_id: ch
+    web_server:
+      sorting_group_id: sorting_control
     visual:
       min_temperature: 5
       max_temperature: 40
@@ -103,6 +105,8 @@ climate:
     device_id: dhw
     sensor: dhw_temp
     icon: mdi:water-boiler
+    web_server:
+      sorting_group_id: sorting_control
 
     visual:
       min_temperature: 40

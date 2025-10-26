@@ -6,6 +6,8 @@ switch:
     icon: mdi:alert
     internal: true
     optimistic: true
+    web_server:
+      sorting_group_id: sorting_emergency
 
   - platform: template
     id: force_heat
@@ -13,6 +15,8 @@ switch:
     icon: mdi:thermometer-alert
     internal: true
     optimistic: true
+    web_server:
+      sorting_group_id: sorting_emergency
 
   - platform: template
     id: force_dhw
@@ -20,6 +24,8 @@ switch:
     icon: mdi:water-boiler-alert
     internal: true
     optimistic: true
+    web_server:
+      sorting_group_id: sorting_emergency
 
   # Backup temperature
   - platform: template
@@ -29,6 +35,8 @@ switch:
     internal: true
     optimistic: true
     restore_mode: ALWAYS_OFF
+    web_server:
+      sorting_group_id: sorting_emergency
 
   # Developer mode
   - platform: template
@@ -39,6 +47,8 @@ switch:
     optimistic: true
     restore_mode: ALWAYS_OFF
     entity_category: diagnostic
+    web_server:
+      sorting_group_id: sorting_system
     turn_on_action:
       - light.turn_off: onboard_led
 
@@ -51,6 +61,8 @@ switch:
     optimistic: true
     restore_mode: ALWAYS_OFF
     entity_category: diagnostic
+    web_server:
+      sorting_group_id: sorting_system
     turn_on_action:
       - logger.log: "Rainbow test ON"
       - light.turn_on:

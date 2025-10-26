@@ -9,6 +9,8 @@ sensor:
     internal: true
     unit_of_measurement: "°C"
     accuracy_decimals: 1
+    web_server:
+      sorting_group_id: sorting_diagnostic
     filters:
       - lambda: |-
           if (isnan(x)) return 10.0f;  // fallback if no weather data
@@ -23,6 +25,8 @@ sensor:
     internal: true
     unit_of_measurement: "°C"
     accuracy_decimals: 1
+    web_server:
+      sorting_group_id: sorting_diagnostic
     filters:
       - lambda: |-
           if (isnan(x)) return 21.0f;  // fallback if missing
@@ -39,6 +43,8 @@ sensor:
     unit_of_measurement: "°C"
     accuracy_decimals: 1
     device_class: temperature
+    web_server:
+      sorting_group_id: sorting_diagnostic
 
   # Internal temperature sensor used
   - platform: template
@@ -49,6 +55,8 @@ sensor:
     unit_of_measurement: "°C"
     accuracy_decimals: 1
     update_interval: 5s
+    web_server:
+      sorting_group_id: sorting_diagnostic
     lambda: |-
       if (!id(backup_temp_switch).state && !isnan(id(ha_indoor_temp).state)) {
         ESP_LOGI("sensor", "Using Home Assistant temperature");
@@ -74,6 +82,8 @@ sensor:
     accuracy_decimals: 1
     device_class: temperature
     entity_category: diagnostic
+    web_server:
+      sorting_group_id: sorting_diagnostic
 
   - platform: template
     id: return_temp
@@ -84,6 +94,8 @@ sensor:
     accuracy_decimals: 1
     device_class: temperature
     entity_category: diagnostic
+    web_server:
+      sorting_group_id: sorting_diagnostic
 
   - platform: template
     id: modulation
@@ -93,6 +105,8 @@ sensor:
     accuracy_decimals: 0
     device_class: power_factor
     entity_category: diagnostic
+    web_server:
+      sorting_group_id: sorting_diagnostic
 
   - platform: template
     id: setpoint
@@ -103,6 +117,8 @@ sensor:
     accuracy_decimals: 1
     device_class: temperature
     entity_category: diagnostic
+    web_server:
+      sorting_group_id: sorting_diagnostic
 
   # Domestic Hot Water
   - platform: template
@@ -113,6 +129,8 @@ sensor:
     accuracy_decimals: 2
     entity_category: diagnostic
     device_class: volume_flow_rate
+    web_server:
+      sorting_group_id: sorting_diagnostic
   
   - platform: template
     name: "DHW Current temperature"
@@ -122,6 +140,8 @@ sensor:
     accuracy_decimals: 1
     entity_category: diagnostic
     device_class: temperature
+    web_server:
+      sorting_group_id: sorting_diagnostic
 
   # Diagnostics
   - platform: wifi_signal
@@ -129,3 +149,5 @@ sensor:
     update_interval: 60s
     entity_category: diagnostic
     device_class: signal_strength
+    web_server:
+      sorting_group_id: sorting_diagnostic

@@ -5,6 +5,8 @@ binary_sensor:
     device_id: dhw
     device_class: running
     entity_category: diagnostic
+    web_server:
+      sorting_group_id: sorting_diagnostic
     lambda: |-
       auto ot = opentherm::OpenThermComponent::get_singleton();
       return ot ? ot->tap_flow() : false;
@@ -16,6 +18,8 @@ binary_sensor:
     device_id: ch
     icon: mdi:radiator
     entity_category: diagnostic
+    web_server:
+      sorting_group_id: sorting_diagnostic
 
   # Domestic Hot Water
   - platform: template
@@ -24,6 +28,8 @@ binary_sensor:
     device_id: dhw
     icon: mdi:water-boiler
     entity_category: diagnostic
+    web_server:
+      sorting_group_id: sorting_diagnostic
 
   - platform: template
     name: "DHW Heating Active"
@@ -35,6 +41,8 @@ binary_sensor:
       if (ot == nullptr) return false;
       return ot->tap_flow();  // true if DHW tap/flow is active
     entity_category: diagnostic
+    web_server:
+      sorting_group_id: sorting_diagnostic
 
   - platform: template
     name: "DHW Preheat Active"
@@ -44,6 +52,8 @@ binary_sensor:
     lambda: |-
       return opentherm::DHW::comfort_mode_enabled;
     entity_category: diagnostic
+    web_server:
+      sorting_group_id: sorting_diagnostic
 
   - platform: template
     id: dhw_flowing
@@ -51,6 +61,8 @@ binary_sensor:
     name: "DHW Water Flowing"
     device_class: running
     entity_category: diagnostic
+    web_server:
+      sorting_group_id: sorting_diagnostic
 
   # Diagnistics
   - platform: template
@@ -58,6 +70,8 @@ binary_sensor:
     name: "Boiler Flame"
     icon: mdi:fire
     entity_category: diagnostic
+    web_server:
+      sorting_group_id: sorting_diagnostic
 
   - platform: template
     id: boiler_fault
@@ -65,21 +79,29 @@ binary_sensor:
     entity_category: diagnostic
     icon: mdi:alert-box
     device_class: problem
+    web_server:
+      sorting_group_id: sorting_diagnostic
 
   - platform: template
     id: boiler_diag
     name: "Boiler Diagnostic"
     icon: mdi:information
     entity_category: diagnostic
+    web_server:
+      sorting_group_id: sorting_diagnostic
 
   - platform: template
     id: comms_ok
     name: "OpenTherm Communication"
     entity_category: diagnostic
     device_class: connectivity
+    web_server:
+      sorting_group_id: sorting_diagnostic
 
   - platform: status
     id: wifi_connected
     name: "Wi-Fi Connected"
     entity_category: diagnostic
     device_class: connectivity
+    web_server:
+      sorting_group_id: sorting_diagnostic

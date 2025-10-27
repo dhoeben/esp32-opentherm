@@ -8,6 +8,15 @@ button:
     web_server:
       sorting_group_id: sorting_system
 
+  - platform: shutdown
+    name: "[Shutdown]"
+    id: shutdown_ot
+    icon: "mdi:power"
+    internal: true
+    entity_category: diagnostic
+    web_server:
+      sorting_group_id: sorting_system
+
   - platform: safe_mode
     name: "[Reboot Safe Mode]"
     id: reboot_safe

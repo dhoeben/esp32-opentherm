@@ -9,15 +9,19 @@
 // 💡 Hardware Pin Defaults
 // ---------------------------------------------------------------------------
 #ifndef OT_IN_PIN
-  #define OT_IN_PIN   GPIO_NUM_5    // OpenTherm input pin (RX)
+  #define OT_IN_PIN   GPIO_NUM_18    // OpenTherm input pin (RX)
 #endif
 
 #ifndef OT_OUT_PIN
-  #define OT_OUT_PIN  GPIO_NUM_6    // OpenTherm output pin (TX)
+  #define OT_OUT_PIN  GPIO_NUM_17    // OpenTherm output pin (TX)
 #endif
 
 #ifndef TEMP_PIN
-  #define TEMP_PIN    GPIO_NUM_4    // 1-Wire / Dallas temperature sensor bus
+  #define TEMP_PIN    GPIO_NUM_4     // 1-Wire / Dallas temperature sensor bus
+#endif
+
+#ifndef LIGHT_PIN
+  #define LIGHT_PIN   GPIO_NUM_48   // Onboard status LED
 #endif
 
 // ---------------------------------------------------------------------------

@@ -4,7 +4,7 @@ light:
     internal: true
     name: "Status LED"
     icon: mdi:circle
-    pin: GPIO48
+    pin: !secret light_pin
     num_leds: 1
     default_transition_length: 0s
     rgb_order: GRB

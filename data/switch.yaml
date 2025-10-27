@@ -10,8 +10,8 @@ switch:
       sorting_group_id: sorting_emergency
 
   - platform: template
-    id: force_heat
-    name: "Emergency force Heating"
+    id: sw_force_heat
+    name: "Force Central Heating"
     icon: mdi:thermometer-alert
     internal: true
     optimistic: true
@@ -19,8 +19,8 @@ switch:
       sorting_group_id: sorting_emergency
 
   - platform: template
-    id: force_dhw
-    name: "Emergency force DHW"
+    id: sw_force_dhw
+    name: "Force Domestic Hot Water"
     icon: mdi:water-boiler-alert
     internal: true
     optimistic: true

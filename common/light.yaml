@@ -33,8 +33,14 @@ interval:
           bool has_fault   = id(boiler_fault).state;
           bool wifi_down   = !id(wifi_connected).state;
           bool comm_error  = !id(comms_ok).state;
-          bool emergency   = id(emergency_mode).state;
           bool backup_mode = id(backup_temp_switch).state;
+          bool emergency   = id(emergency_mode).state;
+          bool force_heat  = id(sw_force_heat).state;
+          bool force_dhw   = id(sw_force_dhw).state;
+
+          // Treat either emergency or forced modes as "orange"
+          bool override_active = emergency || force_heat || force_dhw;
+
 
           // Overruling modes
           bool developer   = id(developer_mode_switch).state;
@@ -72,7 +78,7 @@ interval:
               return;
             }
 
-            if (emergency && step == 3) {
+            if (override_active && step == 3) {
               call.set_rgb(1.0f, 0.5f, 0.0f);  // 🟠
               call.perform();
               return;

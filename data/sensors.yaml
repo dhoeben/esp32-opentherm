@@ -34,7 +34,7 @@ sensor:
   
   # External hardware sensor
   - platform: dallas_temp
-    name: "Backup Temperature"
+    name: "Temperature backup"
     icon: mdi:thermometer-probe
     id: backup_temp
     internal: true

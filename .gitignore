@@ -16,7 +16,7 @@ build/
 # Logs
 logs/
 *.log
-todo.txt
+*.txt
 
 # Secrets (Wi-Fi, API passwords)
 secrets.yaml

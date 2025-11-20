@@ -1,4 +1,4 @@
-Tested OK on ESPHome software version 2025.9.3 - 2025.10.1
+Tested OK on ESPHome software version 2025.9.3 - 2025.11.0
 
 ### 🏠 OpenTherm Gateway (ESPHome + ESP32)
 This project is still a work in progress and will implements a **fully native OpenTherm Gateway** using an **ESP32-S3** chip and ESPHome.  

@@ -1,24 +1,4 @@
 number:
-  # - platform: template
-  #   name: "Boiler Target Temperature"
-  #   id: boiler_target
-  #   icon: mdi:thermostat
-  #   unit_of_measurement: "°C"
-  #   min_value: 10
-  #   max_value: 80
-  #   step: 1.0
-  #   optimistic: true
-  #   initial_value: 21.0
-  #   on_value:
-  #     - lambda: |-
-  #         auto ot = opentherm::OpenThermComponent::get_singleton();
-  #         if (ot != nullptr) {
-  #           uint16_t raw = (uint16_t)(x * 256.0f);      // °C → F8.8
-  #           uint32_t frame = ot->build_request(opentherm::WRITE_DATA, 0x11, raw);
-  #           ot->send_frame(frame);
-  #           ESP_LOGI("otgw", "Sent new setpoint %.1f°C to boiler", x);
-  #         }
-
   # Equitherm
   - platform: template
     name: "Equitherm N (Slope)"
@@ -193,5 +173,20 @@ number:
     unit_of_measurement: "°C"
     restore_value: true
     optimistic: true
+    web_server:
+      sorting_group_id: sorting_ch
+
+
+# Temperature compensation
+  - platform: template
+    id: indoor_temp_offset
+    name: "Indoor Temperature Offset"
+    entity_category: config
+    mode: box  
+    min_value: -5.0
+    max_value: 5.0
+    step: 0.1
+    restore_value: true
+    initial_value: 0.0
     web_server:
       sorting_group_id: sorting_ch

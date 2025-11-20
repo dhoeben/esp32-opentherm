@@ -27,10 +27,6 @@ sensor:
     accuracy_decimals: 1
     web_server:
       sorting_group_id: sorting_diagnostic
-    filters:
-      - lambda: |-
-          if (isnan(x)) return 21.0f;  // fallback if missing
-          return x;
   
   # External hardware sensor
   - platform: bme680
@@ -87,18 +83,28 @@ sensor:
     web_server:
       sorting_group_id: sorting_diagnostic
     lambda: |-
+      float base_temp;
+
+      // 1. Home Assistant
       if (!id(backup_temp_switch).state && !isnan(id(ha_indoor_temp).state)) {
         ESP_LOGI("sensor", "Using Home Assistant temperature");
-        return id(ha_indoor_temp).state;
+        base_temp = id(ha_indoor_temp).state;
+
+        return base_temp + id(indoor_temp_offset).state;
       }
 
+      // 2. Backup sensor 
       if (!isnan(id(backup_temp).state)) {
         ESP_LOGW("sensor", "Using backup temperature");
-        return id(backup_temp).state;
+        base_temp = id(backup_temp).state;
+
+        return base_temp + id(indoor_temp_offset).state;
       }
 
-      ESP_LOGW("sensor", "Using fixed temperature");
+      // 3. Fall-back 
+      ESP_LOGW("sensor", "Using fixed temperature (no offset)");
       return 21.0f;
+
 
 
   # Central Heating

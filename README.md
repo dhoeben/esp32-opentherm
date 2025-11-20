@@ -20,12 +20,11 @@ Feel free to also use my thermostat I created, which uses a E-ink display and is
 - Optional weather Compensation (Equitherm or boilers own)  
 - Diagnostic & Monitoring (boiler state, flame, fault codes)  
 
-### ⚙️ My Hardware Overview
-| Component | Purpose |
-|------------|----------|
-| **ESP32-S3 DevKitC N16R8** | Main controller running ESPHome (could be any ESP32-S3) |
-| **OpenTherm Interface Circuit** | Connects boiler OpenTherm bus to ESP |
-
+### ⚙️ My PCB Overview
+- Build from scratch
+- Used the best parts I could find
+- Low power usage
+- Used an overpowered ESP32-S3, so there will be no issues in the future
 
 ### 🖥️ Web Interface
 - Access via http://otgateway.local (or the device IP)

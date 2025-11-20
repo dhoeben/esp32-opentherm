@@ -24,6 +24,12 @@ interval:
 
   - interval: 1s
     then:
+      - if:
+          condition:
+            lambda: 'return id(led_test_switch).state;'
+          then:
+            - logger.log: "LED TEST active — skipping LED logic"
+            - return:
 
       # RED
       - if:

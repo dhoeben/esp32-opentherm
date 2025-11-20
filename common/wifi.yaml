@@ -7,3 +7,11 @@ wifi:
   ssid: !secret wifi_ssid
   password: !secret wifi_password
   fast_connect: true
+
+  on_connect:
+    - lambda: |-
+        id(wifi_connected).publish_state(true);
+
+  on_disconnect:
+    - lambda: |-
+        id(wifi_connected).publish_state(false);

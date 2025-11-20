@@ -7,3 +7,12 @@ api:
     - service: reboot_gateway
       then:
         - button.press: restart_ot
+  on_client_connected:
+    then:
+      - lambda: |-
+          id(api_connected) = true;
+
+  on_client_disconnected:
+    then:
+      - lambda: |-
+          id(api_connected) = false;

@@ -1,0 +1,5 @@
+globals:
+  - id: api_connected
+    type: bool
+    restore_value: no
+    initial_value: "false"

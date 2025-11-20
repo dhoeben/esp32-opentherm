@@ -1,8 +1,10 @@
 Tested OK on ESPHome software version 2025.9.3 - 2025.10.1
 
 ### 🏠 OpenTherm Gateway (ESPHome + ESP32)
-This project is still a work in progress and will implements a **fully native OpenTherm Gateway** using an **ESP32-S3** and ESPHome.  
-It acts as a modern, reliable, and flexible interface between your boiler and Home Assistant — featuring full OpenTherm communication, diagnostics, and web-accessible emergency controls. To create the PCB just download the files from .pcb folder, then order at your convenience.
+This project is still a work in progress and will implements a **fully native OpenTherm Gateway** using an **ESP32-S3** chip and ESPHome.  
+It acts as a modern, reliable, and flexible interface between your boiler and Home Assistant — featuring full OpenTherm communication, diagnostics, and web-accessible emergency controls. To create the PCB just download the gerber files from .pcb folder, then order at your convenience.
+
+Feel free to also use my thermostat I created, which uses a E-ink display and is also fully customizable. Also has his own PCB you can just order! https://github.com/dhoeben/esp32-thermostat. 
 
 ### ⬇️ Installation
 1) Download latest release
@@ -10,19 +12,6 @@ It acts as a modern, reliable, and flexible interface between your boiler and Ho
 3) Flash to your ESP device
 4) Connect ESP device to Opentherm Interface Circuit
 5) Connect Opentherm Interface Circuit to boiler OT+/- 
-
-<details>
-<summary><strong>Connection schedule</strong></summary>
-
-| ESP32-S3 DevKitC-1   | DIYless Thermostat Shield | Function           | Notes                                                              |
-| -------------------- | ------------------------- | ------------------ | ------------------------------------------------------------------ |
-| **3V3 (pin 1 or 2)** | **3V3**                   | Power              | powers the shield logic (it runs at 3.3 V). **Do NOT** use 5 V.    |
-| **GND (pin 22)**     | **GND**                   | Ground             | common reference for logic side.                                   |
-| **GPIO 17**          | **D5**                    | OpenTherm TX (OUT) | from ESP32 to shield (MCU drives line driver).                     |
-| **GPIO 18**          | **D6**                    | OpenTherm RX (IN)  | from shield to ESP32 (optocoupler output).                         |
-
-
-</details>
 
 ### 🚀 Features
 - Full OpenTherm Protocol Support
@@ -89,10 +78,11 @@ The Equithermic control curve automatically increases boiler flow temperature wh
 ### ⚫ Status LED
 | Condition                 | Color     | Behavior                       |
 | ------------------------- | --------- | ------------------------------ |
-| **Booting (<10 s)**       | 🟢 Green  | Device initialization phase    |
+| **Boiler fault**          | 🔴 Red    | Boiler fault detected          |
+| **Emergency mode active** | 🟠 Orange | Manual override or safety mode |
+| **Backup Temp used**      | 🟡 Yellow | Onboard BME680 is used         |
+| **Connected to power**    | 🟢 Green  | Power is connected             |
 | **Wi-Fi disconnected**    | 🔵 Blue   | No Wi-Fi connection            |
 | **OpenTherm comm error**  | 🟣 Purple | No or invalid boiler response  |
-| **Emergency mode active** | 🟠 Orange | Manual override or safety mode |
-| **Boiler fault**          | 🔴 Red    | Boiler fault detected          |
-| **Using backup temp**     | ⚪ White  | When backup temp switch is on  |
-| **System OK / standby**   | ⚫ Off    | Everything normal              |
+| **Home Assistant error**  | ⚪ White  | Connect to Home Assistant      |
+| **Board has no power**    | ⚫ Off    | Connect to power               |

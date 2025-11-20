@@ -10,14 +10,77 @@ interval:
           auto preset = id(ch_climate).preset.value_or(CLIMATE_PRESET_HOME);
 
           if (preset == CLIMATE_PRESET_BOOST) {
-              if (!active) {
-                  boost_start = millis();
-                  active = true;
-                  ESP_LOGI("boost", "Boost mode started");
-              } else if (millis() - boost_start > 30UL * 60UL * 1000UL) {
-                  ESP_LOGI("boost", "Boost timeout reached — please revert preset in HA");
-                  active = false;
-              }
-          } else {
+            if (!active) {
+              boost_start = millis();
+              active = true;
+              ESP_LOGI("boost", "Boost mode started");
+            } else if (millis() - boost_start > 30UL * 60UL * 1000UL) {
+              ESP_LOGI("boost", "Boost timeout reached — please revert preset in HA");
               active = false;
+            }
+          } else {
+            active = false;
           }
+
+  - interval: 1s
+    then:
+
+      # RED
+      - if:
+          condition:
+            lambda: |-
+              return id(boiler_fault).state;
+          then:
+            - light.turn_on: led_red
+          else:
+            - light.turn_off: led_red
+
+      # ORANGE 
+      - if:
+          condition:
+            lambda: |-
+              return id(emergency_mode).state;
+          then:
+            - light.turn_on: led_orange
+          else:
+            - light.turn_off: led_orange
+
+      # YELLOW 
+      - if:
+          condition:
+            lambda: |-
+              return id(backup_temp_switch).state;
+          then:
+            - light.turn_on: led_yellow
+          else:
+            - light.turn_off: led_yellow
+
+      # BLUE 
+      - if:
+          condition:
+            lambda: |-
+              return id(wifi_connected).state;
+          then:
+            - light.turn_off: led_blue
+          else:
+            - light.toggle: led_blue
+
+      # PURPLE 
+      - if:
+          condition:
+            lambda: |-
+              return !id(comms_ok).state;
+          then:
+            - light.turn_on: led_purple
+          else:
+            - light.turn_off: led_purple
+
+      # WHITE 
+      - if:
+          condition:
+            lambda: |-
+              return id(api_connected);
+          then:
+            - light.turn_off: led_white
+          else:
+            - light.turn_on: led_white

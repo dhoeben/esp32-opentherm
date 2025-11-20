@@ -4,13 +4,15 @@ packages:
   - !include common/esp32.yaml
   - !include common/esphome.yaml
   - !include common/external_components.yaml
+  - !include common/global.yaml
+  - !include common/i2c.yaml
   - !include common/interval.yaml
   - !include common/light.yaml
   - !include common/logger.yaml
   - !include common/network.yaml
-  - !include common/one_wire.yaml
   - !include common/opentherm.yaml
   - !include common/ota.yaml
+  - !include common/psram.yaml
   - !include common/time.yaml
   - !include common/web_server.yaml
   - !include common/wifi.yaml

@@ -10,12 +10,12 @@ esp32:
       CONFIG_ESP_CONSOLE_UART_DEFAULT: y
       CONFIG_ESP_CONSOLE_USB_CDC: n
 
-      # PSRAM configuration (8MB Octal, 120MHz)
-      CONFIG_SPIRAM_MODE_OCT: y
-      CONFIG_SPIRAM_TYPE_AUTO: y
-      CONFIG_SPIRAM_SPEED_120M: y
-      CONFIG_ESP32S3_SPIRAM_SUPPORT: y
-      CONFIG_SPIRAM_USE_MALLOC: y
+      # Disable PSRAM entirely (required for GPIO35/36 use)
+      CONFIG_ESP32S3_SPIRAM_SUPPORT: n
+      CONFIG_SPIRAM_MODE_OCT: n
+      CONFIG_SPIRAM_TYPE_AUTO: n
+      CONFIG_SPIRAM_SPEED_120M: n
+      CONFIG_SPIRAM_USE_MALLOC: n
 
       # Flash configuration (safe & compatible)
       CONFIG_ESPTOOLPY_FLASHMODE_DIO: y

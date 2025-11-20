@@ -33,18 +33,47 @@ sensor:
           return x;
   
   # External hardware sensor
-  - platform: dallas_temp
-    name: "Temperature backup"
-    icon: mdi:thermometer-probe
-    id: backup_temp
-    internal: true
+  - platform: bme680
+    i2c_id: i2c_bme680
+    temperature:
+      name: "Onboard temperature"
+      id: backup_temp
+      icon: mdi:thermometer-probe
+      oversampling: 16x
+      entity_category: diagnostic
+      device_class: temperature
+      web_server:
+        sorting_group_id: sorting_diagnostic
+
+    pressure:
+      name: "Onboard Pressure"
+      id: backup_pressure
+      icon: mdi:thermometer-probe
+      device_class: pressure
+      entity_category: diagnostic
+      web_server:
+        sorting_group_id: sorting_diagnostic
+
+    humidity:
+      name: "Onboard Humidity"
+      id: backup_humdity
+      icon: mdi:thermometer-probe
+      device_class: humidity
+      entity_category: diagnostic
+      web_server:
+        sorting_group_id: sorting_diagnostic
+
+    gas_resistance:
+      name: "Onboard Gas Resistance"
+      id: backup_gas
+      icon: mdi:thermometer-probe
+      device_class: gas
+      entity_category: diagnostic
+      web_server:
+        sorting_group_id: sorting_diagnostic
+
+    address: 0x77
     update_interval: 10s
-    entity_category: diagnostic
-    unit_of_measurement: "°C"
-    accuracy_decimals: 1
-    device_class: temperature
-    web_server:
-      sorting_group_id: sorting_diagnostic
 
   # Internal temperature sensor used
   - platform: template

@@ -1,95 +1,79 @@
+output:
+  - platform: gpio
+    pin: !secret light_red_pin
+    id: output_led_red
+
+  - platform: gpio
+    pin: !secret light_orange_pin
+    id: output_led_orange
+
+  - platform: gpio
+    pin: !secret light_yellow_pin
+    id: output_led_yellow
+
+  - platform: gpio
+    pin: !secret light_blue_pin
+    id: output_led_blue
+
+  - platform: gpio
+    pin: !secret light_purple_pin
+    id: output_led_purple
+
+  - platform: gpio
+    pin: !secret light_white_pin
+    id: output_led_white
+
 light:
-  - platform: esp32_rmt_led_strip
-    id: onboard_led
-    internal: true
-    name: "Status LED"
+  - platform: binary
+    name: "LED red"
+    output: output_led_red
     icon: mdi:circle
-    pin: !secret light_pin
-    num_leds: 1
-    default_transition_length: 0s
-    rgb_order: GRB
-    chipset: WS2812
+    internal: true
+    id: led_red
     web_server:
       sorting_group_id: sorting_system
-    effects:
-      - addressable_rainbow:
-          name: "Rainbow"
-          speed: 10
-          width: 25
 
-interval:
-  - interval: 1s
-    then:
-      - lambda: |-
-          // Boot phase (first 10 s): solid green overrides everything
-          if (millis() < 10000) {
-            auto call = id(onboard_led).turn_on();
-            call.set_rgb(0.0f, 1.0f, 0.0f);   // 🟢
-            call.perform();
-            return;
-          }
+  - platform: binary
+    name: "LED orange"
+    icon: mdi:circle
+    internal: true
+    output: output_led_orange
+    id: led_orange
+    web_server:
+      sorting_group_id: sorting_system
 
-          // Determine which errors are active
-          bool has_fault   = id(boiler_fault).state;
-          bool wifi_down   = !id(wifi_connected).state;
-          bool comm_error  = !id(comms_ok).state;
-          bool backup_mode = id(backup_temp_switch).state;
-          bool emergency   = id(emergency_mode).state;
-          bool force_heat  = id(sw_force_heat).state;
-          bool force_dhw   = id(sw_force_dhw).state;
+  - platform: binary
+    name: "LED yellow"
+    icon: mdi:circle
+    internal: true
+    output: output_led_yellow
+    id: led_yellow
+    web_server:
+      sorting_group_id: sorting_system
 
-          // Treat either emergency or forced modes as "orange"
-          bool override_active = emergency || force_heat || force_dhw;
+  - platform: binary
+    name: "LED blue"
+    icon: mdi:circle
+    internal: true
+    output: output_led_blue
+    id: led_blue
+    web_server:
+      sorting_group_id: sorting_system
 
+  - platform: binary
+    name: "LED purple"
+    icon: mdi:circle
+    internal: true
+    output: output_led_purple
+    id: led_purple
+    web_server:
+      sorting_group_id: sorting_system
 
-          // Overruling modes
-          bool developer   = id(developer_mode_switch).state;
-          bool rainbow     = id(led_rainbow_mode).state;
-
-          // If nothing active → LED off
-          if (!has_fault && !wifi_down && !comm_error && !emergency) {
-            id(onboard_led).turn_off().perform();
-            return;
-          }
-
-          if (!developer && !rainbow) {
-            // ---- Blink sequence between active states ----
-            // Order: red (fault) → blue (wifi) → purple (comms) → orange (emergency) → white (backup)
-            static int step = 0;
-            step = (step + 1) % 5; 
-
-            auto call = id(onboard_led).turn_on();
-
-            if (has_fault && step == 0) {
-              call.set_rgb(1.0f, 0.0f, 0.0f);  // 🔴
-              call.perform();
-              return;
-            }
-
-            if (wifi_down && step == 1) {
-              call.set_rgb(0.0f, 0.0f, 1.0f);  // 🔵
-              call.perform();
-              return;
-            }
-
-            if (comm_error && step == 2) {
-              call.set_rgb(0.5f, 0.0f, 0.5f);  // 🟣
-              call.perform();
-              return;
-            }
-
-            if (override_active && step == 3) {
-              call.set_rgb(1.0f, 0.5f, 0.0f);  // 🟠
-              call.perform();
-              return;
-            }
-
-            if (backup_mode && step == 4) {
-              call.set_rgb(1.0f, 1.0f, 1.0f);  // ⚪ 
-              call.perform();
-              return;
-            }
-
-            // Nothing shown this tick → turn off to create visible blinking
-            id(onboard_led).turn_off().perform();
-          }
+  - platform: binary
+    name: "LED white"
+    icon: mdi:circle
+    internal: true
+    output: output_led_white
+    id: led_white
+    web_server:
+      sorting_group_id: sorting_system

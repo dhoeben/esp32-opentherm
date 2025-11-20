@@ -3,3 +3,7 @@ i2c:
   scl: !secret i2c_scl_pin
   id: i2c_bme680
   scan: true
+
+bme68x_bsec2_i2c:
+  address: 0x76
+  model: bme680

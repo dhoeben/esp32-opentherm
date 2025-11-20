@@ -26,67 +26,70 @@ interval:
     then:
       - if:
           condition:
-            lambda: 'return id(led_test_switch).state;'
+            lambda: 'return !id(led_test_switch).state;'
           then:
-            - logger.log: "LED TEST active — skipping LED logic"
-            - return:
+            # ============================================================
+            # RED — Boiler Fault
+            # ============================================================
+            - if:
+                condition:
+                  lambda: 'return id(boiler_fault).state;'
+                then:
+                  - light.turn_on: led_red
+                else:
+                  - light.turn_off: led_red
 
-      # RED
-      - if:
-          condition:
-            lambda: |-
-              return id(boiler_fault).state;
-          then:
-            - light.turn_on: led_red
-          else:
-            - light.turn_off: led_red
+            # ============================================================
+            # ORANGE — Emergency Mode ON
+            # ============================================================
+            - if:
+                condition:
+                  lambda: 'return id(emergency_mode).state;'
+                then:
+                  - light.turn_on: led_orange
+                else:
+                  - light.turn_off: led_orange
 
-      # ORANGE 
-      - if:
-          condition:
-            lambda: |-
-              return id(emergency_mode).state;
-          then:
-            - light.turn_on: led_orange
-          else:
-            - light.turn_off: led_orange
+            # ============================================================
+            # YELLOW — Backup Temp Mode
+            # ============================================================
+            - if:
+                condition:
+                  lambda: 'return id(backup_temp_switch).state;'
+                then:
+                  - light.turn_on: led_yellow
+                else:
+                  - light.turn_off: led_yellow
 
-      # YELLOW 
-      - if:
-          condition:
-            lambda: |-
-              return id(backup_temp_switch).state;
-          then:
-            - light.turn_on: led_yellow
-          else:
-            - light.turn_off: led_yellow
+            # ============================================================
+            # BLUE — WiFi disconnected (blink), connected (off)
+            # ============================================================
+            - if:
+                condition:
+                  lambda: 'return id(wifi_connected).state;'
+                then:
+                  - light.turn_off: led_blue
+                else:
+                  - light.toggle: led_blue
 
-      # BLUE 
-      - if:
-          condition:
-            lambda: |-
-              return id(wifi_connected).state;
-          then:
-            - light.turn_off: led_blue
-          else:
-            - light.toggle: led_blue
+            # ============================================================
+            # PURPLE — OpenTherm Comms Failure
+            # ============================================================
+            - if:
+                condition:
+                  lambda: 'return !id(comms_ok).state;'
+                then:
+                  - light.turn_on: led_purple
+                else:
+                  - light.turn_off: led_purple
 
-      # PURPLE 
-      - if:
-          condition:
-            lambda: |-
-              return !id(comms_ok).state;
-          then:
-            - light.turn_on: led_purple
-          else:
-            - light.turn_off: led_purple
-
-      # WHITE 
-      - if:
-          condition:
-            lambda: |-
-              return id(api_connected);
-          then:
-            - light.turn_off: led_white
-          else:
-            - light.turn_on: led_white
+            # ============================================================
+            # WHITE — API (HA) Disconnected
+            # ============================================================
+            - if:
+                condition:
+                  lambda: 'return id(api_connected);'
+                then:
+                  - light.turn_off: led_white
+                else:
+                  - light.turn_on: led_white

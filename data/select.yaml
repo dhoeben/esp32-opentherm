@@ -17,4 +17,7 @@ select:
       then:
         - lambda: |-
             // Pass the selected string to C++ helper
-            opentherm::set_compensation_mode_from_string(id(compensation_mode).state.c_str());
+            opentherm::set_compensation_mode_from_string(
+              id(compensation_mode).current_option().c_str()
+            );
+

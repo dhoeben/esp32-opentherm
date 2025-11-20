@@ -36,7 +36,7 @@ climate:
           auto ot = opentherm::OpenThermComponent::get_singleton();
           if (ot == nullptr) return;
 
-          std::string mode = id(compensation_mode).state.c_str();
+          std::string mode = id(compensation_mode).current_option();
           std::string preset = "home";
           if (id(ch_climate).preset.has_value()) {
             preset = to_string(id(ch_climate).preset.value());

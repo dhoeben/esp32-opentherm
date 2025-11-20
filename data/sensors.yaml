@@ -29,8 +29,9 @@ sensor:
       sorting_group_id: sorting_diagnostic
   
   # External hardware sensor
-  - platform: bme680
+  - platform: bme680_bsec
     i2c_id: i2c_bme680
+    id: sensor_bme680
     temperature:
       name: "Onboard temperature"
       id: backup_temp
@@ -44,7 +45,7 @@ sensor:
     pressure:
       name: "Onboard Pressure"
       id: backup_pressure
-      icon: mdi:thermometer-probe
+      icon: mdi:thermometer-high
       device_class: pressure
       entity_category: diagnostic
       web_server:
@@ -53,17 +54,35 @@ sensor:
     humidity:
       name: "Onboard Humidity"
       id: backup_humdity
-      icon: mdi:thermometer-probe
+      icon: mdi:water-percent
       device_class: humidity
       entity_category: diagnostic
       web_server:
         sorting_group_id: sorting_diagnostic
 
-    gas_resistance:
-      name: "Onboard Gas Resistance"
-      id: backup_gas
-      icon: mdi:thermometer-probe
-      device_class: gas
+    iaq:
+      name: "Onbiard IAQ"
+      id: backup_iaq
+      icon: mdi:air-filter
+      device_class: aqi
+      entity_category: diagnostic
+      web_server:
+        sorting_group_id: sorting_diagnostic
+
+    co2_equivalent:
+      name: "Onboard CO2 Equivalent"
+      id: backup_co2
+      icon: mdi:molecule-co2
+      device_class: carbon_dioxide
+      entity_category: diagnostic
+      web_server:
+        sorting_group_id: sorting_diagnostic
+
+    breath_voc_equivalent:
+      name: "Onboard Breath VOC Equivalent"
+      id: backup_voc
+      icon: mdi:face-mask
+      device_class: volatile_organic_compounds
       entity_category: diagnostic
       web_server:
         sorting_group_id: sorting_diagnostic

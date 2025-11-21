@@ -21,10 +21,13 @@ Feel free to also use my thermostat I created, which uses a E-ink display and is
 - Diagnostic & Monitoring (boiler state, flame, fault codes)  
 
 ### ⚙️ My PCB Overview
-- Build from scratch
-- Used the best parts I could find
-- Low power usage
+- Build from scratch!
+- Used the best part and foodprint for the task.
+- Low power usage and "light off principle"
+- 7 colored LED for status of the gateway
 - Used an overpowered ESP32-S3, so there will be no issues in the future
+- Used BME680 on PCB for a back-up temperature. Also gives CO2 equivalent, for monitoring of air quality in boiler room. 
+**Warning: Air quality sensing is just for fun, always use proper safety equipment for air quality monitoring.**
 
 ### 🖥️ Web Interface
 - Access via http://otgateway.local (or the device IP)

@@ -1,2 +1,3 @@
 external_components:
-  - source: ./custom_components/opentherm
+  - source: github://dhoeben/custom_opentherm
+    refresh: 24h

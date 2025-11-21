@@ -97,28 +97,26 @@ sensor:
     web_server:
       sorting_group_id: sorting_diagnostic
     lambda: |-
+      float offset = isnan(id(indoor_temp_offset).state) ? 0.0f : id(indoor_temp_offset).state;
       float base_temp;
 
       // 1. Home Assistant
       if (!id(backup_temp_switch).state && !isnan(id(ha_indoor_temp).state)) {
         ESP_LOGI("sensor", "Using Home Assistant temperature");
         base_temp = id(ha_indoor_temp).state;
-
-        return base_temp + id(indoor_temp_offset).state;
+        return base_temp + offset;
       }
 
-      // 2. Backup sensor 
+      // 2. Backup sensor
       if (!isnan(id(backup_temp).state)) {
         ESP_LOGW("sensor", "Using backup temperature");
         base_temp = id(backup_temp).state;
-
-        return base_temp + id(indoor_temp_offset).state;
+        return base_temp + offset;
       }
 
-      // 3. Fall-back 
+      // 3. Fall-back
       ESP_LOGW("sensor", "Using fixed temperature (no offset)");
       return 21.0f;
-
 
 
   # Central Heating

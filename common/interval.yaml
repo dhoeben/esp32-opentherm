@@ -26,7 +26,7 @@ interval:
     then:
       - if:
           condition:
-            lambda: 'return !id(led_test_switch).state;'
+            lambda: 'return !id(developer_mode_switch).state;'
           then:
             # ============================================================
             # RED — Boiler Fault

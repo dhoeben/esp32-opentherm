@@ -7,12 +7,35 @@ api:
     - service: reboot_gateway
       then:
         - button.press: restart_ot
+
   on_client_connected:
     then:
       - lambda: |-
-          id(api_connected) = true;
+          ESP_LOGI("api", "Client connected: %s (%s)",
+                   client_address.c_str(), client_info.c_str());
+
+          bool is_ha =
+              client_info.find("aioesphomeapi") != std::string::npos ||
+              client_info.find("Home Assistant") != std::string::npos ||
+              client_info.find("homeassistant") != std::string::npos;
+
+          if (is_ha) {
+            id(api_connected) = true;
+            ESP_LOGI("api", "=> Home Assistant detected");
+          }
 
   on_client_disconnected:
     then:
       - lambda: |-
-          id(api_connected) = false;
+          ESP_LOGI("api", "Client disconnected: %s (%s)",
+                   client_address.c_str(), client_info.c_str());
+
+          bool is_ha =
+              client_info.find("aioesphomeapi") != std::string::npos ||
+              client_info.find("Home Assistant") != std::string::npos ||
+              client_info.find("homeassistant") != std::string::npos;
+
+          if (is_ha) {
+            id(api_connected) = false;
+            ESP_LOGI("api", "=> Home Assistant disconnected");
+          }

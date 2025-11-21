@@ -49,24 +49,7 @@ switch:
     entity_category: diagnostic
     web_server:
       sorting_group_id: sorting_system
-
-  # Light test
-  - platform: template
-    name: "LED test"
-    id: led_test_switch
-    icon: mdi:circle
-    internal: true
-    entity_category: diagnostic
-    web_server:
-      sorting_group_id: sorting_system
-    turn_on_action:
-      - light.turn_on: led_red
-      - light.turn_on: led_orange
-      - light.turn_on: led_yellow
-      - light.turn_on: led_blue
-      - light.turn_on: led_purple
-      - light.turn_on: led_white
-    turn_off_action:
+    on_turn_on:
       - light.turn_off: led_red
       - light.turn_off: led_orange
       - light.turn_off: led_yellow

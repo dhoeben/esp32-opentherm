@@ -8,8 +8,8 @@
   "address": "otgateway.local",
   "web_port": 80,
   "esp_platform": "ESP32S3",
-  "build_path": "/home/douwehoeben/esphome/Opentherm/.esphome/build/otgateway",
-  "firmware_bin_path": "/home/douwehoeben/esphome/Opentherm/.esphome/build/otgateway/.pioenvs/otgateway/firmware.bin",
+  "build_path": "/home/douwehoeben/esphome/esp32_opentherm/.esphome/build/otgateway",
+  "firmware_bin_path": "/home/douwehoeben/esphome/esp32_opentherm/.esphome/build/otgateway/.pioenvs/otgateway/firmware.bin",
   "loaded_integrations": [
     "api",
     "binary",

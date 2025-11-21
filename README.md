@@ -8,10 +8,10 @@ Feel free to also use my thermostat I created, which uses a E-ink display and is
 
 ### ⬇️ Installation
 1) Download latest release
-2) Use vscode or flash tool to create firmware 
-3) Flash to your ESP device
-4) Connect ESP device to Opentherm Interface Circuit
-5) Connect Opentherm Interface Circuit to boiler OT+/- 
+2) Update/create secrets.yaml to your wishes
+3) Use vscode or flash tool to create firmware 
+4) Flash to your ESP device
+5) Connect ESP device to Opentherm Interface Circuit
 
 ### 🚀 Features
 - Full OpenTherm Protocol Support
@@ -29,6 +29,8 @@ Feel free to also use my thermostat I created, which uses a E-ink display and is
 - Used BME680 on PCB for a back-up temperature. Also gives CO2 equivalent, for monitoring of air quality in boiler room. 
 **Warning: Air quality sensing is just for fun, always use proper safety equipment for air quality monitoring.**
 
+This also works with *any* ESP32-S3, however it is not fully supported and tested. Make sure to update secrets.yaml according to your config.
+
 ### 🖥️ Web Interface
 - Access via http://otgateway.local (or the device IP)
 - Toggle Emergency Mode to enable offline control
@@ -43,6 +45,7 @@ Feel free to also use my thermostat I created, which uses a E-ink display and is
 - OTA encrypted and password protected
 - Automatic reboot after successful updates
 - Safe Mode available if configuration fails to boot
+- External component for OpenTherm: stable releases and adapt config as you please without issues
 
 ### 🧮 Equitherm Heating Curve
 This project implements a custom **Equithermic control algorithm** that dynamically adjusts the **boiler flow temperature** based on outdoor and indoor conditions.  

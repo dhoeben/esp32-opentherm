@@ -1,18 +1,5 @@
 binary_sensor:
   - platform: template
-    name: "Tap Water Flow Detected"
-    id: tap_flow
-    device_id: dhw
-    device_class: running
-    entity_category: diagnostic
-    web_server:
-      sorting_group_id: sorting_diagnostic
-    lambda: |-
-      auto ot = opentherm::OpenThermComponent::get_singleton();
-      return ot ? ot->tap_flow() : false;
-
-  # Central Heating
-  - platform: template
     id: ch_active
     name: "CH Active"
     device_id: ch
@@ -21,25 +8,11 @@ binary_sensor:
     web_server:
       sorting_group_id: sorting_diagnostic
 
-  # Domestic Hot Water
   - platform: template
     id: dhw_active
     name: "DHW Active"
     device_id: dhw
     icon: mdi:water-boiler
-    entity_category: diagnostic
-    web_server:
-      sorting_group_id: sorting_diagnostic
-
-  - platform: template
-    name: "DHW Heating Active"
-    device_id: dhw
-    id: dhw_heating_active
-    device_class: heat
-    lambda: |-
-      auto ot = opentherm::OpenThermComponent::get_singleton();
-      if (ot == nullptr) return false;
-      return ot->tap_flow();  // true if DHW tap/flow is active
     entity_category: diagnostic
     web_server:
       sorting_group_id: sorting_diagnostic
@@ -56,16 +29,6 @@ binary_sensor:
       sorting_group_id: sorting_diagnostic
 
   - platform: template
-    id: dhw_flowing
-    device_id: dhw
-    name: "DHW Water Flowing"
-    device_class: running
-    entity_category: diagnostic
-    web_server:
-      sorting_group_id: sorting_diagnostic
-
-  # Diagnistics
-  - platform: template
     id: boiler_flame
     name: "Boiler Flame"
     icon: mdi:fire
@@ -76,16 +39,8 @@ binary_sensor:
   - platform: template
     id: boiler_fault
     name: "Boiler Fault"
-    entity_category: diagnostic
     icon: mdi:alert-box
     device_class: problem
-    web_server:
-      sorting_group_id: sorting_diagnostic
-
-  - platform: template
-    id: boiler_diag
-    name: "Boiler Diagnostic"
-    icon: mdi:information
     entity_category: diagnostic
     web_server:
       sorting_group_id: sorting_diagnostic
@@ -105,3 +60,16 @@ binary_sensor:
     device_class: connectivity
     web_server:
       sorting_group_id: sorting_diagnostic
+
+  - platform: template
+    name: "Water Flow Detected"
+    id: tap_flow
+    device_id: dhw
+    device_class: running
+    entity_category: diagnostic
+    web_server:
+      sorting_group_id: sorting_diagnostic
+    lambda: |-
+      auto ot = opentherm::OpenThermComponent::get_singleton();
+      return ot ? ot->tap_flow() : false;
+

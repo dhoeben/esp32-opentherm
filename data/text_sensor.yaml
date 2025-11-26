@@ -1,7 +1,7 @@
 text_sensor:
   - platform: template
     id: fault_text
-    name: "Boiler Fault Text"
+    name: "Boiler Fault Detail"
     icon: mdi:alert-box-outline
     entity_category: diagnostic
     web_server:

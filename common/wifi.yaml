@@ -15,3 +15,6 @@ wifi:
   on_disconnect:
     - lambda: |-
         id(wifi_connected).publish_state(false);
+
+mdns:
+  disabled: false

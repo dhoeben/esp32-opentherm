@@ -13,7 +13,7 @@ binary_sensor:
     name: "DHW Active"
     device_id: dhw
     icon: mdi:water-boiler
-    device_class: none
+    device_class: power
     entity_category: diagnostic
     web_server:
       sorting_group_id: sorting_diagnostic

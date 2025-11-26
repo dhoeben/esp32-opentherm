@@ -4,10 +4,11 @@ climate:
     name: "Central Heating"
     icon: mdi:thermostat
     id: ch_climate
-    sensor: adaptive_indoor_temp        # feedback sensor order HA sensor > backup sensor > 21C
+    sensor: adaptive_indoor_temp
     device_id: ch
     web_server:
       sorting_group_id: sorting_control
+
     visual:
       min_temperature: 5
       max_temperature: 40
@@ -19,15 +20,13 @@ climate:
 
     preset:
       - name: away
-        default_target_temperature_low: 10
+        default_target_temperature_low: 12
       - name: eco
-        default_target_temperature_low: 15
-      - name: home
-        default_target_temperature_low: 18
+        default_target_temperature_low: 12
       - name: comfort
-        default_target_temperature_low: 20
+        default_target_temperature_low: 12
       - name: boost
-        default_target_temperature_low: 20
+        default_target_temperature_low: 12
 
     default_preset: eco
 
@@ -37,33 +36,42 @@ climate:
           if (ot == nullptr) return;
 
           std::string mode = id(compensation_mode).current_option();
-          std::string preset = "home";
+
+          std::string preset = "eco";
           if (id(ch_climate).preset.has_value()) {
             preset = to_string(id(ch_climate).preset.value());
+          }
+
+          if (preset == "away") {
+            const float away = id(away_temp).state;
+            if (!isnan(away)) {
+              auto call = id(ch_climate).make_call();
+              call.set_target_temperature(away);
+              call.perform();
+            }
           }
 
           float flow_target = 0.0f;
 
           if (preset == "boost") {
-            // 🚀 BOOST MODE: override equitherm target with boost temperature
-            flow_target = id(boost_temp).state;
-            ESP_LOGI("climate", "BOOST mode active: forcing flow %.1f°C", flow_target);
+            flow_target = id(max_boiler_temp_heating).state;
+            ESP_LOGI("climate", "BOOST mode active: forcing MAX flow %.1f°C", flow_target);
 
           } else if (mode == "Equitherm") {
-            // Normal equitherm operation
             flow_target = opentherm::Equitherm::calculate_target_temp();
             ESP_LOGI("climate", "Equitherm mode active (preset %s)", preset.c_str());
 
           } else {
-            // Let the boiler handle its own curve (no override)
-            flow_target = 0.0f;
             ESP_LOGI("climate", "Boiler internal compensation active (preset %s)", preset.c_str());
             return;
           }
 
-          // Safety clamp
-          if (flow_target < 10.0f) flow_target = 10.0f;
-          if (flow_target > id(max_boiler_temp_heating).state) flow_target = id(max_boiler_temp_heating).state;
+          // Safety clamp (flow cannot exceed max_heating_limit)
+          if (flow_target < 10.0f)
+            flow_target = 10.0f;
+
+          if (flow_target > id(max_boiler_temp_heating).state)
+            flow_target = id(max_boiler_temp_heating).state;
 
           uint16_t raw = static_cast<uint16_t>(flow_target * 256.0f);
           uint32_t frame = ot->build_request(opentherm::WRITE_DATA, 0x11, raw);
@@ -77,15 +85,14 @@ climate:
           auto ot = opentherm::OpenThermComponent::get_singleton();
           if (ot == nullptr) return;
 
-          auto preset_opt = id(ch_climate).preset;
-          std::string preset_str = "home";
-          if (preset_opt.has_value())
-            preset_str = to_string(preset_opt.value());
+          std::string preset_str = "eco";
+          if (id(ch_climate).preset.has_value())
+            preset_str = to_string(id(ch_climate).preset.value());
 
-          // Default: stop boiler completely
+          // Default: boiler idle (leidingen koud)
           float flow_target = 5.0f;
 
-          // Comfort or Boost → keep pipes slightly warm
+          // COMFORT & BOOST → leidingen warm houden
           if (preset_str == "comfort" || preset_str == "boost") {
             flow_target = 15.0f;
           }

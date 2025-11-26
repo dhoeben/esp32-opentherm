@@ -1,12 +1,12 @@
-opentherm:
-  id: otgw
-  debug: true
-  in_pin: !secret in_pin                    # shield D6 → MCU IN
-  out_pin: !secret out_pin                  # shield D5 ← MCU OUT
-  poll_interval: !secret poll_interval
-  rx_timeout: !secret rx_timeout
-  
-  boiler_temp: boiler_temp
-  return_temp: return_temp
-  modulation: modulation
-  setpoint: setpoint
+  custom_opentherm:
+  id:             otgw
+  in_pin:         !secret in_pin
+  out_pin:        !secret out_pin 
+  poll_interval:  !secret poll_interval
+  rx_timeout:     !secret rx_timeout
+  debug:          true
+
+  boiler_temp:    boiler_temp
+  return_temp:    return_temp
+  modulation:     modulation
+  setpoint:       setpoint

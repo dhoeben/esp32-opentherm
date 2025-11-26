@@ -31,6 +31,10 @@ web_server:
       name: "Diagnostics"
       sorting_weight: 60
 
+    - id: sorting_sensor
+      name: "Onboard sensor"
+      sorting_weight: 70
+
     - id: sorting_system
       name: "System"
-      sorting_weight: 70
+      sorting_weight: 80

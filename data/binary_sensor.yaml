@@ -13,6 +13,7 @@ binary_sensor:
     name: "DHW Active"
     device_id: dhw
     icon: mdi:water-boiler
+    device_class: none
     entity_category: diagnostic
     web_server:
       sorting_group_id: sorting_diagnostic
@@ -67,6 +68,7 @@ binary_sensor:
     device_id: dhw
     device_class: running
     entity_category: diagnostic
+    icon: mdi:hand-water
     web_server:
       sorting_group_id: sorting_diagnostic
     lambda: |-

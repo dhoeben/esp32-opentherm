@@ -37,7 +37,7 @@ sensor:
       entity_category: diagnostic
       device_class: temperature
       web_server:
-        sorting_group_id: sorting_diagnostic
+        sorting_group_id: sorting_sensor
 
     pressure:
       name: "Onboard Pressure"
@@ -46,7 +46,7 @@ sensor:
       device_class: pressure
       entity_category: diagnostic
       web_server:
-        sorting_group_id: sorting_diagnostic
+        sorting_group_id: sorting_sensor
 
     humidity:
       name: "Onboard Humidity"
@@ -55,7 +55,7 @@ sensor:
       device_class: humidity
       entity_category: diagnostic
       web_server:
-        sorting_group_id: sorting_diagnostic
+        sorting_group_id: sorting_sensor
 
     iaq:
       name: "Onbiard IAQ"
@@ -64,7 +64,7 @@ sensor:
       device_class: aqi
       entity_category: diagnostic
       web_server:
-        sorting_group_id: sorting_diagnostic
+        sorting_group_id: sorting_sensor
 
     co2_equivalent:
       name: "Onboard CO2 Equivalent"
@@ -73,7 +73,7 @@ sensor:
       device_class: carbon_dioxide
       entity_category: diagnostic
       web_server:
-        sorting_group_id: sorting_diagnostic
+        sorting_group_id: sorting_sensor
 
     breath_voc_equivalent:
       name: "Onboard Breath VOC Equivalent"
@@ -82,7 +82,7 @@ sensor:
       device_class: volatile_organic_compounds
       entity_category: diagnostic
       web_server:
-        sorting_group_id: sorting_diagnostic
+        sorting_group_id: sorting_sensor
 
 
   # Internal temperature sensor used
@@ -175,6 +175,7 @@ sensor:
     name: "DHW Flow Rate"
     device_id: dhw
     accuracy_decimals: 2
+    icon: mdi:hydro-power
     entity_category: diagnostic
     device_class: volume_flow_rate
     web_server:

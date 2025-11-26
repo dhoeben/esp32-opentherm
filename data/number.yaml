@@ -100,6 +100,7 @@ number:
     max_value: 25
     mode: box 
     entity_category: config
+    internal: true
     step: 0.5
     initial_value: 18.0
     unit_of_measurement: "°C"
@@ -113,6 +114,7 @@ number:
     id: boost_temp
     device_id: ch
     icon: mdi:rocket-launch
+    internal: true
     min_value: 18
     max_value: 25
     mode: box 
@@ -127,6 +129,7 @@ number:
 
   - platform: template
     name: "Preset comfort Temperature"
+    internal: true
     id: comfort_temp
     device_id: ch
     icon: mdi:white-balance-sunny
@@ -144,6 +147,7 @@ number:
 
   - platform: template
     name: "Preset eco Temperature"
+    internal: true
     id: eco_temp
     device_id: ch
     icon: mdi:leaf
@@ -164,6 +168,7 @@ number:
     id: away_temp
     device_id: ch
     icon: mdi:home-export-outline
+    internal: true
     min_value: 5
     max_value: 20
     mode: box 
@@ -182,7 +187,7 @@ number:
     id: indoor_temp_offset
     name: "Temperature Offset"
     icon: mdi:tune-variant
-    entity_category: diagnostic
+    entity_category: config
     device_id: ch
     unit_of_measurement: "°C"
     restore_value: true

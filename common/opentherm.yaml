@@ -1,12 +1,12 @@
   custom_opentherm:
-  id:             otgw
-  in_pin:         !secret in_pin
-  out_pin:        !secret out_pin 
-  poll_interval:  !secret poll_interval
-  rx_timeout:     !secret rx_timeout
-  debug:          true
+    id:             otgw
+    in_pin:         !secret in_pin
+    out_pin:        !secret out_pin 
+    poll_interval:  !secret poll_interval
+    rx_timeout:     !secret rx_timeout
+    debug:          true
 
-  boiler_temp:    boiler_temp
-  return_temp:    return_temp
-  modulation:     modulation
-  setpoint:       setpoint
+    boiler_temp:    boiler_temp
+    return_temp:    return_temp
+    modulation:     modulation
+    setpoint:       setpoint

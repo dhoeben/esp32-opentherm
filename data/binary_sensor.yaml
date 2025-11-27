@@ -51,12 +51,13 @@ binary_sensor:
     name: "OpenTherm Communication"
     entity_category: diagnostic
     device_class: connectivity
+    icon: mdi:connection
     web_server:
       sorting_group_id: sorting_diagnostic
 
   - platform: template
     id: wifi_connected
-    name: "Wi-Fi Connection"
+    name: "WiFi"
     entity_category: diagnostic
     device_class: connectivity
     web_server:

@@ -214,7 +214,7 @@ sensor:
 
   # Diagnostics
   - platform: wifi_signal
-    name: "Wi-Fi Signal"
+    name: "WiFi RSSI"
     update_interval: 60s
     entity_category: diagnostic
     device_class: signal_strength

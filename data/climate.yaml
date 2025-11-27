@@ -41,7 +41,6 @@ climate:
 
           if (preset != "away") {
             id(climate_last_set_temp) = new_temp;
-            ESP_LOGI("climate", "User changed temp → storing %.1f", new_temp);
           }
 
     preset_change:
@@ -50,17 +49,16 @@ climate:
           if (id(ch_climate).preset.has_value())
             preset = to_string(id(ch_climate).preset.value());
 
-          float new_temp;
+          float set_temp;
 
           if (preset == "away") {
-            new_temp = id(away_temp).state;
-            id(climate_last_set_temp) = new_temp;
+            set_temp = id(away_temp).state;
           } else {
-            new_temp = id(climate_last_set_temp);
+            set_temp = id(climate_last_set_temp);
           }
 
           auto call = id(ch_climate).make_call();
-          call.set_target_temperature(new_temp);
+          call.set_target_temperature(set_temp);
           call.perform();
 
     heat_action:

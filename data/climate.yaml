@@ -35,18 +35,14 @@ climate:
       - lambda: |-
           float new_temp = id(ch_climate).target_temperature;
 
-          // Haal de preset als enum op
           auto preset_opt = id(ch_climate).preset;
           auto preset = preset_opt.value_or(esphome::climate::CLIMATE_PRESET_NONE);
 
-          // Alle modi behalve AWAY mogen de global bijwerken
           if (preset != esphome::climate::CLIMATE_PRESET_AWAY) {
             id(climate_last_set_temp) = new_temp;
-            ESP_LOGI("climate", "User changed temp → storing %.1f", new_temp);
-          } else {
-            ESP_LOGI("climate", "AWAY: temperature change ignored for last_set_temp");
-          }
-          
+            id(climate_last_active_temp) = new_temp; 
+          } 
+
     preset_change:
       - lambda: |-
           auto preset_opt = id(ch_climate).preset;
@@ -56,12 +52,8 @@ climate:
 
           if (preset == esphome::climate::CLIMATE_PRESET_AWAY) {
             set_temp = id(preset_away_temp).state;
-            id(climate_last_set_temp) = set_temp;
-            ESP_LOGI("climate", "Preset=AWAY → setting temp to %.1f°C", set_temp);
           } else {
-            set_temp = id(climate_last_set_temp);
-            ESP_LOGI("climate", "Preset changed (non-away) → restoring temp %.1f°C",
-                     set_temp);
+            set_temp = id(climate_last_active_temp);
           }
 
           auto call = id(ch_climate).make_call();

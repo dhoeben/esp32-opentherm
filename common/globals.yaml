@@ -8,3 +8,8 @@ globals:
     type: float
     restore_value: no
     initial_value: "18.0"
+
+  - id: climate_last_active_temp
+    type: float
+    restore_value: no
+    initial_value: "20.0"

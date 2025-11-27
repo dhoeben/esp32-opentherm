@@ -4,29 +4,49 @@ sensor:
     entity_id: !secret weather_entity
     attribute: temperature
     id: ha_weather_temp
-    name: Temperature outdoor HA
+    name: HA Temperature outdoor
     icon: mdi:home-assistant
     internal: true
-    unit_of_measurement: "°C"
+    device_class: temperature
     accuracy_decimals: 1
     web_server:
       sorting_group_id: sorting_diagnostic
     filters:
       - lambda: |-
-          if (isnan(x)) return 10.0f;  // fallback if no weather data
-          return x;
+          if (isnan(id(ha_weather_temp).state)) {
+            return 10.0f;
+          }
+          return id(ha_weather_temp).state;
 
   - platform: homeassistant
     entity_id: !secret indoor_entity
     id: ha_indoor_temp
-    name: Temperature indoor HA
+    name: HA Temperature indoor
     icon: mdi:home-assistant
     force_update: true
     internal: true
-    unit_of_measurement: "°C"
+    device_class: temperature
     accuracy_decimals: 1
     web_server:
       sorting_group_id: sorting_diagnostic
+
+  - platform: homeassistant
+    entity_id: !secret humidity_entity
+    id: ha_indoor_humidity
+    name: HA Humidity indoor
+    icon: mdi:home-assistant
+    force_update: true
+    internal: true
+    device_class: humidity
+    accuracy_decimals: 1
+    web_server:
+      sorting_group_id: sorting_diagnostic
+    filters:
+      - lambda: |-
+          if (isnan(id(ha_indoor_humidity).state)) {
+            return 0.0f;
+          }
+          return id(ha_indoor_humidity).state;
   
   # External hardware sensor
   - platform: bme68x_bsec2

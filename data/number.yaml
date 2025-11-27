@@ -40,7 +40,7 @@ number:
     entity_category: config
     restore_value: true
     optimistic: true
-    unit_of_measurement: "°C"
+    device_class: temperature
     icon: mdi:alpha-t
     web_server:
       sorting_group_id: sorting_equitherm
@@ -69,7 +69,7 @@ number:
     max_value: 90
     mode: box 
     step: 1
-    unit_of_measurement: "°C"
+    device_class: temperature
     restore_value: true
     optimistic: true
     icon: mdi:thermometer-high
@@ -83,7 +83,7 @@ number:
     max_value: 90
     mode: box 
     step: 1
-    unit_of_measurement: "°C"
+    device_class: temperature
     restore_value: true
     optimistic: true
     icon: mdi:thermometer-high
@@ -103,7 +103,7 @@ number:
     entity_category: config
     step: 0.5
     initial_value: 12
-    unit_of_measurement: "°C"
+    device_class: temperature
     restore_value: true
     optimistic: true
     web_server:
@@ -117,7 +117,7 @@ number:
     icon: mdi:tune-variant
     entity_category: config
     device_id: ch
-    unit_of_measurement: "°C"
+    device_class: temperature_delta
     restore_value: true
     mode: box  
     min_value: -5.0

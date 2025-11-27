@@ -5,6 +5,7 @@ climate:
     icon: mdi:thermostat
     id: ch_climate
     sensor: adaptive_indoor_temp
+    humidity_sensor: ha_indoor_humidity
     device_id: ch
     web_server:
       sorting_group_id: sorting_control
@@ -30,54 +31,79 @@ climate:
 
     default_preset: eco
 
+    target_temperature_change_action:
+      - lambda: |-
+          float new_temp = id(ch_climate).target_temperature;
+
+          std::string preset = "eco";
+          if (id(ch_climate).preset.has_value())
+            preset = to_string(id(ch_climate).preset.value());
+
+          if (preset != "away") {
+            id(climate_last_set_temp) = new_temp;
+            ESP_LOGI("climate", "User changed temp → storing %.1f", new_temp);
+          }
+
+    preset_change:
+      - lambda: |-
+          std::string preset = "eco";
+          if (id(ch_climate).preset.has_value())
+            preset = to_string(id(ch_climate).preset.value());
+
+          float new_temp;
+
+          if (preset == "away") {
+            new_temp = id(away_temp).state;
+            id(climate_last_set_temp) = new_temp;
+          } else {
+            new_temp = id(climate_last_set_temp);
+          }
+
+          auto call = id(ch_climate).make_call();
+          call.set_target_temperature(new_temp);
+          call.perform();
+
     heat_action:
       - lambda: |-
           auto ot = opentherm::OpenThermComponent::get_singleton();
           if (ot == nullptr) return;
 
           std::string mode = id(compensation_mode).current_option();
-
           std::string preset = "eco";
-          if (id(ch_climate).preset.has_value()) {
+          if (id(ch_climate).preset.has_value())
             preset = to_string(id(ch_climate).preset.value());
-          }
-
-          if (preset == "away") {
-            const float away = id(away_temp).state;
-            if (!isnan(away)) {
-              auto call = id(ch_climate).make_call();
-              call.set_target_temperature(away);
-              call.perform();
-            }
-          }
 
           float flow_target = 0.0f;
 
+          // BOOST → max flow
           if (preset == "boost") {
             flow_target = id(max_boiler_temp_heating).state;
-            ESP_LOGI("climate", "BOOST mode active: forcing MAX flow %.1f°C", flow_target);
+            ESP_LOGI("climate", "BOOST → MAX flow %.1f°C", flow_target);
 
+          // ECO / COMFORT → equitherm
           } else if (mode == "Equitherm") {
             flow_target = opentherm::Equitherm::calculate_target_temp();
-            ESP_LOGI("climate", "Equitherm mode active (preset %s)", preset.c_str());
+            ESP_LOGI("climate", 
+                     "Equitherm (%s) → Flow=%.1f°C",
+                     preset.c_str(), flow_target);
 
+          // Boiler curve fallback
           } else {
-            ESP_LOGI("climate", "Boiler internal compensation active (preset %s)", preset.c_str());
+            ESP_LOGI("climate", "Boiler internal curve active");
             return;
           }
 
-          // Safety clamp (flow cannot exceed max_heating_limit)
-          if (flow_target < 10.0f)
-            flow_target = 10.0f;
+          // Clamp to max allowed flow
+          float max_flow = id(max_boiler_temp_heating).state;
+          if (flow_target < 10.0f) flow_target = 10.0f;
+          if (flow_target > max_flow) flow_target = max_flow;
 
-          if (flow_target > id(max_boiler_temp_heating).state)
-            flow_target = id(max_boiler_temp_heating).state;
-
-          uint16_t raw = static_cast<uint16_t>(flow_target * 256.0f);
+          uint16_t raw = (uint16_t)(flow_target * 256.0f);
           uint32_t frame = ot->build_request(opentherm::WRITE_DATA, 0x11, raw);
           ot->send_frame(frame);
 
-          ESP_LOGI("climate", "Heating ON | Preset: %s | Flow target: %.1f°C",
+          ESP_LOGI("climate",
+                   "Heating ON | Preset=%s | Flow=%.1f°C",
                    preset.c_str(), flow_target);
 
     idle_action:
@@ -85,24 +111,26 @@ climate:
           auto ot = opentherm::OpenThermComponent::get_singleton();
           if (ot == nullptr) return;
 
-          std::string preset_str = "eco";
+          std::string preset = "eco";
           if (id(ch_climate).preset.has_value())
-            preset_str = to_string(id(ch_climate).preset.value());
+            preset = to_string(id(ch_climate).preset.value());
 
-          // Default: boiler idle (leidingen koud)
+          // Default idle → cold pipes
           float flow_target = 5.0f;
 
-          // COMFORT & BOOST → leidingen warm houden
-          if (preset_str == "comfort" || preset_str == "boost") {
+          // Comfort / Boost warm idle
+          if (preset == "comfort" || preset == "boost") {
             flow_target = 15.0f;
           }
 
-          uint16_t raw = static_cast<uint16_t>(flow_target * 256.0f);
+          uint16_t raw = (uint16_t)(flow_target * 256.0f);
           uint32_t frame = ot->build_request(opentherm::WRITE_DATA, 0x11, raw);
           ot->send_frame(frame);
 
-          ESP_LOGI("otgw", "Heating OFF | Preset: %s | Flow target: %.1f°C",
-                   preset_str.c_str(), flow_target);
+          ESP_LOGI("climate",
+                   "Heating OFF | Preset=%s | Idle Flow=%.1f°C",
+                   preset.c_str(), flow_target);
+
 
 
   # Domestic Hot Waterclimate:

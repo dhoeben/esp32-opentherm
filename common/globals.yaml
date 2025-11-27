@@ -3,3 +3,8 @@ globals:
     type: bool
     restore_value: no
     initial_value: "false"
+
+  - id: climate_last_set_temp
+    type: float
+    restore_value: no
+    initial_value: "18.0"

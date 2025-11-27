@@ -92,11 +92,10 @@ number:
 
   # Climate entity
   - platform: template
-    name: "Preset away Temperature"
-    id: away_temp
+    name: "Preset away temperature"
+    id: preset_away_temp
     device_id: ch
     icon: mdi:home-export-outline
-    internal: true
     min_value: 5
     max_value: 20
     mode: box 

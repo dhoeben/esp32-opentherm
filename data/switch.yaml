@@ -49,10 +49,3 @@ switch:
     entity_category: diagnostic
     web_server:
       sorting_group_id: sorting_system
-    on_turn_on:
-      - light.turn_off: led_red
-      - light.turn_off: led_orange
-      - light.turn_off: led_yellow
-      - light.turn_off: led_blue
-      - light.turn_off: led_purple
-      - light.turn_off: led_white

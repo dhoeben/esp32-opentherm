@@ -1,6 +1,6 @@
 i2c:
-  sda: !secret i2c_sda_pin
-  scl: !secret i2c_scl_pin
+  sda: !secret pin_i2c_sda
+  scl: !secret pin_i2c_scl
   id: i2c_bme680
   scan: true
 

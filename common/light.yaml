@@ -1,79 +1,89 @@
-output:
-  - platform: gpio
-    pin: !secret light_red_pin
-    id: output_led_red
-
-  - platform: gpio
-    pin: !secret light_orange_pin
-    id: output_led_orange
-
-  - platform: gpio
-    pin: !secret light_yellow_pin
-    id: output_led_yellow
-
-  - platform: gpio
-    pin: !secret light_blue_pin
-    id: output_led_blue
-
-  - platform: gpio
-    pin: !secret light_purple_pin
-    id: output_led_purple
-
-  - platform: gpio
-    pin: !secret light_white_pin
-    id: output_led_white
-
 light:
-  - platform: binary
-    name: "LED red"
-    output: output_led_red
+  - platform: esp32_rmt_led_strip 
+    name: "LEDs"
+    id: led_strip
     icon: mdi:circle
-    internal: true
-    id: led_red
+    pin: !secret pin_leds
+    chipset: WS2812
+    rgb_order: GRB
+    num_leds: 7
     web_server:
       sorting_group_id: sorting_system
+    
+    on_turn_on:
+      - light.turn_on:
+          id: led_strip
+          effect: "Status Monitor"
 
-  - platform: binary
-    name: "LED orange"
-    icon: mdi:circle
-    internal: true
-    output: output_led_orange
-    id: led_orange
-    web_server:
-      sorting_group_id: sorting_system
+    effects:
+      - addressable_lambda:
+          name: "Status Monitor"
+          update_interval: 250ms 
+          lambda: |-
+            // ----------------------------------------------------------
+            // 0. Developer Mode Check - All LEDs OFF
+            // ----------------------------------------------------------
+            if (id(developer_mode_switch).state) {
+              it.all() = Color::BLACK;
+              return; 
+            }
 
-  - platform: binary
-    name: "LED yellow"
-    icon: mdi:circle
-    internal: true
-    output: output_led_yellow
-    id: led_yellow
-    web_server:
-      sorting_group_id: sorting_system
+            bool blink_on = (millis() / 1000) % 2 == 0;
 
-  - platform: binary
-    name: "LED blue"
-    icon: mdi:circle
-    internal: true
-    output: output_led_blue
-    id: led_blue
-    web_server:
-      sorting_group_id: sorting_system
+            // ----------------------------------------------------------
+            // LED 1 (Index 0): RED — Boiler Fault
+            // ----------------------------------------------------------
+            if (id(boiler_fault).state) {
+              it[0] = Color(255, 0, 0);
+            } else {
+              it[0] = Color(0, 0, 0);
+            }
 
-  - platform: binary
-    name: "LED purple"
-    icon: mdi:circle
-    internal: true
-    output: output_led_purple
-    id: led_purple
-    web_server:
-      sorting_group_id: sorting_system
+            // ----------------------------------------------------------
+            // LED 2 (Index 1): ORANGE — Emergency Mode
+            // ----------------------------------------------------------
+            if (id(emergency_mode).state) {
+              it[1] = Color(255, 165, 0); 
+            } else {
+              it[1] = Color(0, 0, 0);
+            }
 
-  - platform: binary
-    name: "LED white"
-    icon: mdi:circle
-    internal: true
-    output: output_led_white
-    id: led_white
-    web_server:
-      sorting_group_id: sorting_system
+            // ----------------------------------------------------------
+            // LED 3 (Index 2): YELLOW — Backup Temp Mode
+            // ----------------------------------------------------------
+            if (id(backup_temp_switch).state) {
+              it[2] = Color(255, 255, 0);
+            } else {
+              it[2] = Color(0, 0, 0);
+            }
+
+            // ----------------------------------------------------------
+            // LED 4 (Index 3): BLUE — WiFi Status
+            // ----------------------------------------------------------
+            if (id(wifi_connected).state) {
+              it[3] = Color(0, 0, 0);
+            } else {
+              if (blink_on) {
+                it[3] = Color(0, 0, 255);
+              } else {
+                it[3] = Color(0, 0, 0);
+              }
+            }
+
+            // ----------------------------------------------------------
+            // LED 5 (Index 4): PURPLE — OpenTherm Comms Failure
+            // ----------------------------------------------------------
+            if (!id(comms_ok).state) {
+              it[4] = Color(128, 0, 128); 
+            } else {
+              it[4] = Color(0, 0, 0);
+            }
+
+            // ----------------------------------------------------------
+            // LED 6 (Index 5): WHITE — API (HA) Disconnected
+            // ----------------------------------------------------------
+            if (id(api_connected)) {
+               it[5] = Color(0, 0, 0);
+            } else {
+               it[5] = Color(255, 255, 255); 
+            }

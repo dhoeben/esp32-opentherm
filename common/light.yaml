@@ -31,59 +31,68 @@ light:
             bool blink_on = (millis() / 1000) % 2 == 0;
 
             // ----------------------------------------------------------
-            // LED 1 (Index 0): RED — Boiler Fault
+            // LED 1 (Index 0): GREEN — Power
             // ----------------------------------------------------------
-            if (id(boiler_fault).state) {
-              it[0] = Color(255, 0, 0);
-            } else {
-              it[0] = Color(0, 0, 0);
-            }
+            it[0] = Color(0, 255, 0); 
 
             // ----------------------------------------------------------
-            // LED 2 (Index 1): ORANGE — Emergency Mode
+            // LED 2 (Index 1): YELLOW — Emergency Mode
             // ----------------------------------------------------------
             if (id(emergency_mode).state) {
-              it[1] = Color(255, 165, 0); 
+              it[1] = Color(255, 255, 0); 
             } else {
               it[1] = Color(0, 0, 0);
             }
 
             // ----------------------------------------------------------
-            // LED 3 (Index 2): YELLOW — Backup Temp Mode
+            // LED 3 (Index 2): ORANGE — Backup Temp Mode
             // ----------------------------------------------------------
             if (id(backup_temp_switch).state) {
-              it[2] = Color(255, 255, 0);
+              it[2] = Color(255, 165, 0);
             } else {
               it[2] = Color(0, 0, 0);
             }
 
             // ----------------------------------------------------------
-            // LED 4 (Index 3): BLUE — WiFi Status
+            // LED 4 (Index 3): RED — OpenTherm Comms Failure
+            // ----------------------------------------------------------
+            if (!id(comms_ok).state) {
+              it[3] = Color(255, 0, 0); 
+            } else {
+              it[3] = Color(0, 0, 0);
+            }
+
+            // ----------------------------------------------------------
+            // LED 5 (Index 4): PURPLE — API (HA) Disconnected
+            // ----------------------------------------------------------
+            if (id(api_connected)) {
+               it[4] = Color(0, 0, 0);
+            } else {
+               it[4] = Color(128, 0, 128); 
+            }
+
+            // ----------------------------------------------------------
+            // LED 6 (Index 5): BLUE — WiFi Status
             // ----------------------------------------------------------
             if (id(wifi_connected).state) {
-              it[3] = Color(0, 0, 0);
+              it[5] = Color(0, 0, 0);
             } else {
               if (blink_on) {
-                it[3] = Color(0, 0, 255);
+                it[5] = Color(0, 0, 255);
               } else {
-                it[3] = Color(0, 0, 0);
+                it[5] = Color(0, 0, 0);
               }
             }
 
             // ----------------------------------------------------------
-            // LED 5 (Index 4): PURPLE — OpenTherm Comms Failure
+            // LED 7 (Index 6): WHITE — Boiler Fault
             // ----------------------------------------------------------
-            if (!id(comms_ok).state) {
-              it[4] = Color(128, 0, 128); 
+            if (id(boiler_fault).state) {
+              it[6] = Color(0, 0, 0);
             } else {
-              it[4] = Color(0, 0, 0);
-            }
-
-            // ----------------------------------------------------------
-            // LED 6 (Index 5): WHITE — API (HA) Disconnected
-            // ----------------------------------------------------------
-            if (id(api_connected)) {
-               it[5] = Color(0, 0, 0);
-            } else {
-               it[5] = Color(255, 255, 255); 
+              if (blink_on) {
+                it[6] = Color(255, 255, 255);
+              } else {
+                it[6] = Color(0, 0, 0);
+              }
             }

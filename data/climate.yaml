@@ -41,7 +41,7 @@ climate:
           if (preset != esphome::climate::CLIMATE_PRESET_AWAY) {
             id(climate_last_set_temp) = new_temp;
             id(climate_last_active_temp) = new_temp; 
-          } 
+          }
 
     preset_change:
       - lambda: |-
@@ -97,7 +97,7 @@ climate:
           if (flow_target > max_flow) flow_target = max_flow;
 
           uint16_t raw = (uint16_t)(flow_target * 256.0f);
-          
+
           ot->send_request(opentherm::OT_MSG_WRITE_DATA, 0x11, raw);
 
           ESP_LOGI("climate",
@@ -122,14 +122,13 @@ climate:
           }
 
           uint16_t raw = (uint16_t)(flow_target * 256.0f);
-          
+
           // AANGEPAST: Nieuwe send methode
           ot->send_request(opentherm::OT_MSG_WRITE_DATA, 0x11, raw);
 
           ESP_LOGI("climate",
                    "Heating OFF | Preset=%s | Idle Flow=%.1f°C",
                    preset.c_str(), flow_target);
-
 
   # Domestic Hot Water
   - platform: thermostat

@@ -130,7 +130,7 @@ climate:
 
 
 
-  # Domestic Hot Waterclimate:
+  # Domestic Hot Water
   - platform: thermostat
     name: "Domestic Hot Water"
     id: dhw_climate

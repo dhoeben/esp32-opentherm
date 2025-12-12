@@ -10,7 +10,7 @@ esp32:
       CONFIG_ESP_CONSOLE_UART_DEFAULT: y
       CONFIG_ESP_CONSOLE_USB_CDC: n
 
-      # Disable PSRAM entirely (required for GPIO35/36 use)
+      # Disable PSRAM entirely
       CONFIG_ESP32S3_SPIRAM_SUPPORT: n
       CONFIG_SPIRAM_MODE_OCT: n
       CONFIG_SPIRAM_TYPE_AUTO: n

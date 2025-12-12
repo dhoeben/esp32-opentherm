@@ -24,7 +24,8 @@ binary_sensor:
     id: dhw_preheat_active
     icon: "mdi:water-boiler"
     lambda: |-
-      return opentherm::DHW::comfort_mode_enabled;
+      auto ot = opentherm::OpenThermComponent::get_singleton();
+      return ot ? ot->dhw_.is_active() : false;
     entity_category: diagnostic
     web_server:
       sorting_group_id: sorting_diagnostic
@@ -75,4 +76,3 @@ binary_sensor:
     lambda: |-
       auto ot = opentherm::OpenThermComponent::get_singleton();
       return ot ? ot->tap_flow() : false;
-

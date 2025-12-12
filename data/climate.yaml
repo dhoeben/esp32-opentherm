@@ -79,7 +79,8 @@ climate:
 
           // ECO / COMFORT → equitherm
           } else if (mode == "Equitherm") {
-            flow_target = opentherm::Equitherm::calculate_target_temp();
+            // Nieuwe aanroep: via het equitherm_ object
+            flow_target = ot->equitherm_.calculate_target(ot->boiler_.get_limit_temp());
             ESP_LOGI("climate", 
                      "Equitherm (%s) → Flow=%.1f°C",
                      preset.c_str(), flow_target);
@@ -96,8 +97,8 @@ climate:
           if (flow_target > max_flow) flow_target = max_flow;
 
           uint16_t raw = (uint16_t)(flow_target * 256.0f);
-          uint32_t frame = ot->build_request(opentherm::WRITE_DATA, 0x11, raw);
-          ot->send_frame(frame);
+          
+          ot->send_request(opentherm::OT_MSG_WRITE_DATA, 0x11, raw);
 
           ESP_LOGI("climate",
                    "Heating ON | Preset=%s | Flow=%.1f°C",
@@ -121,13 +122,13 @@ climate:
           }
 
           uint16_t raw = (uint16_t)(flow_target * 256.0f);
-          uint32_t frame = ot->build_request(opentherm::WRITE_DATA, 0x11, raw);
-          ot->send_frame(frame);
+          
+          // AANGEPAST: Nieuwe send methode
+          ot->send_request(opentherm::OT_MSG_WRITE_DATA, 0x11, raw);
 
           ESP_LOGI("climate",
                    "Heating OFF | Preset=%s | Idle Flow=%.1f°C",
                    preset.c_str(), flow_target);
-
 
 
   # Domestic Hot Water
@@ -162,10 +163,9 @@ climate:
           auto ot = opentherm::OpenThermComponent::get_singleton();
           if (ot == nullptr) return;
 
-          float t = id(dhw_climate).target_temperature;
-          opentherm::DHW::set_target_temp(ot, t);
-          opentherm::DHW::set_enabled(ot, true);
-          ESP_LOGI("dhw_climate", "Heating DHW to %.1f°C", t);
+          // AANGEPAST: Via dhw_ object en enum class
+          ot->dhw_.set_mode(opentherm::DHWMode::HEAT);
+          ESP_LOGI("dhw_climate", "Heating DHW enabled");
 
     idle_action:
       - lambda: |-
@@ -175,9 +175,9 @@ climate:
           auto preset = id(dhw_climate).preset.value_or(esphome::climate::CLIMATE_PRESET_COMFORT);
 
           if (preset == esphome::climate::CLIMATE_PRESET_ECO) {
-            opentherm::DHW::set_mode(ot, opentherm::DHW::Mode::ECO);
+            ot->dhw_.set_mode(opentherm::DHWMode::ECO);
           } else {
-            opentherm::DHW::set_mode(ot, opentherm::DHW::Mode::HEAT);
+            ot->dhw_.set_mode(opentherm::DHWMode::HEAT);
           }
 
           const char *preset_str =

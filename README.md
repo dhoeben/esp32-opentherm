@@ -7,10 +7,11 @@ This project implements a **fully native OpenTherm Gateway** using an **ESP32-S3
 It acts as a modern, reliable, and flexible interface between your boiler and Home Assistant — featuring full OpenTherm communication, diagnostics, and web-accessible emergency controls.
 It is designed to work with the PCB attached in the .pcb folder, to create the PCB just download the gerber files and order at your convenience.
 
-*Do not sell! This is a hobby project, Use at your own risk, you may damage your boiler.*
+*This is a hobby project, use at your own risk. It might damage your boiler when used incorrectly.*
+*Do not sell!*
 
 
-Feel free to also use my [battery powered thermostat](https://github.com/dhoeben/esp32-thermostat) I created, which features an e-ink display, fully customizable and has it's own PCB you can just order! 
+Feel free to also checkout my [battery powered thermostat](https://github.com/dhoeben/esp32-thermostat), which features an e-ink display, fully customizable and has it's own PCB you can just order! 
 
 
 ### ⬇️ Installation
@@ -23,14 +24,14 @@ Feel free to also use my [battery powered thermostat](https://github.com/dhoeben
 7) Connect to Home Assistant
 
 
-### 🚀 Features
+### 🚀 Featuress
 - Full OpenTherm Protocol Support
 - Integrated Home Assistant Support
 - Emergency Mode (Offline Control)
 - Optional weather Compensation (Equitherm or boilers own)  
 - Diagnostic & Monitoring (boiler state, flame, fault codes)  
 
-### ⚙️ My PCB Overview
+### ⚙️ PCB Overview
 - 4 layer PCB build from scratch
 - Used the best part and foodprint for the task.
 - Created Galvanic isolation, so no false signals or inteferance.

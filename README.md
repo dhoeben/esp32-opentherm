@@ -7,18 +7,18 @@ This project implements a fully native OpenTherm Gateway using an ESP32-S3 chip 
 It acts as a modern, reliable, and flexible interface between your boiler and Home Assistant — featuring full OpenTherm communication, diagnostics, and web-accessible emergency controls.
 It is designed to work with the PCB attached in the .pcb folder, to create the PCB just download the gerber files and order at your convenience.
 
-*This is a hobby project, use at your own risk. It might damage your boiler when used incorrectly.*
-*Do not sell!*
-
 Feel free to also checkout my [battery powered thermostat](https://github.com/dhoeben/esp32-thermostat), which features an e-ink display, fully customizable and has it's own PCB you can just order! 
 
 ### ⚠️ Use case
 The PCB is not designed to connect to a thermostat via wire! It is a stand-alone gateway which gets all data from Home Assistant. Most boilers do have a 12-24v output, which you can connect your wired thermostat to for power. But the data from the thermostat **must** be available in Home Assistant.
 
+*This is a hobby project, use at your own risk. It might damage your boiler when used incorrectly.*
+*Do not sell!*
+
 ### 🛒 Shopping list
 | Item | Name | Quantity | Price | Link |
 | :--- | :---: | :--- | :--- | :--- |
-| **PCB screuws** | M3x10 or M3 x 12 | 4 | $0.50 - $5 | [Link](https://www.waveshare.com/4.26inch-e-paper-hat.htm) |
+| **Screws** | M3x10 or M3 x 12 | 4 | $0.50 - $5 | Any |
 | **PCB** | Attached in .pcb folder | 1 | $50 - $200 | [Link](.pcb/gerber_files.zip) |
 | **Case** | Attached in .pcb folder | 1 | $10 - $80 | [Link](.pcb/) |
 

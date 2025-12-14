@@ -1,13 +1,17 @@
-# OpenTherm Gateway [![GitHub release](https://img.shields.io/github/v/release/dhoeben/esp32-opentherm.svg)](https://GitHub.com/dhoeben/esp32-opentherm/releases/) [![ESPHome version](https://img.shields.io/badge/Based%20on%20ESPHome-v2025.12.1-blue)](https://GitHub.com/esphome/esophome/releases/)
+# OpenTherm Gateway 
+[![GitHub release](https://img.shields.io/github/v/release/dhoeben/esp32-opentherm.svg)](https://GitHub.com/dhoeben/esp32-opentherm/releases/) [![ESPHome version](https://img.shields.io/badge/Based%20on%20ESPHome-v2025.12.1-blue)](https://GitHub.com/esphome/esphome/releases/)
 
 
 
-This project is still a work in progress and will implements a **fully native OpenTherm Gateway** using an **ESP32-S3** chip and ESPHome.  
+This project implements a **fully native OpenTherm Gateway** using an **ESP32-S3** chip and ESPHome.  
 It acts as a modern, reliable, and flexible interface between your boiler and Home Assistant — featuring full OpenTherm communication, diagnostics, and web-accessible emergency controls.
 It is designed to work with the PCB attached in the .pcb folder, to create the PCB just download the gerber files and order at your convenience.
 
-Feel free to also use my thermostat I created, which uses a E-ink display and is also fully customizable. Also has it's own PCB you can just order! https://github.com/dhoeben/esp32-thermostat. 
-Do not sell!
+*Do not sell! This is a hobby project, Use at your own risk, you may damage your boiler.*
+
+
+Feel free to also use my [battery powered thermostat](https://github.com/dhoeben/esp32-thermostat) I created, which features an e-ink display, fully customizable and has it's own PCB you can just order! 
+
 
 ### ⬇️ Installation
 1) Order PCB using gerber_files and 3D print / assemble case.

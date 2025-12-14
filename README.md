@@ -3,16 +3,24 @@
 
 
 
-This project implements a **fully native OpenTherm Gateway** using an **ESP32-S3** chip and ESPHome.  
+This project implements a fully native OpenTherm Gateway using an ESP32-S3 chip and ESPHome. 
 It acts as a modern, reliable, and flexible interface between your boiler and Home Assistant — featuring full OpenTherm communication, diagnostics, and web-accessible emergency controls.
 It is designed to work with the PCB attached in the .pcb folder, to create the PCB just download the gerber files and order at your convenience.
 
 *This is a hobby project, use at your own risk. It might damage your boiler when used incorrectly.*
 *Do not sell!*
 
-
 Feel free to also checkout my [battery powered thermostat](https://github.com/dhoeben/esp32-thermostat), which features an e-ink display, fully customizable and has it's own PCB you can just order! 
 
+### ⚠️ Use case
+The PCB is not designed to connect to a thermostat via wire! It is a stand-alone gateway which gets all data from Home Assistant. Most boilers do have a 12-24v output, which you can connect your wired thermostat to for power. But the data from the thermostat **must** be available in Home Assistant.
+
+### 🛒 Shopping list
+| Item | Name | Quantity | Price | Link |
+| :--- | :---: | :--- | :--- | :--- |
+| **PCB screuws** | M3x10 or M3 x 12 | 4 | $0.50 - $5 | [Link](https://www.waveshare.com/4.26inch-e-paper-hat.htm) |
+| **PCB** | Attached in .pcb folder | 1 | $50 - $200 | [Link](.pcb/gerber_files.zip) |
+| **Case** | Attached in .pcb folder | 1 | $10 - $80 | [Link](.pcb/) |
 
 ### ⬇️ Installation
 1) Order PCB using gerber_files and 3D print / assemble case.
@@ -22,14 +30,6 @@ Feel free to also checkout my [battery powered thermostat](https://github.com/dh
 5) Flash to PCB using USB.
 6) Connect to boiler's OpenTherm connectors.
 7) Connect to Home Assistant
-
-
-### 🚀 Featuress
-- Full OpenTherm Protocol Support
-- Integrated Home Assistant Support
-- Emergency Mode (Offline Control)
-- Optional weather Compensation (Equitherm or boilers own)  
-- Diagnostic & Monitoring (boiler state, flame, fault codes)  
 
 ### ⚙️ PCB Overview
 - 4 layer PCB build from scratch
@@ -43,21 +43,20 @@ Feel free to also checkout my [battery powered thermostat](https://github.com/dh
 
 This also works with *any* ESP32-S3, however it is not fully supported and tested. Make sure to update secrets.yaml according to your config.
 
+### 🚀 Featuress
+- Full OpenTherm Protocol Support
+- Integrated Home Assistant Support
+- Emergency Mode (Offline Control)
+- Optional weather Compensation (Equitherm or boilers own)  
+- Diagnostic & Monitoring (boiler state, flame, fault codes) 
+
 ### 🖥️ Web Interface
 - Access via http://otgateway.local (or the device IP)
 - Option to toggle Emergency Mode and enable offline control
 - Option to control even without Home Assistant or during (temporary) failure.
 - Heating (CH) control
 - Domestic Hot Water (DHW) control
-- All controls are processed locally on the ESP chip — not on Home Assistant.
-
-### 🔒 OTA & Maintenance
-- Updates can be pushed via Home Assistant or directly through ESPHome
-- OTA encrypted and password protected
-- Automatic reboot after successful updates
-- Safe Mode available if configuration fails to boot
-- External component for OpenTherm: stable releases and adapt config as you please without issues
-
+- All controls are processed locally on the ESP chip — not on Home Assistant. 
 ### 🧮 Equitherm Heating Curve
 This project implements a custom **Equithermic control algorithm** that dynamically adjusts the **boiler flow temperature** based on outdoor and indoor conditions.  
 It uses the same principle as weather-compensated control, but allows you to fully tune the curve parameters via Home Assistant. 

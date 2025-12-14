@@ -18,7 +18,7 @@ The PCB is not designed to connect to a thermostat via wire! It is a stand-alone
 ### 🛒 Shopping list
 | Item | Name | Quantity | Price | Link |
 | :--- | :---: | :--- | :--- | :--- |
-| **Screws** | M3x10 or M3 x 12 | 4 | $0.50 - $5 | Any |
+| **Screws** | M3 10-12mm | 4 | $0.50 - $5 | Any |
 | **PCB** | Attached in .pcb folder | 1 | $50 - $200 | [Link](.pcb/gerber_files.zip) |
 | **Case** | Attached in .pcb folder | 1 | $10 - $80 | [Link](.pcb/) |
 

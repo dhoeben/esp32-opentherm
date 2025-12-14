@@ -1,17 +1,23 @@
-Tested OK on ESPHome software version 2025.9.3 - 2025.11.0
+# OpenTherm Gateway [![GitHub release](https://img.shields.io/github/v/release/dhoeben/esp32-opentherm.svg)](https://GitHub.com/dhoeben/esp32-opentherm/releases/) [![ESPHome version](https://img.shields.io/badge/Based%20on%20ESPHome-v2025.12.1-blue)](https://GitHub.com/esphome/esophome/releases/)
 
-### 🏠 OpenTherm Gateway (ESPHome + ESP32)
+
+
 This project is still a work in progress and will implements a **fully native OpenTherm Gateway** using an **ESP32-S3** chip and ESPHome.  
-It acts as a modern, reliable, and flexible interface between your boiler and Home Assistant — featuring full OpenTherm communication, diagnostics, and web-accessible emergency controls. To create the PCB just download the gerber files from .pcb folder, then order at your convenience.
+It acts as a modern, reliable, and flexible interface between your boiler and Home Assistant — featuring full OpenTherm communication, diagnostics, and web-accessible emergency controls.
+It is designed to work with the PCB attached in the .pcb folder, to create the PCB just download the gerber files and order at your convenience.
 
-Feel free to also use my thermostat I created, which uses a E-ink display and is also fully customizable. Also has his own PCB you can just order! https://github.com/dhoeben/esp32-thermostat. 
+Feel free to also use my thermostat I created, which uses a E-ink display and is also fully customizable. Also has it's own PCB you can just order! https://github.com/dhoeben/esp32-thermostat. 
+Do not sell!
 
 ### ⬇️ Installation
-1) Download latest release
-2) Update/create secrets.yaml to your wishes
-3) Use vscode or flash tool to create firmware 
-4) Flash to your ESP device
-5) Connect ESP device to Opentherm Interface Circuit
+1) Order PCB using gerber_files and 3D print / assemble case.
+2) Download latest release
+3) Update secrets.yaml
+4) Use vscode or flash tool to create firmware 
+5) Flash to PCB using USB.
+6) Connect to boiler's OpenTherm connectors.
+7) Connect to Home Assistant
+
 
 ### 🚀 Features
 - Full OpenTherm Protocol Support
@@ -21,10 +27,11 @@ Feel free to also use my thermostat I created, which uses a E-ink display and is
 - Diagnostic & Monitoring (boiler state, flame, fault codes)  
 
 ### ⚙️ My PCB Overview
-- Build from scratch!
+- 4 layer PCB build from scratch
 - Used the best part and foodprint for the task.
+- Created Galvanic isolation, so no false signals or inteferance.
 - Low power usage and "light off principle"
-- 7 colored LED for status of the gateway
+- 7 multicolor LED's for status of the gateway
 - Used an overpowered ESP32-S3, so there will be no issues in the future
 - Used BME680 on PCB for a back-up temperature. Also gives CO2 equivalent, for monitoring of air quality in boiler room. 
 **Warning: Air quality sensing is just for fun, always use proper safety equipment for air quality monitoring.**
@@ -33,12 +40,11 @@ This also works with *any* ESP32-S3, however it is not fully supported and teste
 
 ### 🖥️ Web Interface
 - Access via http://otgateway.local (or the device IP)
-- Toggle Emergency Mode to enable offline control
-- Manually control
-- Heating (CH) On/Off
-- Domestic Hot Water (DHW) On/Off
-- Target temperatures
-- All controls are processed locally — no HA required.
+- Option to toggle Emergency Mode and enable offline control
+- Option to control even without Home Assistant or during (temporary) failure.
+- Heating (CH) control
+- Domestic Hot Water (DHW) control
+- All controls are processed locally on the ESP chip — not on Home Assistant.
 
 ### 🔒 OTA & Maintenance
 - Updates can be pushed via Home Assistant or directly through ESPHome
@@ -49,7 +55,10 @@ This also works with *any* ESP32-S3, however it is not fully supported and teste
 
 ### 🧮 Equitherm Heating Curve
 This project implements a custom **Equithermic control algorithm** that dynamically adjusts the **boiler flow temperature** based on outdoor and indoor conditions.  
-It uses the same principle as weather-compensated control, but allows you to fully tune the curve parameters via Home Assistant.
+It uses the same principle as weather-compensated control, but allows you to fully tune the curve parameters via Home Assistant. 
+This takes time, but eventually will save you a lot of money (and it is envoirmental friendly).
+
+You can also switch it off.
 
 <details>
 <summary><strong>More information</strong></summary>
@@ -79,15 +88,3 @@ The Equithermic control curve automatically increases boiler flow temperature wh
 - The final calculated temperature is **clamped** to the `Maximum CH Temperature` number you define in Home Assistant.
 
 </details>
-
-### ⚫ Status LED
-| Condition                 | Color     | Behavior                       |
-| ------------------------- | --------- | ------------------------------ |
-| **Boiler fault**          | 🔴 Red    | Boiler fault detected          |
-| **Emergency mode active** | 🟠 Orange | Manual override or safety mode |
-| **Backup Temp used**      | 🟡 Yellow | Onboard BME680 is used         |
-| **Connected to power**    | 🟢 Green  | Power is connected             |
-| **Wi-Fi disconnected**    | 🔵 Blue   | No Wi-Fi connection            |
-| **OpenTherm comm error**  | 🟣 Purple | No or invalid boiler response  |
-| **Home Assistant error**  | ⚪ White  | Connect to Home Assistant      |
-| **Board has no power**    | ⚫ Off    | Connect to power               |

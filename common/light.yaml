@@ -20,14 +20,6 @@ light:
           name: "Status Monitor"
           update_interval: 250ms 
           lambda: |-
-            // ----------------------------------------------------------
-            // 0. Developer Mode Check - All LEDs OFF
-            // ----------------------------------------------------------
-            if (id(developer_mode_switch).state) {
-              it.all() = Color::BLACK;
-              return; 
-            }
-
             bool blink_on = (millis() / 1000) % 2 == 0;
 
             // ----------------------------------------------------------

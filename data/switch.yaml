@@ -37,15 +37,3 @@ switch:
     restore_mode: ALWAYS_OFF
     web_server:
       sorting_group_id: sorting_emergency
-
-  # Developer mode
-  - platform: template
-    id: developer_mode_switch
-    name: "Developer mode"
-    icon: mdi:test-tube
-    internal: true
-    optimistic: true
-    restore_mode: ALWAYS_OFF
-    entity_category: diagnostic
-    web_server:
-      sorting_group_id: sorting_system

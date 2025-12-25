@@ -9,3 +9,9 @@ esphome:
     - id: dhw
       name: "Domestic Hot Water"
   
+  on_boot:
+    priority: 600
+    then:
+      - light.turn_on:
+          id: led_strip
+          effect: "Status Monitor"

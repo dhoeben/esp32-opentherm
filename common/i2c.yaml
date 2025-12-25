@@ -2,8 +2,13 @@ i2c:
   sda: !secret pin_i2c_sda
   scl: !secret pin_i2c_scl
   id: i2c_bme680
-  scan: true
+  frequency: 100kHz
+  scan: false
 
 bme68x_bsec2_i2c:
   address: 0x76
   model: bme680
+  i2c_id: i2c_bme680
+  operating_age: 28d
+  sample_rate: LP
+  supply_voltage: 3.3V

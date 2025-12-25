@@ -1,2 +1,4 @@
 logger:
   level: INFO
+  logs:
+    component: ERROR
